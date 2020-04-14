@@ -6,14 +6,52 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:SZVppFilmUI"
+        xmlns:Views="clr-namespace:SZVppFilmUI.Views"
         mc:Ignorable="d"
-        Title="{Binding WindowTitle}" Height="350" Width="525">
+        Title="{Binding WindowTitle}" Height="691" Width="1024" WindowStartupLocation ="CenterScreen" ResizeMode="CanResize"
+        Icon="AVARY01.ico">
+    <Controls:MetroWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Dictionary1.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Controls:MetroWindow.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding AppLoadedEventCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Menu VerticalAlignment="Center">
+            <MenuItem Header="主页" Command="{Binding MenuActionCommand}" CommandParameter="0"></MenuItem>
+            <MenuItem Header="参数" Command="{Binding MenuActionCommand}" CommandParameter="1"></MenuItem>
+        </Menu>
+        <Views:HomePage Grid.Row="1"></Views:HomePage>
+        <StatusBar Grid.Row="2">
+            <StatusBarItem>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center">Top</TextBlock>
+                    <Ellipse Style="{StaticResource EllipseStatusTop}"></Ellipse>
+                </StackPanel>
+            </StatusBarItem>
+            <StatusBarItem>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center">Bottom1</TextBlock>
+                    <Ellipse Style="{StaticResource EllipseStatusBottom1}"></Ellipse>
+                </StackPanel>
+            </StatusBarItem>
+            <StatusBarItem>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center">Bottom2</TextBlock>
+                    <Ellipse Style="{StaticResource EllipseStatusBottom2}"></Ellipse>
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Controls:MetroWindow>
