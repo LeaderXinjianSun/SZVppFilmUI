@@ -62,7 +62,7 @@ namespace BingLibrary.HVision
             {
                 if (Connected)
                 {
-                    CurrentImage?.Dispose();
+                    //CurrentImage?.Dispose();
                     CurrentImage = Framegrabber.GrabImage();
                     return true;
                 }
@@ -81,7 +81,7 @@ namespace BingLibrary.HVision
             {
                 if (Connected)
                 {
-                    CurrentImage?.Dispose();
+                    //CurrentImage?.Dispose();
                     CurrentImage = Framegrabber.GrabImage();
                    
                 }

@@ -12,7 +12,7 @@
             <ColumnDefinition Width="2*"></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <halconviewer:ImageViewer Name="BottonCamera2ImageViewer" Image="{Binding BottomCamera2Iamge}"></halconviewer:ImageViewer>
+        <halconviewer:ImageViewer Name="BottonCamera2ImageViewer" Image="{Binding BottomCamera2Iamge}" Repaint="{Binding BottomCamera2Repaint}" AutoFit="True"></halconviewer:ImageViewer>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>

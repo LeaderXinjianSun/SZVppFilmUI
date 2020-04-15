@@ -52,6 +52,15 @@
                     <Ellipse Style="{StaticResource EllipseStatusBottom2}"></Ellipse>
                 </StackPanel>
             </StatusBarItem>
+            <StatusBarItem>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center">PLC</TextBlock>
+                    <Ellipse Style="{StaticResource EllipseStatusPLC}"></Ellipse>
+                </StackPanel>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding Cycle,StringFormat=Cycle:{0}ms}"></TextBlock>
+            </StatusBarItem>
         </StatusBar>
     </Grid>
 </Controls:MetroWindow>
