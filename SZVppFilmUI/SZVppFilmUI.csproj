@@ -143,7 +143,7 @@
     <Compile Include="Views\TopCamera.xaml.cs">
       <DependentUpon>TopCamera.xaml</DependentUpon>
     </Compile>
-    <Page Include="Dictionary1.xaml">
+    <Page Include="Views\Dictionary1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

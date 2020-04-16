@@ -122,7 +122,7 @@ namespace BingLibrary.HVision
         {
             try
             {
-                CurrentImage?.Dispose();
+                //CurrentImage?.Dispose();
                 CurrentImage.ReadImage(imagePath);
                 return true;
             }

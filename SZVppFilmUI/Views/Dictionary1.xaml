@@ -34,4 +34,12 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
+    <Style TargetType="Grid" x:Key="GridLoginStatus">
+        <Setter Property="Visibility" Value="Collapsed"></Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsLogin}" Value="True">
+                <Setter Property="Visibility" Value="Visible"></Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>

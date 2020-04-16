@@ -13,7 +13,7 @@
     <Controls:MetroWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Dictionary1.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="Views\Dictionary1.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Controls:MetroWindow.Resources>
@@ -31,6 +31,7 @@
         <Menu VerticalAlignment="Center">
             <MenuItem Header="主页" Command="{Binding MenuActionCommand}" CommandParameter="0"></MenuItem>
             <MenuItem Header="参数" Command="{Binding MenuActionCommand}" CommandParameter="1"></MenuItem>
+            <MenuItem Header="{Binding LoginMenuItemHeader}" Command="{Binding MenuActionCommand}" CommandParameter="2"></MenuItem>
         </Menu>
         <Views:HomePage Grid.Row="1"></Views:HomePage>
         <StatusBar Grid.Row="2">

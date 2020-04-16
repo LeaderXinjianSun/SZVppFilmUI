@@ -12,6 +12,9 @@ using BingLibrary.HVision;
 using SXJLibrary;
 using BingLibrary.hjb.file;
 using System.Diagnostics;
+using System.IO;
+using HalconViewer;
+using System.Collections.ObjectModel;
 
 namespace SZVppFilmUI.ViewModels
 {
@@ -195,13 +198,217 @@ namespace SZVppFilmUI.ViewModels
                 this.RaisePropertyChanged("Cycle");
             }
         }
+        private string loginMenuItemHeader;
+
+        public string LoginMenuItemHeader
+        {
+            get { return loginMenuItemHeader; }
+            set
+            {
+                loginMenuItemHeader = value;
+                this.RaisePropertyChanged("LoginMenuItemHeader");
+            }
+        }
+        private bool isLogin;
+
+        public bool IsLogin
+        {
+            get { return isLogin; }
+            set
+            {
+                isLogin = value;
+                this.RaisePropertyChanged("IsLogin");
+            }
+        }
+        private string halconWindowVisibility;
+
+        public string HalconWindowVisibility
+        {
+            get { return halconWindowVisibility; }
+            set
+            {
+                halconWindowVisibility = value;
+                this.RaisePropertyChanged("HalconWindowVisibility");
+            }
+        }
+        private ObservableCollection<ROI> topCameraROIList;
+
+        public ObservableCollection<ROI> TopCameraROIList
+        {
+            get { return topCameraROIList; }
+            set
+            {
+                topCameraROIList = value;
+                this.RaisePropertyChanged("TopCameraROIList");
+            }
+        }
+        private ObservableCollection<ROI> bottomCamera1ROIList;
+
+        public ObservableCollection<ROI> BottomCamera1ROIList
+        {
+            get { return bottomCamera1ROIList; }
+            set
+            {
+                bottomCamera1ROIList = value;
+                this.RaisePropertyChanged("BottomCamera1ROIList");
+            }
+        }
+        private ObservableCollection<ROI> bottomCamera2ROIList;
+
+        public ObservableCollection<ROI> BottomCamera2ROIList
+        {
+            get { return bottomCamera2ROIList; }
+            set
+            {
+                bottomCamera2ROIList = value;
+                this.RaisePropertyChanged("BottomCamera2ROIList");
+            }
+        }
+        private string iniSection;
+
+        public string IniSection
+        {
+            get { return iniSection; }
+            set
+            {
+                iniSection = value;
+                this.RaisePropertyChanged("IniSection");
+            }
+        }
+        private string iniName;
+
+        public string IniName
+        {
+            get { return iniName; }
+            set
+            {
+                iniName = value;
+                this.RaisePropertyChanged("IniName");
+            }
+        }
+        private string iniValue;
+
+        public string IniValue
+        {
+            get { return iniValue; }
+            set
+            {
+                iniValue = value;
+                this.RaisePropertyChanged("IniValue");
+            }
+        }
+        private double topCameraDiff1_X;
+
+        public double TopCameraDiff1_X
+        {
+            get { return topCameraDiff1_X; }
+            set
+            {
+                topCameraDiff1_X = value;
+                this.RaisePropertyChanged("TopCameraDiff1_X");
+            }
+        }
+        private double topCameraDiff1_Y;
+
+        public double TopCameraDiff1_Y
+        {
+            get { return topCameraDiff1_Y; }
+            set
+            {
+                topCameraDiff1_Y = value;
+                this.RaisePropertyChanged("TopCameraDiff1_Y");
+            }
+        }
+        private double topCameraDiff1_U;
+
+        public double TopCameraDiff1_U
+        {
+            get { return topCameraDiff1_U; }
+            set
+            {
+                topCameraDiff1_U = value;
+                this.RaisePropertyChanged("TopCameraDiff1_U");
+            }
+        }
+        private double topCameraDiff2_X;
+
+        public double TopCameraDiff2_X
+        {
+            get { return topCameraDiff2_X; }
+            set
+            {
+                topCameraDiff2_X = value;
+                this.RaisePropertyChanged("TopCameraDiff2_X");
+            }
+        }
+        private double topCameraDiff2_Y;
+
+        public double TopCameraDiff2_Y
+        {
+            get { return topCameraDiff2_Y; }
+            set
+            {
+                topCameraDiff2_Y = value;
+                this.RaisePropertyChanged("TopCameraDiff2_Y");
+            }
+        }
+        private double topCameraDiff2_U;
+
+        public double TopCameraDiff2_U
+        {
+            get { return topCameraDiff2_U; }
+            set
+            {
+                topCameraDiff2_U = value;
+                this.RaisePropertyChanged("TopCameraDiff2_U");
+            }
+        }
+        private HObject topCameraAppendHObject;
+
+        public HObject TopCameraAppendHObject
+        {
+            get { return topCameraAppendHObject; }
+            set
+            {
+                topCameraAppendHObject = value;
+                this.RaisePropertyChanged("TopCameraAppendHObject");
+            }
+        }
+        private HObject bottomCamera1AppendHObject;
+
+        public HObject BottomCamera1AppendHObject
+        {
+            get { return bottomCamera1AppendHObject; }
+            set
+            {
+                bottomCamera1AppendHObject = value;
+                this.RaisePropertyChanged("BottomCamera1AppendHObject");
+            }
+        }
+        private HObject bottomCamera2AppendHObject;
+
+        public HObject BottomCamera2AppendHObject
+        {
+            get { return bottomCamera2AppendHObject; }
+            set
+            {
+                bottomCamera2AppendHObject = value;
+                this.RaisePropertyChanged("BottomCamera2AppendHObject");
+            }
+        }
 
         #endregion
         #region 方法绑定
         public DelegateCommand AppLoadedEventCommand { get; set; }
+        public DelegateCommand<object> MenuActionCommand { get; set; }
         public DelegateCommand TopCameraFunctionCommand { get; set; }
         public DelegateCommand BottonCamera1FunctionCommand { get; set; }
         public DelegateCommand BottonCamera2FunctionCommand { get; set; }
+        public DelegateCommand<object> DrawROIOperateCommand { get; set; }
+        public DelegateCommand<object> ReadImageOperateCommand { get; set; }
+        public DelegateCommand FuncBtnCommand { get; set; }
+        public DelegateCommand<object> SaveParamOperateCommand { get; set; }
+        public DelegateCommand<object> CreateShapeModelOperateCommand { get; set; }
         #endregion
         #region 变量
         private Metro metro = new Metro();
@@ -215,9 +422,15 @@ namespace SZVppFilmUI.ViewModels
         public MainWindowViewModel()
         {
             AppLoadedEventCommand = new DelegateCommand(new Action(this.AppLoadedEventCommandExecute));
+            MenuActionCommand = new DelegateCommand<object>(new Action<object>(this.MenuActionCommandExecute));
             TopCameraFunctionCommand = new DelegateCommand(new Action(this.TopCameraFunctionCommandExecute));
             BottonCamera1FunctionCommand = new DelegateCommand(new Action(this.BottonCamera1FunctionCommandExecute));
             BottonCamera2FunctionCommand = new DelegateCommand(new Action(this.BottonCamera2FunctionCommandExecute));
+            DrawROIOperateCommand = new DelegateCommand<object>(new Action<object>(this.DrawROIOperateCommandExecute));
+            ReadImageOperateCommand = new DelegateCommand<object>(new Action<object>(this.ReadImageOperateCommandExecute));
+            FuncBtnCommand = new DelegateCommand(new Action(this.FuncBtnCommandExecute));
+            SaveParamOperateCommand = new DelegateCommand<object>(new Action<object>(this.SaveParamOperateCommandExecute));
+            CreateShapeModelOperateCommand = new DelegateCommand<object>(new Action<object>(this.CreateShapeModelOperateCommandExecute));
         }
         #endregion
         #region 方法绑定函数
@@ -227,28 +440,205 @@ namespace SZVppFilmUI.ViewModels
             UIRun();
             Task.Run(()=> { SystemRun(); });
         }
+        private async void MenuActionCommandExecute(object p)
+        {
+            switch (p.ToString())
+            {
+                case "0":
+                    break;
+                case "1":
+                    break;
+                case "2":
+                    if (IsLogin)
+                    {
+                        IsLogin = false;
+                        LoginMenuItemHeader = "登录";
+                        AddMessage("已登出");
+                    }
+                    else
+                    {
+                        metro.ChangeAccent("Orange");
+                        HalconWindowVisibility = "Collapsed";
+                        var r = await metro.ShowLoginOnlyPassword("请登录");
+                        if (r == GetPassWord())
+                        {
+                            IsLogin = true;
+                            LoginMenuItemHeader = "登出";
+                        }
+                        else
+                        {
+                            AddMessage("密码错误");
+                        }
+                        HalconWindowVisibility = "Visible";
+                        metro.ChangeAccent("Blue");
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
         private void TopCameraFunctionCommandExecute()
         {
 
-            topCamera.GrabImage();
+            topCamera.GrabImageVoid();
             TopCameraIamge = topCamera.CurrentImage;
-            TopCameraRepaint = !TopCameraRepaint;
-
+            AddMessage("TopCamera拍照");
         }
         private void BottonCamera1FunctionCommandExecute()
         {
 
-            bottomCamera1.GrabImage();
+            bottomCamera1.GrabImageVoid();
             BottomCamera1Iamge = bottomCamera1.CurrentImage;
-            BottomCamera1Repaint = !BottomCamera1Repaint;
-
+            AddMessage("BottomCamera1拍照");
         }
         private void BottonCamera2FunctionCommandExecute()
         {
 
-            bottomCamera2.GrabImage();
+            bottomCamera2.GrabImageVoid();
             BottomCamera2Iamge = bottomCamera2.CurrentImage;
-            BottomCamera2Repaint = !BottomCamera2Repaint;
+            AddMessage("BottomCamera2拍照");
+        }
+        private void DrawROIOperateCommandExecute(object p)
+        {
+            HImage image;
+            ImageViewer imageViewer;
+            ObservableCollection<ROI> rOIList;
+            string path;
+            switch (p.ToString())
+            {
+                case "1":
+                    image = bottomCamera1.CurrentImage;
+                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom1");
+                    imageViewer = Global.BottonCamera1ImageViewer;
+                    rOIList = BottomCamera1ROIList;
+                    break;
+                case "2":
+                    image = bottomCamera2.CurrentImage;
+                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom2");
+                    imageViewer = Global.BottonCamera2ImageViewer;
+                    rOIList = BottomCamera2ROIList;
+                    break;
+                default:
+                    image = topCamera.CurrentImage;
+                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
+                    imageViewer = Global.TopCameraImageViewer;
+                    rOIList = TopCameraROIList;
+                    break;
+            }
+            
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            ROI roi = imageViewer.DrawROI(ROI.ROI_TYPE_RECTANGLE1);
+            rOIList.Clear();
+            rOIList.Add(roi);
+            HOperatorSet.WriteRegion(roi.getRegion(),Path.Combine(path, "Region.hobj"));
+        }
+        private void ReadImageOperateCommandExecute(object p)
+        {
+            System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
+            ofd.Filter = "Image文件(*.bmp;*.jpg)|*.bmp;*.jpg|所有文件|*.*";
+            ofd.ValidateNames = true;
+            ofd.CheckPathExists = true;
+            ofd.CheckFileExists = true;
+            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string strFileName = ofd.FileName;
+                switch (p.ToString())
+                {
+                    case "0":
+                        topCamera.ReadImage(strFileName);
+                        TopCameraIamge = topCamera.CurrentImage;
+                        break;
+                    case "1":
+                        bottomCamera1.ReadImage(strFileName);
+                        BottomCamera1Iamge = bottomCamera1.CurrentImage;
+                        break;
+                    case "2":
+                        bottomCamera2.ReadImage(strFileName);
+                        BottomCamera2Iamge = bottomCamera2.CurrentImage;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+        }
+        private void FuncBtnCommandExecute()
+        {
+            try
+            {
+                //Inifile.INIWriteValue(iniParameterPath, IniSection, IniName, IniValue);
+                //AddMessage(string.Format("Ini文件,{0},{1},{2} 写入完成", IniSection, IniName, IniValue));
+            }
+            catch (Exception ex)
+            {
+                AddMessage(ex.Message);
+            }
+        }
+        private void SaveParamOperateCommandExecute(object p)
+        {
+            switch (p.ToString())
+            {
+                case "0":
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraDiff1_X", TopCameraDiff1_X.ToString("F2"));
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraDiff1_Y", TopCameraDiff1_Y.ToString("F2"));
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraDiff1_U", TopCameraDiff1_U.ToString("F2"));
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraDiff2_X", TopCameraDiff2_X.ToString("F2"));
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraDiff2_Y", TopCameraDiff2_Y.ToString("F2"));
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraDiff2_U", TopCameraDiff2_U.ToString("F2"));
+                    AddMessage("上相机参数保存完成");
+                    break;
+                default:
+                    break;
+            }
+        }
+        private void CreateShapeModelOperateCommandExecute(object p)
+        {
+            HImage image;
+            ImageViewer imageViewer;
+            ObservableCollection<ROI> rOIList;
+            string path;
+            switch (p.ToString())
+            {
+                case "1":
+                    image = bottomCamera1.CurrentImage;
+                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom1");
+                    imageViewer = Global.BottonCamera1ImageViewer;
+                    rOIList = BottomCamera1ROIList;
+                    break;
+                case "2":
+                    image = bottomCamera2.CurrentImage;
+                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom2");
+                    imageViewer = Global.BottonCamera2ImageViewer;
+                    rOIList = BottomCamera2ROIList;
+                    break;
+                default:
+                    image = topCamera.CurrentImage;
+                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
+                    imageViewer = Global.TopCameraImageViewer;
+                    rOIList = TopCameraROIList;
+                    break;
+            }
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            ROI roi = imageViewer.DrawROI(ROI.ROI_TYPE_REGION);
+            HObject ReduceDomainImage;
+            HOperatorSet.ReduceDomain(image, roi.getRegion(), out ReduceDomainImage);
+            HObject modelImages, modelRegions;
+            HOperatorSet.InspectShapeModel(ReduceDomainImage, out modelImages, out modelRegions, 7, 30);
+            HObject objectSelected;
+            HOperatorSet.SelectObj(modelRegions, out objectSelected, 1);
+            HOperatorSet.WriteRegion(objectSelected, Path.Combine(path, "ModelRegion.hobj"));
+            TopCameraAppendHObject = null;
+            TopCameraAppendHObject = objectSelected;
+            //rOIList.Clear();
+            //rOIList.Add();
+            //HOperatorSet.WriteRegion(roi.getRegion(), Path.Combine(path, "Region.hobj"));
         }
         #endregion
         #region 自定义函数
@@ -260,6 +650,12 @@ namespace SZVppFilmUI.ViewModels
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
             StatusPLC = true;
+            IsLogin = false;
+            HalconWindowVisibility = "Visible";
+            LoginMenuItemHeader = "登录";
+            TopCameraROIList = new ObservableCollection<ROI>();
+            BottomCamera1ROIList = new ObservableCollection<ROI>();
+            BottomCamera2ROIList = new ObservableCollection<ROI>();
             if (topCamera.OpenCamera(TopCameraName, "GigEVision"))
             {
                 AddMessage("TopCamera Open Success!");
@@ -304,7 +700,12 @@ namespace SZVppFilmUI.ViewModels
             
             Fx5u = new Fx5u(plc_ip, plc_port);
             Fx5u.ConnectStateChanged += Fx5uConnectStateChanged;
-
+            TopCameraDiff1_X = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraDiff1_X", "0"));
+            TopCameraDiff1_Y = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraDiff1_Y", "0"));
+            TopCameraDiff1_U = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraDiff1_U", "0"));
+            TopCameraDiff2_X = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraDiff2_X", "0"));
+            TopCameraDiff2_Y = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraDiff2_Y", "0"));
+            TopCameraDiff2_U = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraDiff2_U", "0"));
         }
         private void AddMessage(string str)
         {
@@ -451,6 +852,19 @@ namespace SZVppFilmUI.ViewModels
         void Fx5uConnectStateChanged(object sender,bool e)
         {
             StatusPLC = e;
+        }
+        private string GetPassWord()
+        {
+            int day = System.DateTime.Now.Day;
+            int month = System.DateTime.Now.Month;
+            string ss = (day + month).ToString();
+            string passwordstr = "";
+            for (int i = 0; i < 4 - ss.Length; i++)
+            {
+                passwordstr += "0";
+            }
+            passwordstr += ss;
+            return passwordstr;
         }
         #endregion
 

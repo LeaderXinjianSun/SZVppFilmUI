@@ -12,7 +12,7 @@
             <ColumnDefinition Width="2*"></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <halconviewer:ImageViewer Name="BottonCamera2ImageViewer" Image="{Binding BottomCamera2Iamge}" Repaint="{Binding BottomCamera2Repaint}" AutoFit="True"></halconviewer:ImageViewer>
+        <halconviewer:ImageViewer Visibility="{Binding HalconWindowVisibility}" Name="BottonCamera2ImageViewer" Image="{Binding BottomCamera2Iamge}" Repaint="{Binding BottomCamera2Repaint}" AutoRepaint="True" ROIList="{Binding BottomCamera2ROIList}" AppendHObject="{Binding BottomCamera2AppendHObject}"></halconviewer:ImageViewer>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
@@ -26,9 +26,9 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.ColumnSpan="3" Orientation="Vertical">
-                <TextBlock Text="{Binding BottomCamera2Name,StringFormat=相机名称:{0}}"></TextBlock>
+                <TextBlock Text="{Binding BottomCamera2Name,StringFormat=相机名称:{0}}" FontSize="24"></TextBlock>
             </StackPanel>
-            <Button Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Margin="10" Content="功能" FontSize="36" Command="{Binding BottonCamera2FunctionCommand}"></Button>
+            <Button Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Margin="10" Content="拍照" FontSize="36" Command="{Binding BottonCamera2FunctionCommand}"></Button>
         </Grid>
     </Grid>
 </UserControl>
