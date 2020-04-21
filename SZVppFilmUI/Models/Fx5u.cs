@@ -182,6 +182,23 @@ namespace SXJLibrary
             {
                 _Connect = false;
             }
-        }        
+        }
+        /// <summary>
+        /// 写多个双字
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="value"></param>
+        public void WriteMultW(string address, int[] value)
+        {
+            OperateResult write = melsec_net.Write(address, value);
+            if (write.IsSuccess)
+            {
+                _Connect = true;
+            }
+            else
+            {
+                _Connect = false;
+            }
+        }
     }
 }

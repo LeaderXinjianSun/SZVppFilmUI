@@ -19,7 +19,7 @@
             <ColumnDefinition Width="2*"></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <halconviewer:ImageViewer Visibility="{Binding HalconWindowVisibility}" Name="TopCameraImageViewer" Image="{Binding TopCameraIamge}" Repaint="{Binding TopCameraRepaint}" AutoRepaint="True" ROIList="{Binding TopCameraROIList}" AppendHObject="{Binding TopCameraAppendHObject}"></halconviewer:ImageViewer>
+        <halconviewer:ImageViewer Visibility="{Binding HalconWindowVisibility}" Name="TopCameraImageViewer" Image="{Binding TopCameraIamge}" Repaint="{Binding TopCameraRepaint}" AutoRepaint="True" ROIList="{Binding TopCameraROIList}" AppendHObject="{Binding TopCameraAppendHObject}" GCStyle="{Binding TopCameraGCStyle}"></halconviewer:ImageViewer>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
@@ -38,7 +38,7 @@
                 <TextBlock Text="{Binding TopCameraName,StringFormat=相机名称:{0},FallbackValue=相机名称}" FontSize="24"></TextBlock>
             </StackPanel>
             <Button Grid.Column="3" Style="{StaticResource AccentedSquareButtonStyle}" Margin="10" Content="拍照" FontSize="24" Command="{Binding TopCameraFunctionCommand}"></Button>
-            <Grid Grid.Row="1" Grid.ColumnSpan="4" Grid.RowSpan="4" Style="{StaticResource GridLoginStatus}" Visibility="Visible">
+            <Grid Grid.Row="1" Grid.ColumnSpan="4" Grid.RowSpan="4" Style="{StaticResource GridLoginStatus}">
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
@@ -53,10 +53,13 @@
                 </Grid.ColumnDefinitions>
                 <Button Style="{StaticResource AccentedSquareButtonStyle}" Content="区域" Margin="10" FontSize="24" Command="{Binding DrawROIOperateCommand}" CommandParameter="0"></Button>
                 <Button Grid.Column="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="模板" Margin="10" FontSize="24" Command="{Binding CreateShapeModelOperateCommand}" CommandParameter="0"></Button>
-                <Button Grid.Column="2" Style="{StaticResource AccentedSquareButtonStyle}" Content="识别" Margin="10" FontSize="24"></Button>
-                <Button Grid.Column="3" Style="{StaticResource AccentedSquareButtonStyle}" Content="标定" Margin="10" FontSize="24"></Button>
+                <Button Grid.Column="2" Style="{StaticResource AccentedSquareButtonStyle}" Content="识别" Margin="10" FontSize="24" Command="{Binding FindShapeModelOperateCommand}" CommandParameter="0"></Button>
+                <Button Grid.Column="3" Style="{StaticResource AccentedSquareButtonStyle}" Content="标定" Margin="10" FontSize="24" Command="{Binding ClibOperateCommand}" CommandParameter="0" IsEnabled="{Binding ClibButtonIsEnabled}"></Button>
                 <Button Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="读取" Margin="10" FontSize="24" Command="{Binding ReadImageOperateCommand}" CommandParameter="0"></Button>
+                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="模板2" Margin="10" FontSize="20" Command="{Binding CreateShapeModel2}"></Button>
+                <Button Grid.Row="1" Grid.Column="2" Style="{StaticResource AccentedSquareButtonStyle}" Content="识别2" Margin="10" FontSize="20" Command="{Binding FindShapeModel2}"></Button>
                 <Button Grid.Column="3" Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="保存" Margin="10" FontSize="24" Command="{Binding SaveParamOperateCommand}" CommandParameter="0"></Button>
+                
                 <Grid Grid.Row="2" Grid.ColumnSpan="4" Grid.RowSpan="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition></ColumnDefinition>

@@ -7,14 +7,22 @@
              xmlns:halconviewer="clr-namespace:HalconViewer;assembly=HalconViewer"
              mc:Ignorable="d" 
              d:DesignHeight="480" d:DesignWidth="1024">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Dictionary1.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <halconviewer:ImageViewer Visibility="{Binding HalconWindowVisibility}" Name="BottonCamera1ImageViewer" Image="{Binding BottomCamera1Iamge}" Repaint="{Binding BottomCamera1Repaint}" AutoRepaint="True" ROIList="{Binding BottomCamera1ROIList}" AppendHObject="{Binding BottomCamera1AppendHObject}"></halconviewer:ImageViewer>
+        <halconviewer:ImageViewer Visibility="{Binding HalconWindowVisibility}" Name="BottonCamera1ImageViewer" Image="{Binding BottomCamera1Iamge}" Repaint="{Binding BottomCamera1Repaint}" AutoRepaint="True" ROIList="{Binding BottomCamera1ROIList}" AppendHObject="{Binding BottomCamera1AppendHObject}" GCStyle="{Binding BottomCamera1GCStyle}"></halconviewer:ImageViewer>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -24,11 +32,58 @@
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <StackPanel Grid.ColumnSpan="3" Orientation="Vertical">
+            <StackPanel Grid.ColumnSpan="2" Orientation="Vertical">
                 <TextBlock Text="{Binding BottomCamera1Name,StringFormat=相机名称:{0}}" FontSize="24"></TextBlock>
             </StackPanel>
-            <Button Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Margin="10" Content="拍照" FontSize="36" Command="{Binding BottonCamera1FunctionCommand}"></Button>
+            <Button Grid.Column="3" Style="{StaticResource AccentedSquareButtonStyle}" Margin="10" Content="拍照" FontSize="24" Command="{Binding BottonCamera1FunctionCommand}"></Button>
+            <Grid Grid.Row="1" Grid.ColumnSpan="4" Grid.RowSpan="4" Style="{StaticResource GridLoginStatus}">
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button Style="{StaticResource AccentedSquareButtonStyle}" Content="区域" Margin="10" FontSize="24" Command="{Binding DrawROIOperateCommand}" CommandParameter="1"></Button>
+                <Button Grid.Column="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="模板" Margin="10" FontSize="24" Command="{Binding CreateShapeModelOperateCommand}" CommandParameter="1"></Button>
+                <Button Grid.Column="2" Style="{StaticResource AccentedSquareButtonStyle}" Content="识别" Margin="10" FontSize="24" Command="{Binding FindShapeModelOperateCommand}" CommandParameter="1"></Button>
+                <Button Grid.Column="3" Style="{StaticResource AccentedSquareButtonStyle}" Content="标定" Margin="10" FontSize="24" Command="{Binding ClibOperateCommand}" CommandParameter="1" IsEnabled="{Binding ClibButtonIsEnabled}"></Button>
+                <Button Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="读取" Margin="10" FontSize="24" Command="{Binding ReadImageOperateCommand}" CommandParameter="1"></Button>
+                <Button Grid.Column="3" Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="保存" Margin="10" FontSize="24" Command="{Binding SaveParamOperateCommand}" CommandParameter="1"></Button>
+                <Grid Grid.Row="2" Grid.ColumnSpan="4" Grid.RowSpan="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <GroupBox Header="吸嘴1">
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal" Margin="0,1">
+                                <Label Content="补偿X:" Width="50"></Label>
+                                <TextBox Width="60" Text="{Binding BottomCamera1Diff1_X}"></TextBox>
+                                <Label Content="mm"></Label>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,1">
+                                <Label Content="补偿Y:" Width="50"></Label>
+                                <TextBox Width="60" Text="{Binding BottomCamera1Diff1_Y}"></TextBox>
+                                <Label Content="mm"></Label>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,1">
+                                <Label Content="补偿U:" Width="50"></Label>
+                                <TextBox Width="60" Text="{Binding BottomCamera1Diff1_U}"></TextBox>
+                                <Label Content="°"></Label>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+                    
+                </Grid>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>
