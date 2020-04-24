@@ -56,14 +56,24 @@ namespace BingLibrary.HVision
         /// 拍摄一张图片
         /// </summary>
         /// <returns></returns>
-        public bool GrabImage()
+        public bool GrabImage(int medianRadius)
         {
             try
             {
                 if (Connected)
                 {
                     //CurrentImage?.Dispose();
-                    CurrentImage = Framegrabber.GrabImage();
+                    var image = Framegrabber.GrabImage();
+                    if (medianRadius > 0)
+                    {
+                        HObject medianedImage;
+                        HOperatorSet.MedianImage(image, out medianedImage, "circle", medianRadius, "mirrored");
+                        CurrentImage = new HImage(medianedImage);
+                    }
+                    else
+                    {
+                        CurrentImage = image;
+                    }
                     return true;
                 }
                 else return false;
@@ -75,17 +85,25 @@ namespace BingLibrary.HVision
             }
         }
 
-        public void GrabImageVoid()
+        public void GrabImageVoid(int medianRadius)
         {
             try
             {
-                if (Connected)
                 {
                     //CurrentImage?.Dispose();
-                    CurrentImage = Framegrabber.GrabImage();
-                   
+                    var image = Framegrabber.GrabImage();
+                    if (medianRadius > 0)
+                    {
+                        HObject medianedImage;
+                        HOperatorSet.MedianImage(image, out medianedImage, "circle", medianRadius, "mirrored");
+                        CurrentImage = new HImage(medianedImage);
+                    }
+                    else
+                    {
+                        CurrentImage = image;
+                    }
                 }
-          
+
             }
             catch
             {
@@ -123,7 +141,9 @@ namespace BingLibrary.HVision
             try
             {
                 //CurrentImage?.Dispose();
-                CurrentImage.ReadImage(imagePath);
+                HObject image;
+                HOperatorSet.ReadImage(out image, imagePath);
+                CurrentImage = new HImage(image);
                 return true;
             }
             catch { return false; }

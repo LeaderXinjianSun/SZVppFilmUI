@@ -457,6 +457,39 @@ namespace SZVppFilmUI.ViewModels
                 this.RaisePropertyChanged("BottomCamera2ExposureValue");
             }
         }
+        private int topCameraRadius;
+
+        public int TopCameraRadius
+        {
+            get { return topCameraRadius; }
+            set
+            {
+                topCameraRadius = value;
+                this.RaisePropertyChanged("TopCameraRadius");
+            }
+        }
+        private int bottomCamera1Radius;
+
+        public int BottomCamera1Radius
+        {
+            get { return bottomCamera1Radius; }
+            set
+            {
+                bottomCamera1Radius = value;
+                this.RaisePropertyChanged("BottomCamera1Radius");
+            }
+        }
+        private int bottomCamera2Radius;
+
+        public int BottomCamera2Radius
+        {
+            get { return bottomCamera2Radius; }
+            set
+            {
+                bottomCamera2Radius = value;
+                this.RaisePropertyChanged("BottomCamera2Radius");
+            }
+        }
 
         #endregion
         #region 方法绑定
@@ -470,10 +503,13 @@ namespace SZVppFilmUI.ViewModels
         public DelegateCommand FuncBtnCommand { get; set; }
         public DelegateCommand<object> SaveParamOperateCommand { get; set; }
         public DelegateCommand<object> CreateShapeModelOperateCommand { get; set; }
+        public DelegateCommand<object> CreateLineCommand { get; set; }
         public DelegateCommand<object> FindShapeModelOperateCommand { get; set; }
+        public DelegateCommand<object> FindLineOperateCommand { get; set; }
         public DelegateCommand<object> ClibOperateCommand { get; set; }
         public DelegateCommand CreateShapeModel2 { get; set; }
         public DelegateCommand FindShapeModel2 { get; set; }
+        public DelegateCommand AppClosedEventCommand { get; set; }
         #endregion
         #region 变量
         private Metro metro = new Metro();
@@ -487,6 +523,7 @@ namespace SZVppFilmUI.ViewModels
         public MainWindowViewModel()
         {
             AppLoadedEventCommand = new DelegateCommand(new Action(this.AppLoadedEventCommandExecute));
+            AppClosedEventCommand = new DelegateCommand(new Action(this.AppClosedEventCommandExecute));
             MenuActionCommand = new DelegateCommand<object>(new Action<object>(this.MenuActionCommandExecute));
             TopCameraFunctionCommand = new DelegateCommand(new Action(this.TopCameraFunctionCommandExecute));
             BottonCamera1FunctionCommand = new DelegateCommand(new Action(this.BottonCamera1FunctionCommandExecute));
@@ -497,9 +534,11 @@ namespace SZVppFilmUI.ViewModels
             SaveParamOperateCommand = new DelegateCommand<object>(new Action<object>(this.SaveParamOperateCommandExecute));
             CreateShapeModelOperateCommand = new DelegateCommand<object>(new Action<object>(this.CreateShapeModelOperateCommandExecute));
             FindShapeModelOperateCommand = new DelegateCommand<object>(new Action<object>(this.FindShapeModelOperateCommandExecute));
+            FindLineOperateCommand = new DelegateCommand<object>(new Action<object>(this.FindLineOperateCommandExecute));
             ClibOperateCommand = new DelegateCommand<object>(new Action<object>(this.ClibOperateCommandExecute));
             CreateShapeModel2 = new DelegateCommand(new Action(this.CreateShapeModel2Execute));
             FindShapeModel2 = new DelegateCommand(new Action(this.FindShapeModel2Execute));
+            CreateLineCommand = new DelegateCommand<object>(new Action<object>(this.CreateLineCommandExecute));
         }
         #endregion
         #region 方法绑定函数
@@ -508,6 +547,19 @@ namespace SZVppFilmUI.ViewModels
             Init();
             UIRun();
             Task.Run(() => { SystemRun(); });
+        }
+        private void AppClosedEventCommandExecute()
+        {
+            try
+            {
+                topCamera.CloseCamera();
+                bottomCamera1.CloseCamera();
+                bottomCamera2.CloseCamera();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
         private async void MenuActionCommandExecute(object p)
         {
@@ -549,79 +601,93 @@ namespace SZVppFilmUI.ViewModels
         private void TopCameraFunctionCommandExecute()
         {
 
-            topCamera.GrabImageVoid();
+            topCamera.GrabImageVoid(TopCameraRadius);
             TopCameraIamge = topCamera.CurrentImage;
             AddMessage("TopCamera拍照");
         }
         private void BottonCamera1FunctionCommandExecute()
         {
 
-            bottomCamera1.GrabImageVoid();
+            bottomCamera1.GrabImageVoid(BottomCamera1Radius);
             BottomCamera1Iamge = bottomCamera1.CurrentImage;
             AddMessage("BottomCamera1拍照");
         }
         private void BottonCamera2FunctionCommandExecute()
         {
 
-            bottomCamera2.GrabImageVoid();
+            bottomCamera2.GrabImageVoid(BottomCamera2Radius);
             BottomCamera2Iamge = bottomCamera2.CurrentImage;
             AddMessage("BottomCamera2拍照");
         }
-        private void DrawROIOperateCommandExecute(object p)
+        private async void DrawROIOperateCommandExecute(object p)
         {
-            HImage image;
-            ImageViewer imageViewer;
-            ObservableCollection<ROI> rOIList;
-            string path;
-            switch (p.ToString())
+            metro.ChangeAccent("Red");
+            HalconWindowVisibility = "Collapsed";
+            var r = await metro.ShowConfirm("确认", "请确认需要重画区域吗？");
+            if (r)
             {
-                case "1":
-                    image = bottomCamera1.CurrentImage;
-                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom1");
-                    imageViewer = Global.BottonCamera1ImageViewer;
-                    rOIList = BottomCamera1ROIList;
-                    break;
-                case "2":
-                    image = bottomCamera2.CurrentImage;
-                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom2");
-                    imageViewer = Global.BottonCamera2ImageViewer;
-                    rOIList = BottomCamera2ROIList;
-                    break;
-                default:
-                    image = topCamera.CurrentImage;
-                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
-                    imageViewer = Global.TopCameraImageViewer;
-                    rOIList = TopCameraROIList;
-                    break;
-            }
+                metro.ChangeAccent("Blue");
+                HalconWindowVisibility = "Visible";
+                HImage image;
+                ImageViewer imageViewer;
+                ObservableCollection<ROI> rOIList;
+                string path;
+                switch (p.ToString())
+                {
+                    case "1":
+                        image = bottomCamera1.CurrentImage;
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom1");
+                        imageViewer = Global.BottonCamera1ImageViewer;
+                        rOIList = BottomCamera1ROIList;
+                        break;
+                    case "2":
+                        image = bottomCamera2.CurrentImage;
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom2");
+                        imageViewer = Global.BottonCamera2ImageViewer;
+                        rOIList = BottomCamera2ROIList;
+                        break;
+                    default:
+                        image = topCamera.CurrentImage;
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
+                        imageViewer = Global.TopCameraImageViewer;
+                        rOIList = TopCameraROIList;
+                        break;
+                }
 
-            if (!Directory.Exists(path))
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                ROI roi = imageViewer.DrawROI(ROI.ROI_TYPE_RECTANGLE1);
+                Tuple<string, object> t = new Tuple<string, object>("Color", "red");
+
+                switch (p.ToString())
+                {
+                    case "1":
+                        BottomCamera1GCStyle = t;
+                        BottomCamera1AppendHObject = null;
+                        BottomCamera1AppendHObject = roi.getRegion();
+                        break;
+
+                    case "2":
+                        BottomCamera2GCStyle = t;
+                        BottomCamera2AppendHObject = null;
+                        BottomCamera2AppendHObject = roi.getRegion();
+                        break;
+                    default:
+                        TopCameraGCStyle = t;
+                        TopCameraAppendHObject = null;
+                        TopCameraAppendHObject = roi.getRegion();
+                        break;
+                }
+                HOperatorSet.WriteRegion(roi.getRegion(), Path.Combine(path, "Region.hobj"));
+            }
+            else
             {
-                Directory.CreateDirectory(path);
+                metro.ChangeAccent("Blue");
+                HalconWindowVisibility = "Visible";
             }
-            ROI roi = imageViewer.DrawROI(ROI.ROI_TYPE_RECTANGLE1);
-            Tuple<string, object> t = new Tuple<string, object>("Color", "red");
-
-            switch (p.ToString())
-            {
-                case "1":
-                    BottomCamera1GCStyle = t;
-                    BottomCamera1AppendHObject = null;
-                    BottomCamera1AppendHObject = roi.getRegion();
-                    break;
-
-                case "2":
-                    BottomCamera2GCStyle = t;
-                    BottomCamera2AppendHObject = null;
-                    BottomCamera2AppendHObject = roi.getRegion();
-                    break;
-                default:
-                    TopCameraGCStyle = t;
-                    TopCameraAppendHObject = null;
-                    TopCameraAppendHObject = roi.getRegion();
-                    break;
-            }
-            HOperatorSet.WriteRegion(roi.getRegion(), Path.Combine(path, "Region.hobj"));
+            
         }
         private void ReadImageOperateCommandExecute(object p)
         {
@@ -657,25 +723,14 @@ namespace SZVppFilmUI.ViewModels
         {
             try
             {
-                //Inifile.INIWriteValue(iniParameterPath, IniSection, IniName, IniValue);
-                //AddMessage(string.Format("Ini文件,{0},{1},{2} 写入完成", IniSection, IniName, IniValue));
-                //int[] camerap = Fx5u.ReadMultiW("D4128", 3);
-                //int[] senddata = new int[3] { camerap[0] + -5 * 100, camerap[1] + 5 * 100, camerap[2] + 30 * 100 };
-                //Fx5u.WriteMultW("D3200", senddata);
-                //var rst = BottomCamera1Calc(BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
-                //var rst = BottomCamera1Calc(BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
-                //if (rst.Item2)
-                //{
-                //    AddMessage(rst.Item1[0].ToString() + "," + rst.Item1[1].ToString() + "," + rst.Item1[2].ToString());
-                //}
-                //else
-                //{
-                //    AddMessage("失败");
-                //}
+                var rst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
+                AddMessage(rst.Item1[0].ToString() + "," + rst.Item1[1].ToString() + "," + rst.Item1[2].ToString());
+
             }
             catch (Exception ex)
             {
                 AddMessage(ex.Message);
+                
             }
         }
         private void SaveParamOperateCommandExecute(object p)
@@ -686,18 +741,21 @@ namespace SZVppFilmUI.ViewModels
                     WriteToJson(TopCameraDiff1, Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top", "TopCameraDiff1.json"));
                     WriteToJson(TopCameraDiff2, Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top", "TopCameraDiff2.json"));
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraExposureValue", TopCameraExposureValue.ToString());
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraRadius", TopCameraRadius.ToString());
                     topCamera.SetExpose(TopCameraExposureValue);
                     AddMessage("上相机参数保存完成");
                     break;
                 case "1":
                     WriteToJson(BottomCamera1Diff, Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom1", "BottomCamera1Diff.json"));
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera1ExposureValue", BottomCamera1ExposureValue.ToString());
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera1Radius", BottomCamera1Radius.ToString());
                     bottomCamera1.SetExpose(BottomCamera1ExposureValue);
                     AddMessage("下相机1参数保存完成");
                     break;
                 case "2":
                     WriteToJson(BottomCamera2Diff, Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom2", "BottomCamera2Diff.json"));
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera2ExposureValue", BottomCamera2ExposureValue.ToString());
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera2Radius", BottomCamera2Radius.ToString());
                     bottomCamera2.SetExpose(BottomCamera2ExposureValue);
                     AddMessage("下相机2参数保存完成");
                     break;
@@ -705,110 +763,143 @@ namespace SZVppFilmUI.ViewModels
                     break;
             }
         }
-        private void CreateShapeModelOperateCommandExecute(object p)
+        private async void CreateShapeModelOperateCommandExecute(object p)
         {
-            try
+            metro.ChangeAccent("Red");
+            HalconWindowVisibility = "Collapsed";
+            var r = await metro.ShowConfirm("确认", "请确认需要重新画模板吗？");
+            if (r)
             {
-                HImage image;
-                ImageViewer imageViewer;
-                ObservableCollection<ROI> rOIList;
-                CameraOperate camera;
-                string path;
-                switch (p.ToString())
+                metro.ChangeAccent("Blue");
+                HalconWindowVisibility = "Visible";
+                try
                 {
-                    case "1":
-                        image = bottomCamera1.CurrentImage;
-                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom1");
-                        imageViewer = Global.BottonCamera1ImageViewer;
-                        rOIList = BottomCamera1ROIList;
-                        camera = bottomCamera1;
-                        break;
-                    case "2":
-                        image = bottomCamera2.CurrentImage;
-                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom2");
-                        imageViewer = Global.BottonCamera2ImageViewer;
-                        rOIList = BottomCamera2ROIList;
-                        camera = bottomCamera2;
-                        break;
-                    default:
-                        image = topCamera.CurrentImage;
-                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
-                        imageViewer = Global.TopCameraImageViewer;
-                        rOIList = TopCameraROIList;
-                        camera = topCamera;
-                        break;
-                }
+                    HImage image;
+                    ImageViewer imageViewer;
+                    ObservableCollection<ROI> rOIList;
+                    CameraOperate camera;
 
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-                ROI roi = imageViewer.DrawROI(ROI.ROI_TYPE_REGION);
-                HObject ReduceDomainImage;
-                HOperatorSet.ReduceDomain(image, roi.getRegion(), out ReduceDomainImage);
-                HObject modelImages, modelRegions;
-                HOperatorSet.InspectShapeModel(ReduceDomainImage, out modelImages, out modelRegions, 7, 30);
-                HObject objectSelected;
-                HOperatorSet.SelectObj(modelRegions, out objectSelected, 1);
-                HOperatorSet.WriteRegion(objectSelected, Path.Combine(path, "ModelRegion.hobj"));
-                switch (p.ToString())
-                {
-                    case "1":
-                        BottomCamera1AppendHObject = null;
-                        BottomCamera1AppendHObject = objectSelected;
-                        break;
+                    string path;
+                    switch (p.ToString())
+                    {
+                        case "1":
+                            image = bottomCamera1.CurrentImage;
+                            path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom1");
+                            imageViewer = Global.BottonCamera1ImageViewer;
+                            rOIList = BottomCamera1ROIList;
+                            camera = bottomCamera1;
+                            BottomCamera1AppendHObject = null;
+                            break;
+                        case "2":
+                            image = bottomCamera2.CurrentImage;
+                            path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom2");
+                            imageViewer = Global.BottonCamera2ImageViewer;
+                            rOIList = BottomCamera2ROIList;
+                            camera = bottomCamera2;
+                            BottomCamera2AppendHObject = null;
+                            break;
+                        default:
+                            image = topCamera.CurrentImage;
+                            path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
+                            imageViewer = Global.TopCameraImageViewer;
+                            rOIList = TopCameraROIList;
+                            camera = topCamera;
+                            TopCameraAppendHObject = null;
+                            break;
+                    }
 
-                    case "2":
-                        BottomCamera2AppendHObject = null;
-                        BottomCamera2AppendHObject = objectSelected;
-                        break;
-                    default:
-                        TopCameraAppendHObject = null;
-                        TopCameraAppendHObject = objectSelected;
-                        break;
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+                    ROI roi = imageViewer.DrawROI(ROI.ROI_TYPE_REGION);
+                    HObject ReduceDomainImage;
+                    HOperatorSet.ReduceDomain(image, roi.getRegion(), out ReduceDomainImage);
+                    HObject modelImages, modelRegions;
+                    HOperatorSet.InspectShapeModel(ReduceDomainImage, out modelImages, out modelRegions, 7, 25);
+                    HObject objectSelected;
+                    HOperatorSet.SelectObj(modelRegions, out objectSelected, 1);
+                    HOperatorSet.WriteRegion(objectSelected, Path.Combine(path, "ModelRegion.hobj"));
+                    switch (p.ToString())
+                    {
+                        case "1":
+                            BottomCamera1AppendHObject = null;
+                            BottomCamera1AppendHObject = objectSelected;
+                            break;
+
+                        case "2":
+                            BottomCamera2AppendHObject = null;
+                            BottomCamera2AppendHObject = objectSelected;
+                            break;
+                        default:
+                            TopCameraAppendHObject = null;
+                            TopCameraAppendHObject = objectSelected;
+                            break;
+                    }
+                    HTuple ModelID;
+                    HOperatorSet.CreateShapeModel(ReduceDomainImage, 7, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), (new HTuple(0.1)).TupleRad(), "no_pregeneration", "use_polarity", 25, 10, out ModelID);
+                    HOperatorSet.WriteShapeModel(ModelID, Path.Combine(path, "ShapeModel.shm"));
+                    camera.SaveImage("bmp", Path.Combine(path, "ModelImage.bmp"));
+                    AddMessage("创建模板完成");
                 }
-                HTuple ModelID;
-                HOperatorSet.CreateShapeModel(ReduceDomainImage, 7, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), (new HTuple(0.1)).TupleRad(), "no_pregeneration", "use_polarity", 30, 10, out ModelID);
-                HOperatorSet.WriteShapeModel(ModelID, Path.Combine(path, "ShapeModel.shm"));
-                camera.SaveImage("bmp", Path.Combine(path, "ModelImage.bmp"));
-                AddMessage("创建模板完成");
+                catch (Exception ex)
+                {
+                    AddMessage(ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                AddMessage(ex.Message);
+                metro.ChangeAccent("Blue");
+                HalconWindowVisibility = "Visible";
             }
+
 
 
         }
-        private void CreateShapeModel2Execute()
+        private async void CreateShapeModel2Execute()
         {
-            try
+            metro.ChangeAccent("Red");
+            HalconWindowVisibility = "Collapsed";
+            var r = await metro.ShowConfirm("确认", "请确认需要重新画模板2吗？");
+            if (r)
             {
-                string path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
-                ROI roi = Global.TopCameraImageViewer.DrawROI(ROI.ROI_TYPE_REGION);
-                HObject ReduceDomainImage;
-                HOperatorSet.ReduceDomain(topCamera.CurrentImage, roi.getRegion(), out ReduceDomainImage);
-                HObject modelImages, modelRegions;
-                HOperatorSet.InspectShapeModel(ReduceDomainImage, out modelImages, out modelRegions, 7, 30);
+                metro.ChangeAccent("Blue");
+                HalconWindowVisibility = "Visible";
+                try
+                {
+                    TopCameraAppendHObject = null;
+                    string path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
+                    ROI roi = Global.TopCameraImageViewer.DrawROI(ROI.ROI_TYPE_REGION);
+                    HObject ReduceDomainImage;
+                    HOperatorSet.ReduceDomain(topCamera.CurrentImage, roi.getRegion(), out ReduceDomainImage);
+                    HObject modelImages, modelRegions;
+                    HOperatorSet.InspectShapeModel(ReduceDomainImage, out modelImages, out modelRegions, 7, 30);
 
-                HObject objectSelected;
-                HOperatorSet.SelectObj(modelRegions, out objectSelected, 1);
-                HOperatorSet.WriteRegion(objectSelected, Path.Combine(path, "ModelRegion2.hobj"));
-                Tuple<string, object> t = new Tuple<string, object>("Color", "green");
-                TopCameraGCStyle = t;
-                TopCameraAppendHObject = null;
-                TopCameraAppendHObject = objectSelected;
-                HTuple ModelID;
-                HOperatorSet.CreateShapeModel(ReduceDomainImage, 7, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), (new HTuple(0.1)).TupleRad(), "no_pregeneration", "use_polarity", 30, 10, out ModelID);
-                HOperatorSet.WriteShapeModel(ModelID, Path.Combine(path, "ShapeModel2.shm"));
-                topCamera.SaveImage("bmp", Path.Combine(path, "ModelImage2.bmp"));
-                AddMessage("创建模板2完成");
+                    HObject objectSelected;
+                    HOperatorSet.SelectObj(modelRegions, out objectSelected, 1);
+                    HOperatorSet.WriteRegion(objectSelected, Path.Combine(path, "ModelRegion2.hobj"));
+                    Tuple<string, object> t = new Tuple<string, object>("Color", "green");
+                    TopCameraGCStyle = t;
+                    TopCameraAppendHObject = null;
+                    TopCameraAppendHObject = objectSelected;
+                    HTuple ModelID;
+                    HOperatorSet.CreateShapeModel(ReduceDomainImage, 7, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), (new HTuple(0.1)).TupleRad(), "no_pregeneration", "use_polarity", 30, 10, out ModelID);
+                    HOperatorSet.WriteShapeModel(ModelID, Path.Combine(path, "ShapeModel2.shm"));
+                    topCamera.SaveImage("bmp", Path.Combine(path, "ModelImage2.bmp"));
+                    AddMessage("创建模板2完成");
+                }
+                catch (Exception ex)
+                {
+
+                    AddMessage(ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-
-                AddMessage(ex.Message);
+                metro.ChangeAccent("Blue");
+                HalconWindowVisibility = "Visible";
             }
+
 
         }
         private void FindShapeModelOperateCommandExecute(object p)
@@ -895,6 +986,105 @@ namespace SZVppFilmUI.ViewModels
 
 
         }
+        private void FindLineOperateCommandExecute(object p)
+        {
+            try
+            {
+                HImage image;
+                ImageViewer imageViewer;
+                CameraOperate camera;
+                HTuple edges_sub_pix_low = null, edges_sub_pix_high = null;
+                string path;
+                switch (p.ToString())
+                {
+                    case "1":
+                        image = bottomCamera1.CurrentImage;
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom1");
+                        imageViewer = Global.BottonCamera1ImageViewer;
+                        edges_sub_pix_low = 20;
+                        edges_sub_pix_high = 40;
+                        camera = bottomCamera1;
+                        break;
+                    case "2":
+                        image = bottomCamera2.CurrentImage;
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom2");
+                        imageViewer = Global.BottonCamera2ImageViewer;
+                        edges_sub_pix_low = 20;
+                        edges_sub_pix_high = 40;
+                        camera = bottomCamera2;
+                        break;
+                    default:
+                        image = topCamera.CurrentImage;
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
+                        imageViewer = Global.TopCameraImageViewer;
+                        edges_sub_pix_low = 10;
+                        edges_sub_pix_high = 30;
+                        camera = topCamera;
+                        break;
+                }
+
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                HTuple ModelID, row, column, angle, score, row1, column1, angle1, score1;
+                HOperatorSet.ReadShapeModel(Path.Combine(path, "ShapeModel.shm"), out ModelID);
+                HObject ModelImage;
+                HOperatorSet.ReadImage(out ModelImage, Path.Combine(path, "ModelImage.bmp"));
+                HOperatorSet.FindShapeModel(ModelImage, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
+                HOperatorSet.FindShapeModel(camera.CurrentImage, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row1, out column1, out angle1, out score1);
+                HTuple homMat2D;
+                HOperatorSet.VectorAngleToRigid(row, column, angle, row1, column1, angle1, out homMat2D);
+                HObject lineRegion;
+                HOperatorSet.ReadRegion(out lineRegion, Path.Combine(path, "Line.hobj"));
+                HObject regionAffineTrans;
+                HOperatorSet.AffineTransRegion(lineRegion, out regionAffineTrans, homMat2D, "nearest_neighbor");
+                HObject imageReduced1;
+                HOperatorSet.ReduceDomain(camera.CurrentImage, regionAffineTrans, out imageReduced1);
+                HObject edges1;
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, edges_sub_pix_low, edges_sub_pix_high);
+                HObject contoursSplit1;
+                HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
+                HObject selectedContours1;
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
+                HObject unionContours1;
+                HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
+                HTuple rowBegin1, colBegin1, rowEnd1, colEnd1, nr1, nc1, dist1;
+                HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
+                HObject regionLine;
+                HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
+        
+                Tuple<string, object> t = new Tuple<string, object>("Color", "green");
+                switch (p.ToString())
+                {
+                    case "1":
+                        BottomCamera1GCStyle = t;
+                        BottomCamera1AppendHObject = null;
+                        BottomCamera1AppendHObject = regionLine;
+                        break;
+
+                    case "2":
+                        BottomCamera2GCStyle = t;
+                        BottomCamera2AppendHObject = null;
+                        BottomCamera2AppendHObject = regionLine;
+                        break;
+                    default:
+                        TopCameraGCStyle = t;
+                        TopCameraAppendHObject = null;
+                        TopCameraAppendHObject = regionLine;
+
+                        break;
+                }
+
+
+                AddMessage("找到直线: " + (Math.Atan2((nc1), (nr1)) * 180 / Math.PI - 90).ToString("F2") + "°");
+            }
+            catch (Exception ex)
+            {
+
+                AddMessage(ex.Message);
+            }
+        }
         private void FindShapeModel2Execute()
         {
             try
@@ -927,47 +1117,58 @@ namespace SZVppFilmUI.ViewModels
         }
         private async void ClibOperateCommandExecute(object p)
         {
-            HImage image;
-            ImageViewer imageViewer;
-            ObservableCollection<ROI> rOIList;
-            CameraOperate camera;
-            string path;
-            switch (p.ToString())
+            metro.ChangeAccent("Red");
+            HalconWindowVisibility = "Collapsed";
+            var r = await metro.ShowConfirm("确认", "请确认需要重新标定吗？");
+            if (r)
             {
-                case "1":
-                    image = bottomCamera1.CurrentImage;
-                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom1");
-                    imageViewer = Global.BottonCamera1ImageViewer;
-                    rOIList = BottomCamera1ROIList;
-                    camera = bottomCamera1;
-                    break;
-                case "2":
-                    image = bottomCamera2.CurrentImage;
-                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom2");
-                    imageViewer = Global.BottonCamera2ImageViewer;
-                    rOIList = BottomCamera2ROIList;
-                    camera = bottomCamera2;
-                    break;
-                default:
-                    image = topCamera.CurrentImage;
-                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
-                    imageViewer = Global.TopCameraImageViewer;
-                    rOIList = TopCameraROIList;
-                    camera = topCamera;
-                    break;
-            }
+                metro.ChangeAccent("Blue");
+                HalconWindowVisibility = "Visible";
+                HImage image;
+                ImageViewer imageViewer;
+                ObservableCollection<ROI> rOIList;
+                CameraOperate camera;
+                int radius;
+                string path;
+                switch (p.ToString())
+                {
+                    case "1":
+                        image = bottomCamera1.CurrentImage;
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom1");
+                        imageViewer = Global.BottonCamera1ImageViewer;
+                        rOIList = BottomCamera1ROIList;
+                        camera = bottomCamera1;
+                        radius = BottomCamera1Radius;
+                        break;
+                    case "2":
+                        image = bottomCamera2.CurrentImage;
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom2");
+                        imageViewer = Global.BottonCamera2ImageViewer;
+                        rOIList = BottomCamera2ROIList;
+                        camera = bottomCamera2;
+                        radius = BottomCamera2Radius;
+                        break;
+                    default:
+                        image = topCamera.CurrentImage;
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
+                        imageViewer = Global.TopCameraImageViewer;
+                        rOIList = TopCameraROIList;
+                        camera = topCamera;
+                        radius = TopCameraRadius;
+                        break;
+                }
 
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
 
-            ClibButtonIsEnabled = false;
-            await Task.Run(() =>
-            {
-                string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
+                ClibButtonIsEnabled = false;
+                await Task.Run(() =>
+                {
+                    string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
 
-                int[][] diff = new int[9][] {
+                    int[][] diff = new int[9][] {
                     new int[] { 0,0,0},
                     new int[] { -5,-5,0},
                     new int[] { 0,-5,0},
@@ -978,192 +1179,273 @@ namespace SZVppFilmUI.ViewModels
                     new int[] { -5,5,0},
                     new int[] { -5,0,0}
                 };
-                int[][] diff_r = new int[3][] {
+                    int[][] diff_r = new int[3][] {
                     new int[] { 0,0,0},
-                    new int[] { 0,0,5},
-                    new int[] { 0,0,-5}
+                    new int[] { 0,0,8},
+                    new int[] { 0,0,-8}
                 };
-                string MoveStart = "M3210";
-                string MoveFinish = "M3110";
-                string MoveData = "D3200";
-                string CameraP = "D4128";
-                string CameraRP = "D4280";
-                switch (Station)
-                {
-                    case "A":
-                        MoveStart = "M3210";
-                        MoveFinish = "M3110";
-                        MoveData = "D3200";
+                    string MoveStart = "M3210";
+                    string MoveFinish = "M3110";
+                    string MoveData = "D3200";
+                    string CameraP = "D4128";
+                    string CameraRP = "D4280";
+                    switch (Station)
+                    {
+                        case "A":
+                            MoveStart = "M3210";
+                            MoveFinish = "M3110";
+                            MoveData = "D3200";
+                            switch (p.ToString())
+                            {
+                                case "1":
+                                    CameraP = "D4134";
+                                    CameraRP = "D4134";
+                                    break;
+                                case "2":
+                                    CameraP = "D4134";
+                                    CameraRP = "D4134";
+                                    break;
+                                default:
+                                    CameraP = "D4128";
+                                    CameraRP = "D4280";
+                                    break;
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    //9点标定拍照
+                    int[] camerap = Fx5u.ReadMultiW(CameraP, 3);
+                    for (int i = 0; i < 9; i++)
+                    {
+                        int[] senddata = new int[3] { camerap[0] + diff[i][0] * 100, camerap[1] + diff[i][1] * 100, camerap[2] + diff[i][2] * 100 };
+                        Fx5u.WriteMultW(MoveData, senddata);
+                        Fx5u.SetM(MoveFinish, false);
+                        Fx5u.SetM(MoveStart, true);
+                        AddMessage("运动到位，按启动开始拍照");
+                        while (true)
+                        {
+                            try
+                            {
+                                if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
+                                    break;
+                            }
+                            catch { }
+                            System.Threading.Thread.Sleep(100);
+                        }
+                        camera.GrabImageVoid(radius);
                         switch (p.ToString())
                         {
                             case "1":
-                                CameraP = "D4134";
-                                CameraRP = "D4134";
+                                BottomCamera1Iamge = camera.CurrentImage;
                                 break;
+
                             case "2":
-                                CameraP = "D4134";
-                                CameraRP = "D4134";
+                                BottomCamera2Iamge = camera.CurrentImage;
                                 break;
                             default:
-                                CameraP = "D4128";
-                                CameraRP = "D4280";
+                                TopCameraIamge = camera.CurrentImage;
                                 break;
                         }
-                        break;
-
-                    default:
-                        break;
-                }
-
-                //9点标定拍照
-                int[] camerap = Fx5u.ReadMultiW(CameraP, 3);
-                //for (int i = 0; i < 9; i++)
-                //{
-                //    int[] senddata = new int[3] { camerap[0] + diff[i][0] * 100, camerap[1] + diff[i][1] * 100, camerap[2] + diff[i][2] * 100 };
-                //    Fx5u.WriteMultW(MoveData, senddata);
-                //    Fx5u.SetM(MoveFinish, false);
-                //    Fx5u.SetM(MoveStart, true);
-                //    AddMessage("运动到位，按启动开始拍照");
-                //    while (true)
-                //    {
-                //        try
-                //        {
-                //            if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
-                //                break;
-                //        }
-                //        catch { }
-                //        System.Threading.Thread.Sleep(100);
-                //    }
-                //    camera.GrabImageVoid();
-                //    switch (p.ToString())
-                //    {
-                //        case "1":
-                //            BottomCamera1Iamge = camera.CurrentImage;
-                //            break;
-
-                //        case "2":
-                //            BottomCamera2Iamge = camera.CurrentImage;
-                //            break;
-                //        default:
-                //            TopCameraIamge = camera.CurrentImage;
-                //            break;
-                //    }
-                //    if (!Directory.Exists(Path.Combine(path, "Calib")))
-                //    {
-                //        Directory.CreateDirectory(Path.Combine(path, "Calib"));
-                //    }
-                //    camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1).ToString() + ".bmp"));
+                        if (!Directory.Exists(Path.Combine(path, "Calib")))
+                        {
+                            Directory.CreateDirectory(Path.Combine(path, "Calib"));
+                        }
+                        camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1).ToString() + ".bmp"));
 
 
-                //}
-                double[][] Array1 = new double[9][];
-                int muli = p.ToString() == "0" ? -1 : 1;
-                for (int i = 0; i < 9; i++)
-                {
-                    try
-                    {
-                        HObject img;
-                        HOperatorSet.ReadImage(out img, Path.Combine(path, "Calib", (i + 1).ToString() + ".bmp"));
-                        HTuple ModelID, row, column, angle, score;
-                        HOperatorSet.ReadShapeModel(Path.Combine(path, "ShapeModel.shm"), out ModelID);
-                        HOperatorSet.FindShapeModel(img, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
-                        
-                        Array1[i] = new double[4] { row.D, column.D, camerap[0] + diff[i][0] * muli * 100, camerap[1] + diff[i][1] * muli * 100 };
                     }
-                    catch (Exception ex)
+                    double[][] Array1 = new double[9][];
+                    int muli = p.ToString() == "0" ? -1 : 1;
+                    for (int i = 0; i < 9; i++)
                     {
-                        Array1[i] = new double[4] { 0, 0, camerap[0] + diff[i][0] * muli * 100, camerap[1] + diff[i][1] * muli * 100 };
-                        AddMessage(ex.Message);
-                    }
-                }
-                HTuple homMat2D;
-                HOperatorSet.VectorToHomMat2d(new HTuple(Array1[0][0]).TupleConcat(Array1[1][0]).TupleConcat(Array1[2][0]).TupleConcat(Array1[3][0]).TupleConcat(Array1[4][0]).TupleConcat(Array1[5][0]).TupleConcat(Array1[6][0]).TupleConcat(Array1[7][0]).TupleConcat(Array1[8][0]),
-                    new HTuple(Array1[0][1]).TupleConcat(Array1[1][1]).TupleConcat(Array1[2][1]).TupleConcat(Array1[3][1]).TupleConcat(Array1[4][1]).TupleConcat(Array1[5][1]).TupleConcat(Array1[6][1]).TupleConcat(Array1[7][1]).TupleConcat(Array1[8][1]),
-                    new HTuple(Array1[0][2]).TupleConcat(Array1[1][2]).TupleConcat(Array1[2][2]).TupleConcat(Array1[3][2]).TupleConcat(Array1[4][2]).TupleConcat(Array1[5][2]).TupleConcat(Array1[6][2]).TupleConcat(Array1[7][2]).TupleConcat(Array1[8][2]),
-                    new HTuple(Array1[0][3]).TupleConcat(Array1[1][3]).TupleConcat(Array1[2][3]).TupleConcat(Array1[3][3]).TupleConcat(Array1[4][3]).TupleConcat(Array1[5][3]).TupleConcat(Array1[6][3]).TupleConcat(Array1[7][3]).TupleConcat(Array1[8][3])
-                    , out homMat2D);
-                //旋转标定拍照
-                camerap = Fx5u.ReadMultiW(CameraRP, 3);
-                //for (int i = 0; i < 3; i++)
-                //{
-                //    int[] senddata = new int[3] { camerap[0] + diff_r[i][0] * 100, camerap[1] + diff_r[i][1] * 100, camerap[2] + diff_r[i][2] * 100 };
-                //    Fx5u.WriteMultW(MoveData, senddata);
-                //    Fx5u.SetM(MoveFinish, false);
-                //    Fx5u.SetM(MoveStart, true);
-                //    AddMessage("运动到位，按启动开始拍照");
-                //    while (true)
-                //    {
-                //        try
-                //        {
-                //            if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
-                //                break;
-                //        }
-                //        catch { }
-                //        System.Threading.Thread.Sleep(100);
-                //    }
-                //    camera.GrabImageVoid();
-                //    switch (p.ToString())
-                //    {
-                //        case "1":
-                //            BottomCamera1Iamge = camera.CurrentImage;
-                //            break;
+                        try
+                        {
+                            HObject img;
+                            HOperatorSet.ReadImage(out img, Path.Combine(path, "Calib", (i + 1).ToString() + ".bmp"));
+                            HTuple ModelID, row, column, angle, score;
+                            HOperatorSet.ReadShapeModel(Path.Combine(path, "ShapeModel.shm"), out ModelID);
+                            HOperatorSet.FindShapeModel(img, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
 
-                //        case "2":
-                //            BottomCamera2Iamge = camera.CurrentImage;
-                //            break;
-                //        default:
-                //            TopCameraIamge = camera.CurrentImage;
-                //            break;
-                //    }
-                //    if (!Directory.Exists(Path.Combine(path, "Calib")))
-                //    {
-                //        Directory.CreateDirectory(Path.Combine(path, "Calib"));
-                //    }
-                //    camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1 + 9).ToString() + ".bmp"));
-                //}
-                double[][] Array2 = new double[3][];
-                for (int i = 0; i < 3; i++)
-                {
-                    try
-                    {
-                        HObject img;
-                        HOperatorSet.ReadImage(out img, Path.Combine(path, "Calib", (i + 1 + 9).ToString() + ".bmp"));
-                        HTuple ModelID, row, column, angle, score;
-                        string shapmodelname = p.ToString() == "0" ? "ShapeModel2.shm" : "ShapeModel.shm";
-                        HOperatorSet.ReadShapeModel(Path.Combine(path, shapmodelname), out ModelID);
-                        HOperatorSet.FindShapeModel(img, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
-                        Array2[i] = new double[2] { row.D, column.D };
+                            Array1[i] = new double[4] { row.D, column.D, (double)camerap[0] / 100 + diff[i][0] * muli, (double)camerap[1] / 100 + diff[i][1] * muli };
+                        }
+                        catch (Exception ex)
+                        {
+                            Array1[i] = new double[4] { 0, 0, (double)camerap[0] / 100 + diff[i][0] * muli, (double)camerap[1] / 100 + diff[i][1] * muli };
+                            AddMessage(ex.Message);
+                        }
                     }
-                    catch (Exception ex)
+                    HTuple homMat2D;
+                    HOperatorSet.VectorToHomMat2d(new HTuple(Array1[0][0]).TupleConcat(Array1[1][0]).TupleConcat(Array1[2][0]).TupleConcat(Array1[3][0]).TupleConcat(Array1[4][0]).TupleConcat(Array1[5][0]).TupleConcat(Array1[6][0]).TupleConcat(Array1[7][0]).TupleConcat(Array1[8][0]),
+                        new HTuple(Array1[0][1]).TupleConcat(Array1[1][1]).TupleConcat(Array1[2][1]).TupleConcat(Array1[3][1]).TupleConcat(Array1[4][1]).TupleConcat(Array1[5][1]).TupleConcat(Array1[6][1]).TupleConcat(Array1[7][1]).TupleConcat(Array1[8][1]),
+                        new HTuple(Array1[0][2]).TupleConcat(Array1[1][2]).TupleConcat(Array1[2][2]).TupleConcat(Array1[3][2]).TupleConcat(Array1[4][2]).TupleConcat(Array1[5][2]).TupleConcat(Array1[6][2]).TupleConcat(Array1[7][2]).TupleConcat(Array1[8][2]),
+                        new HTuple(Array1[0][3]).TupleConcat(Array1[1][3]).TupleConcat(Array1[2][3]).TupleConcat(Array1[3][3]).TupleConcat(Array1[4][3]).TupleConcat(Array1[5][3]).TupleConcat(Array1[6][3]).TupleConcat(Array1[7][3]).TupleConcat(Array1[8][3])
+                        , out homMat2D);
+                    //旋转标定拍照
+                    camerap = Fx5u.ReadMultiW(CameraRP, 3);
+                    for (int i = 0; i < 3; i++)
                     {
-                        Array2[i] = new double[2] { 0, 0 };
-                        AddMessage(ex.Message);
+                        int[] senddata = new int[3] { camerap[0] + diff_r[i][0] * 100, camerap[1] + diff_r[i][1] * 100, camerap[2] + diff_r[i][2] * 100 };
+                        Fx5u.WriteMultW(MoveData, senddata);
+                        Fx5u.SetM(MoveFinish, false);
+                        Fx5u.SetM(MoveStart, true);
+                        AddMessage("运动到位，按启动开始拍照");
+                        while (true)
+                        {
+                            try
+                            {
+                                if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
+                                    break;
+                            }
+                            catch { }
+                            System.Threading.Thread.Sleep(100);
+                        }
+                        camera.GrabImageVoid(radius);
+                        switch (p.ToString())
+                        {
+                            case "1":
+                                BottomCamera1Iamge = camera.CurrentImage;
+                                break;
+
+                            case "2":
+                                BottomCamera2Iamge = camera.CurrentImage;
+                                break;
+                            default:
+                                TopCameraIamge = camera.CurrentImage;
+                                break;
+                        }
+                        if (!Directory.Exists(Path.Combine(path, "Calib")))
+                        {
+                            Directory.CreateDirectory(Path.Combine(path, "Calib"));
+                        }
+                        camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1 + 9).ToString() + ".bmp"));
                     }
-                }
-                double[] circleCenter = rotateCenter(Array2[0][0], Array2[0][1], Array2[1][0], Array2[1][1], Array2[2][0], Array2[2][1]);
-                HTuple qx0, qy0;
-                HOperatorSet.AffineTransPoint2d(homMat2D, circleCenter[0], circleCenter[1], out qx0, out qy0);
-                double delta_x = camerap[0] - qx0;
-                double delta_y = camerap[1] - qy0;
-                AddMessage(delta_x.ToString() + " , " + delta_y.ToString());
-                HOperatorSet.VectorToHomMat2d(new HTuple(Array1[0][0]).TupleConcat(Array1[1][0]).TupleConcat(Array1[2][0]).TupleConcat(Array1[3][0]).TupleConcat(Array1[4][0]).TupleConcat(Array1[5][0]).TupleConcat(Array1[6][0]).TupleConcat(Array1[7][0]).TupleConcat(Array1[8][0]),
-                    new HTuple(Array1[0][1]).TupleConcat(Array1[1][1]).TupleConcat(Array1[2][1]).TupleConcat(Array1[3][1]).TupleConcat(Array1[4][1]).TupleConcat(Array1[5][1]).TupleConcat(Array1[6][1]).TupleConcat(Array1[7][1]).TupleConcat(Array1[8][1]),
-                    new HTuple(Array1[0][2] + delta_x).TupleConcat(Array1[1][2] + delta_x).TupleConcat(Array1[2][2] + delta_x).TupleConcat(Array1[3][2] + delta_x).TupleConcat(Array1[4][2] + delta_x).TupleConcat(Array1[5][2] + delta_x).TupleConcat(Array1[6][2] + delta_x).TupleConcat(Array1[7][2] + delta_x).TupleConcat(Array1[8][2] + delta_x),
-                    new HTuple(Array1[0][3] + delta_y).TupleConcat(Array1[1][3] + delta_y).TupleConcat(Array1[2][3] + delta_y).TupleConcat(Array1[3][3] + delta_y).TupleConcat(Array1[4][3] + delta_y).TupleConcat(Array1[5][3] + delta_y).TupleConcat(Array1[6][3] + delta_y).TupleConcat(Array1[7][3] + delta_y).TupleConcat(Array1[8][3] + delta_y)
-                    , out homMat2D);
-                HOperatorSet.WriteTuple(homMat2D, Path.Combine(path, "homMat2D.tup"));
-                AddMessage("保存标定文件成功");
-                HOperatorSet.SetColor(imageViewer.viewController.viewPort.HalconWindow, "green");
-                for (int i = 0; i < 9; i++)
+                    double[][] Array2 = new double[3][];
+                    for (int i = 0; i < 3; i++)
+                    {
+                        try
+                        {
+                            HObject img;
+                            HOperatorSet.ReadImage(out img, Path.Combine(path, "Calib", (i + 1 + 9).ToString() + ".bmp"));
+                            HTuple ModelID, row, column, angle, score;
+                            string shapmodelname = p.ToString() == "0" ? "ShapeModel2.shm" : "ShapeModel.shm";
+                            HOperatorSet.ReadShapeModel(Path.Combine(path, shapmodelname), out ModelID);
+                            HOperatorSet.FindShapeModel(img, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
+                            Array2[i] = new double[2] { row.D, column.D };
+                        }
+                        catch (Exception ex)
+                        {
+                            Array2[i] = new double[2] { 0, 0 };
+                            AddMessage(ex.Message);
+                        }
+                    }
+                    double[] circleCenter = rotateCenter(Array2[0][0], Array2[0][1], Array2[1][0], Array2[1][1], Array2[2][0], Array2[2][1]);
+                    HTuple qx0, qy0;
+                    HOperatorSet.AffineTransPoint2d(homMat2D, circleCenter[0], circleCenter[1], out qx0, out qy0);
+                    double delta_x = (double)camerap[0] / 100 - qx0;
+                    double delta_y = (double)camerap[1] / 100 - qy0;
+                    AddMessage(delta_x.ToString() + " , " + delta_y.ToString());
+                    HOperatorSet.VectorToHomMat2d(new HTuple(Array1[0][0]).TupleConcat(Array1[1][0]).TupleConcat(Array1[2][0]).TupleConcat(Array1[3][0]).TupleConcat(Array1[4][0]).TupleConcat(Array1[5][0]).TupleConcat(Array1[6][0]).TupleConcat(Array1[7][0]).TupleConcat(Array1[8][0]),
+                        new HTuple(Array1[0][1]).TupleConcat(Array1[1][1]).TupleConcat(Array1[2][1]).TupleConcat(Array1[3][1]).TupleConcat(Array1[4][1]).TupleConcat(Array1[5][1]).TupleConcat(Array1[6][1]).TupleConcat(Array1[7][1]).TupleConcat(Array1[8][1]),
+                        new HTuple(Array1[0][2] + delta_x).TupleConcat(Array1[1][2] + delta_x).TupleConcat(Array1[2][2] + delta_x).TupleConcat(Array1[3][2] + delta_x).TupleConcat(Array1[4][2] + delta_x).TupleConcat(Array1[5][2] + delta_x).TupleConcat(Array1[6][2] + delta_x).TupleConcat(Array1[7][2] + delta_x).TupleConcat(Array1[8][2] + delta_x),
+                        new HTuple(Array1[0][3] + delta_y).TupleConcat(Array1[1][3] + delta_y).TupleConcat(Array1[2][3] + delta_y).TupleConcat(Array1[3][3] + delta_y).TupleConcat(Array1[4][3] + delta_y).TupleConcat(Array1[5][3] + delta_y).TupleConcat(Array1[6][3] + delta_y).TupleConcat(Array1[7][3] + delta_y).TupleConcat(Array1[8][3] + delta_y)
+                        , out homMat2D);
+                    HOperatorSet.WriteTuple(homMat2D, Path.Combine(path, "homMat2D.tup"));
+                    AddMessage("保存标定文件成功");
+                    HOperatorSet.SetColor(imageViewer.viewController.viewPort.HalconWindow, "green");
+                    for (int i = 0; i < 9; i++)
+                    {
+                        HOperatorSet.DispCross(imageViewer.viewController.viewPort.HalconWindow, Array1[i][0], Array1[i][1], 120, 0);
+                    }
+                    for (int i = 0; i < 3; i++)
+                    {
+                        HOperatorSet.DispCross(imageViewer.viewController.viewPort.HalconWindow, Array2[i][0], Array2[i][1], 120, 0);
+                    }
+                });
+                ClibButtonIsEnabled = true;
+            }
+            else
+            {
+                metro.ChangeAccent("Blue");
+                HalconWindowVisibility = "Visible";
+            }
+
+        }
+        private async void CreateLineCommandExecute(object p)
+        {
+            metro.ChangeAccent("Red");
+            HalconWindowVisibility = "Collapsed";
+            var r = await metro.ShowConfirm("确认", "请确认需要重新画直线吗？");
+            if (r)
+            {
+                metro.ChangeAccent("Blue");
+                HalconWindowVisibility = "Visible";
+                try
                 {
-                    HOperatorSet.DispCross(imageViewer.viewController.viewPort.HalconWindow, Array1[i][0], Array1[i][1], 120, 0);
+                    HImage image;
+                    ImageViewer imageViewer;
+                    CameraOperate camera;
+
+                    string path;
+                    switch (p.ToString())
+                    {
+                        case "1":
+                            image = bottomCamera1.CurrentImage;
+                            path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom1");
+                            imageViewer = Global.BottonCamera1ImageViewer;
+                            camera = bottomCamera1;
+                            BottomCamera1AppendHObject = null;
+                            break;
+                        case "2":
+                            image = bottomCamera2.CurrentImage;
+                            path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom2");
+                            imageViewer = Global.BottonCamera2ImageViewer;
+                            camera = bottomCamera2;
+                            BottomCamera2AppendHObject = null;
+                            break;
+                        default:
+                            image = topCamera.CurrentImage;
+                            path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
+                            imageViewer = Global.TopCameraImageViewer;
+                            camera = topCamera;
+                            TopCameraAppendHObject = null;
+                            break;
+                    }
+
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+                    ROI roi = imageViewer.DrawROI(ROI.ROI_TYPE_RECTANGLE2);
+                    HOperatorSet.SetColor(imageViewer.viewController.viewPort.HalconWindow, "green");
+                    switch (p.ToString())
+                    {
+                        case "1":
+                            BottomCamera1AppendHObject = roi.getRegion();
+                            break;
+                        case "2":
+                            BottomCamera2AppendHObject = roi.getRegion();
+                            break;
+                        default:
+                            TopCameraAppendHObject = roi.getRegion();
+                            break;
+                    }
+                    HOperatorSet.WriteRegion(roi.getRegion(), Path.Combine(path, "Line.hobj"));
+                    AddMessage("画直线完成");
                 }
-                for (int i = 0; i < 3; i++)
+                catch (Exception ex)
                 {
-                    HOperatorSet.DispCross(imageViewer.viewController.viewPort.HalconWindow, Array2[i][0], Array2[i][1], 120, 0);
+                    AddMessage(ex.Message);
                 }
-            });
-            ClibButtonIsEnabled = true;
+
+            }
+            else
+            {
+                metro.ChangeAccent("Blue");
+                HalconWindowVisibility = "Visible";
+            }
         }
         #endregion
         #region 自定义函数
@@ -1182,12 +1464,15 @@ namespace SZVppFilmUI.ViewModels
             BottomCamera1ROIList = new ObservableCollection<ROI>();
             BottomCamera2ROIList = new ObservableCollection<ROI>();
             ClibButtonIsEnabled = true;
+            TopCameraRadius = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraRadius", "0"));
+            BottomCamera1Radius = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera1Radius", "0"));
+            BottomCamera2Radius = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera2Radius", "0"));
             if (topCamera.OpenCamera(TopCameraName, "GigEVision"))
             {
                 AddMessage("TopCamera Open Success!");
                 TopCameraExposureValue = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraExposureValue", "3500"));
                 topCamera.SetExpose(TopCameraExposureValue);
-                if (topCamera.GrabImage())
+                if (topCamera.GrabImage(TopCameraRadius))
                 {
                     AddMessage("TopCamera拍照成功");
                     TopCameraIamge = topCamera.CurrentImage;
@@ -1202,7 +1487,7 @@ namespace SZVppFilmUI.ViewModels
                 AddMessage("BottomCamera1 Open Success!");
                 BottomCamera1ExposureValue = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera1ExposureValue", "3500"));
                 bottomCamera1.SetExpose(BottomCamera1ExposureValue);
-                if (bottomCamera1.GrabImage())
+                if (bottomCamera1.GrabImage(BottomCamera1Radius))
                 {
                     AddMessage("BottomCamera1拍照成功");
                     BottomCamera1Iamge = bottomCamera1.CurrentImage;
@@ -1217,7 +1502,7 @@ namespace SZVppFilmUI.ViewModels
                 BottomCamera2ExposureValue = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera2ExposureValue", "3500"));
                 bottomCamera2.SetExpose(BottomCamera2ExposureValue);
                 AddMessage("BottomCamera2 Open Success!");
-                if (bottomCamera2.GrabImage())
+                if (bottomCamera2.GrabImage(BottomCamera2Radius))
                 {
                     AddMessage("BottomCamera2拍照成功");
                     BottomCamera2Iamge = bottomCamera2.CurrentImage;
@@ -1226,7 +1511,7 @@ namespace SZVppFilmUI.ViewModels
             else
             {
                 AddMessage("BottomCamera2 Open Fail!");
-            }
+            }            
             string plc_ip = Inifile.INIGetStringValue(iniParameterPath, "System", "PLCIP", "192.168.1.13");
             int plc_port = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "PLCPORT", "3900"));
 
@@ -1331,11 +1616,12 @@ namespace SZVppFilmUI.ViewModels
                                 AddMessage("上相机拍照1");
                                 try
                                 {
-                                    bool rst = topCamera.GrabImage();
+                                    bool rst = topCamera.GrabImage(TopCameraRadius);
                                     if (rst)
                                     {
                                         TopCameraIamge = topCamera.CurrentImage;
                                         var calcrst = TopCameraCalc("D4116", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U);
+                                        AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3206", calcrst.Item1);
                                         Fx5u.SetM("M3201", calcrst.Item2);
                                     }
@@ -1358,11 +1644,12 @@ namespace SZVppFilmUI.ViewModels
                                 AddMessage("上相机拍照2");
                                 try
                                 {
-                                    bool rst = topCamera.GrabImage();
+                                    bool rst = topCamera.GrabImage(TopCameraRadius);
                                     if (rst)
                                     {
                                         TopCameraIamge = topCamera.CurrentImage;
                                         var calcrst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
+                                        AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3206", calcrst.Item1);
                                         Fx5u.SetM("M3203", calcrst.Item2);
                                     }
@@ -1386,8 +1673,8 @@ namespace SZVppFilmUI.ViewModels
                                 try
                                 {
                                     bool rst1 = false, rst2 = false, finish1 = false, finish2 = false;
-                                    Task.Run(() => { rst1 = bottomCamera1.GrabImage(); finish1 = true; });
-                                    Task.Run(() => { rst2 = bottomCamera2.GrabImage(); finish2 = true; });
+                                    Task.Run(() => { rst1 = bottomCamera1.GrabImage(BottomCamera1Radius); finish1 = true; });
+                                    Task.Run(() => { rst2 = bottomCamera2.GrabImage(BottomCamera2Radius); finish2 = true; });
                                     while (!finish1 || !finish2)
                                     {
                                         System.Threading.Thread.Sleep(10);
@@ -1396,6 +1683,7 @@ namespace SZVppFilmUI.ViewModels
                                     {
                                         BottomCamera1Iamge = bottomCamera1.CurrentImage;
                                         var calcrst = BottomCamera1Calc(BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
+                                        AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3212", calcrst.Item1);
                                         Fx5u.SetM("M3205", calcrst.Item2);
                                     }
@@ -1403,6 +1691,7 @@ namespace SZVppFilmUI.ViewModels
                                     {
                                         BottomCamera2Iamge = bottomCamera2.CurrentImage;
                                         var calcrst = BottomCamera2Calc(BottomCamera2Diff.X, BottomCamera2Diff.Y, BottomCamera2Diff.U);
+                                        AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3218", calcrst.Item1);
                                         Fx5u.SetM("M3206", calcrst.Item2);
                                     }
@@ -1432,7 +1721,7 @@ namespace SZVppFilmUI.ViewModels
             }
         }
         private Tuple<int[], bool> TopCameraCalc(string TargetD, double _x, double _y, double _u)
-        {
+        {            
             try
             {
                 #region 读取PLC坐标
@@ -1464,23 +1753,75 @@ namespace SZVppFilmUI.ViewModels
                 TopCameraAppendHObject = null;
                 TopCameraAppendHObject = regionAffineTrans;
                 AddMessage("找到模板: Row:" + row1.D.ToString("F0") + " Column:" + column1.D.ToString("F0") + " Angle:" + angle1.TupleDeg().D.ToString("F2") + " Score:" + score1.D.ToString("F1"));
+
+                //确认角度
+                HObject lineRegion;
+                HOperatorSet.ReadRegion(out lineRegion, Path.Combine(path, "Line.hobj"));
+                HObject imageReduced1;
+                HOperatorSet.ReduceDomain(ModelImage, lineRegion, out imageReduced1);
+                HObject edges1;
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 10, 30);
+                HObject contoursSplit1;
+                HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
+                HObject selectedContours1;
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
+                HObject unionContours1;
+                HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
+                HTuple rowBegin1, colBegin1, rowEnd1, colEnd1, nr1, nc1, dist1;
+                HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
+
+                double lineAngle1 = Math.Atan2((nc1), (nr1)) * 180 / Math.PI - 90;
+
+                HObject regionLineAffineTrans;
+                HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
+                HOperatorSet.ReduceDomain(topCamera.CurrentImage, regionLineAffineTrans, out imageReduced1);
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 10, 30);
+                HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
+                HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
+                HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
+                HObject regionLine;
+                HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
+                TopCameraAppendHObject = regionLine;
+                double lineAngle2 = Math.Atan2((nc1), (nr1)) * 180 / Math.PI - 90;
+
+
+
+
+
                 //坐标变换
                 HOperatorSet.ReadTuple(Path.Combine(path, "homMat2D.tup"), out homMat2D);
                 HTuple CamImage_x, CamImage_y;
                 HOperatorSet.AffineTransPoint2d(homMat2D, row, column, out CamImage_x, out CamImage_y);
                 HTuple CamImage_x1, CamImage_y1;
                 HOperatorSet.AffineTransPoint2d(homMat2D, row1, column1, out CamImage_x1, out CamImage_y1);
-                HTuple T2;
-                HOperatorSet.VectorAngleToRigid(CamImage_x1, CamImage_y1, angle1, CamImage_x, CamImage_y, angle, out T2);//T2是新料移动到模板料位置的变换
-                HTuple T1;
-                HOperatorSet.VectorAngleToRigid(camerap[0], camerap[1], new HTuple(targetp[2]).TupleRad(), targetp[0] + _x * 100, targetp[1] + _y * 100, new HTuple(targetp[2] + _u * 100).TupleRad(), out T1);//T1是拍照位置移动到贴合位置的变换
-                HTuple CamRobot_x1, CamRobot_y1;
-                HOperatorSet.AffineTransPoint2d(T2, camerap[0], camerap[1], out CamRobot_x1, out CamRobot_y1);//移动到新料与模板料重合
+                HTuple T3;
+                HOperatorSet.VectorAngleToRigid(CamImage_x, CamImage_y, new HTuple(lineAngle1).TupleRad(), CamImage_x1, CamImage_y1, new HTuple(lineAngle2).TupleRad(), out T3);//T3是模板料移动到新料位置的变换
                 HTuple FitRobot_x1, FitRobot_y1;
-                HOperatorSet.AffineTransPoint2d(T1, CamRobot_x1, CamRobot_y1, out FitRobot_x1, out FitRobot_y1);//移动到贴合位置
+                HOperatorSet.AffineTransPoint2d(T3, (double)targetp[0] / 100, (double)targetp[1] / 100, out FitRobot_x1, out FitRobot_y1);//移动到新料与模板料重合
 
                 #endregion
-                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D - targetp[0]), (int)(FitRobot_y1.D - targetp[1]), (int)((angle - angle1).TupleDeg().D * 100) }, true);
+
+                bool result = true;
+                if (FitRobot_x1.D * 100 - targetp[0] > 500 || FitRobot_x1.D * 100 - targetp[0] < -500)
+                {
+                    result = false;
+                }
+                else
+                {
+                    if (FitRobot_y1.D * 100 - targetp[1] > 500 || FitRobot_y1.D * 100 - targetp[1] < -500)
+                    {
+                        result = false;
+                    }
+                    else
+                    {
+                        if (lineAngle1 - lineAngle2 > 10 || lineAngle1 - lineAngle2 < -10)
+                        {
+                            result = false;
+                        }
+                    }
+                }
+                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)((lineAngle1 - lineAngle2) * 100) }, result); ;
             }
             catch (Exception ex)
             {
@@ -1495,7 +1836,7 @@ namespace SZVppFilmUI.ViewModels
             {
                 #region 读取PLC坐标
                 int[] camerap = Fx5u.ReadMultiW("D4134", 3);
-                int[] targetp = Fx5u.ReadMultiW("D4116", 3);
+                int[] targetp = Fx5u.ReadMultiW("D4086", 3);
                 #endregion
                 #region 识别图像
                 //找模板
@@ -1522,6 +1863,36 @@ namespace SZVppFilmUI.ViewModels
                 BottomCamera1AppendHObject = null;
                 BottomCamera1AppendHObject = regionAffineTrans;
                 AddMessage("找到模板: Row:" + row1.D.ToString("F0") + " Column:" + column1.D.ToString("F0") + " Angle:" + angle1.TupleDeg().D.ToString("F2") + " Score:" + score1.D.ToString("F1"));
+                //确认角度
+                HObject lineRegion;
+                HOperatorSet.ReadRegion(out lineRegion, Path.Combine(path, "Line.hobj"));
+                HObject imageReduced1;
+                HOperatorSet.ReduceDomain(ModelImage, lineRegion, out imageReduced1);
+                HObject edges1;
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 20, 40);
+                HObject contoursSplit1;
+                HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
+                HObject selectedContours1;
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
+                HObject unionContours1;
+                HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
+                HTuple rowBegin1, colBegin1, rowEnd1, colEnd1, nr1, nc1, dist1;
+                HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
+
+                double lineAngle1 = Math.Atan2((nc1), (nr1)) * 180 / Math.PI - 90;
+
+                HObject regionLineAffineTrans;
+                HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
+                HOperatorSet.ReduceDomain(bottomCamera1.CurrentImage, regionLineAffineTrans, out imageReduced1);
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 20, 40);
+                HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
+                HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
+                HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
+                HObject regionLine;
+                HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
+                BottomCamera1AppendHObject = regionLine;
+                double lineAngle2 = Math.Atan2((nc1), (nr1)) * 180 / Math.PI - 90;
                 //坐标变换
                 HOperatorSet.ReadTuple(Path.Combine(path, "homMat2D.tup"), out homMat2D);
                 HTuple CamImage_x, CamImage_y;
@@ -1529,16 +1900,35 @@ namespace SZVppFilmUI.ViewModels
                 HTuple CamImage_x1, CamImage_y1;
                 HOperatorSet.AffineTransPoint2d(homMat2D, row1, column1, out CamImage_x1, out CamImage_y1);
                 HTuple T2;
-                HOperatorSet.VectorAngleToRigid(CamImage_x1, CamImage_y1, angle1 * -1, CamImage_x, CamImage_y, angle * -1, out T2);//T2是新料移动到模板料位置的变换
+                HOperatorSet.VectorAngleToRigid(CamImage_x1, CamImage_y1, new HTuple(lineAngle2 * -1).TupleRad(), CamImage_x, CamImage_y, new HTuple(lineAngle1 * -1).TupleRad(), out T2);//T2是新料移动到模板料位置的变换
                 HTuple T1;
-                HOperatorSet.VectorAngleToRigid(camerap[0], camerap[1], new HTuple(camerap[2]).TupleRad(), targetp[0] + _x * 100, targetp[1] + _y * 100, new HTuple(targetp[2] + _u * 100).TupleRad(), out T1);//T1是拍照位置移动到贴合位置的变换
+                HOperatorSet.VectorAngleToRigid((double)camerap[0] / 100, (double)camerap[1] / 100, new HTuple((double)camerap[2] / 100).TupleRad(), (double)targetp[0] / 100 + _x , (double)targetp[1] /100 + _y , new HTuple((double)targetp[2] / 100 + _u).TupleRad(), out T1);//T1是拍照位置移动到贴合位置的变换
                 HTuple CamRobot_x1, CamRobot_y1;
-                HOperatorSet.AffineTransPoint2d(T2, camerap[0], camerap[1], out CamRobot_x1, out CamRobot_y1);//移动到新料与模板料重合
+                HOperatorSet.AffineTransPoint2d(T2, (double)camerap[0] / 100, (double)camerap[1] / 100, out CamRobot_x1, out CamRobot_y1);//移动到新料与模板料重合
                 HTuple FitRobot_x1, FitRobot_y1;
                 HOperatorSet.AffineTransPoint2d(T1, CamRobot_x1, CamRobot_y1, out FitRobot_x1, out FitRobot_y1);//移动到贴合位置
 
                 #endregion
-                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D - targetp[0]), (int)(FitRobot_y1.D - targetp[1]), (int)(((angle - angle1) * -1).TupleDeg().D * 100) }, true);
+                bool result = true;
+                if (FitRobot_x1.D * 100 - targetp[0] > 500 || FitRobot_x1.D * 100 - targetp[0] < -500)
+                {
+                    result = false;
+                }
+                else
+                {
+                    if (FitRobot_y1.D * 100 - targetp[1] > 500 || FitRobot_y1.D * 100 - targetp[1] < -500)
+                    {
+                        result = false;
+                    }
+                    else
+                    {
+                        if (lineAngle1 - lineAngle2 > 10 || lineAngle1 - lineAngle2 < -10)
+                        {
+                            result = false;
+                        }
+                    }
+                }
+                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)((lineAngle1 - lineAngle2) * -1 * 100) }, result);
             }
             catch (Exception ex)
             {
@@ -1553,7 +1943,7 @@ namespace SZVppFilmUI.ViewModels
             {
                 #region 读取PLC坐标
                 int[] camerap = Fx5u.ReadMultiW("D4134", 3);
-                int[] targetp = Fx5u.ReadMultiW("D4122", 3);
+                int[] targetp = Fx5u.ReadMultiW("D4092", 3);
                 #endregion
                 #region 识别图像
                 //找模板
@@ -1580,6 +1970,41 @@ namespace SZVppFilmUI.ViewModels
                 BottomCamera2AppendHObject = null;
                 BottomCamera2AppendHObject = regionAffineTrans;
                 AddMessage("找到模板: Row:" + row1.D.ToString("F0") + " Column:" + column1.D.ToString("F0") + " Angle:" + angle1.TupleDeg().D.ToString("F2") + " Score:" + score1.D.ToString("F1"));
+
+                //确认角度
+                HObject lineRegion;
+                HOperatorSet.ReadRegion(out lineRegion, Path.Combine(path, "Line.hobj"));
+                HObject imageReduced1;
+                HOperatorSet.ReduceDomain(ModelImage, lineRegion, out imageReduced1);
+                HObject edges1;
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 20, 40);
+                HObject contoursSplit1;
+                HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
+                HObject selectedContours1;
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
+                HObject unionContours1;
+                HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
+                HTuple rowBegin1, colBegin1, rowEnd1, colEnd1, nr1, nc1, dist1;
+                HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
+
+                double lineAngle1 = Math.Atan2((nc1), (nr1)) * 180 / Math.PI - 90;
+
+                HObject regionLineAffineTrans;
+                HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
+                HOperatorSet.ReduceDomain(bottomCamera2.CurrentImage, regionLineAffineTrans, out imageReduced1);
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 20, 40);
+                HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
+                HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
+                HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
+                HObject regionLine;
+                HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
+                BottomCamera2AppendHObject = regionLine;
+                double lineAngle2 = Math.Atan2((nc1), (nr1)) * 180 / Math.PI - 90;
+
+
+
+
                 //坐标变换
                 HOperatorSet.ReadTuple(Path.Combine(path, "homMat2D.tup"), out homMat2D);
                 HTuple CamImage_x, CamImage_y;
@@ -1587,16 +2012,35 @@ namespace SZVppFilmUI.ViewModels
                 HTuple CamImage_x1, CamImage_y1;
                 HOperatorSet.AffineTransPoint2d(homMat2D, row1, column1, out CamImage_x1, out CamImage_y1);
                 HTuple T2;
-                HOperatorSet.VectorAngleToRigid(CamImage_x1, CamImage_y1, angle1 * -1, CamImage_x, CamImage_y, angle * -1, out T2);//T2是新料移动到模板料位置的变换
+                HOperatorSet.VectorAngleToRigid(CamImage_x1, CamImage_y1, new HTuple(lineAngle2 * -1).TupleRad(), CamImage_x, CamImage_y, new HTuple(lineAngle1 * -1).TupleRad(), out T2);//T2是新料移动到模板料位置的变换
                 HTuple T1;
-                HOperatorSet.VectorAngleToRigid(camerap[0], camerap[1], new HTuple(camerap[2]).TupleRad(), targetp[0] + _x * 100, targetp[1] + _y * 100, new HTuple(targetp[2] + _u * 100).TupleRad(), out T1);//T1是拍照位置移动到贴合位置的变换
+                HOperatorSet.VectorAngleToRigid((double)camerap[0] / 100, (double)camerap[1] / 100, new HTuple((double)camerap[2] / 100).TupleRad(), (double)targetp[0] / 100 + _x , (double)targetp[1] / 100 + _y, new HTuple((double)targetp[2] / 100 + _u).TupleRad(), out T1);//T1是拍照位置移动到贴合位置的变换
                 HTuple CamRobot_x1, CamRobot_y1;
-                HOperatorSet.AffineTransPoint2d(T2, camerap[0], camerap[1], out CamRobot_x1, out CamRobot_y1);//移动到新料与模板料重合
+                HOperatorSet.AffineTransPoint2d(T2, (double)camerap[0] / 100, (double)camerap[1] / 100, out CamRobot_x1, out CamRobot_y1);//移动到新料与模板料重合
                 HTuple FitRobot_x1, FitRobot_y1;
                 HOperatorSet.AffineTransPoint2d(T1, CamRobot_x1, CamRobot_y1, out FitRobot_x1, out FitRobot_y1);//移动到贴合位置
 
                 #endregion
-                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D - targetp[0]), (int)(FitRobot_y1.D - targetp[1]), (int)(((angle - angle1) * -1).TupleDeg().D * 100) }, true);
+                bool result = true;
+                if (FitRobot_x1.D * 100 - targetp[0] > 500 || FitRobot_x1.D * 100 - targetp[0] < -500)
+                {
+                    result = false;
+                }
+                else
+                {
+                    if (FitRobot_y1.D * 100 - targetp[1] > 500 || FitRobot_y1.D * 100 - targetp[1] < -500)
+                    {
+                        result = false;
+                    }
+                    else
+                    {
+                        if (lineAngle1 - lineAngle2 > 10 || lineAngle1 - lineAngle2 < -10)
+                        {
+                            result = false;
+                        }
+                    }
+                }
+                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)((lineAngle1 - lineAngle2) * -1 * 100) }, result);
             }
             catch (Exception ex)
             {
@@ -1658,6 +2102,5 @@ namespace SZVppFilmUI.ViewModels
             }
         }
         #endregion
-
     }
 }
