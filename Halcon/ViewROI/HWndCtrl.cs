@@ -80,7 +80,7 @@ namespace ViewROI
         private double startX, startY;
 
         /// <summary>HALCON window</summary>
-        private HWindowControlWPF viewPort;
+        public HWindowControlWPF viewPort;
 
         /// <summary>
         /// Instance of ROIController, which manages ROI interaction

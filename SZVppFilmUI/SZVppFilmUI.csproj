@@ -88,6 +88,10 @@
       <HintPath>..\packages\Unity.2.1.505.0\lib\NET35\Microsoft.Practices.Unity.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="NSubstitute, Version=0.9.0.34, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
       <HintPath>..\packages\NSubstitute.0.9.0.34\lib\35\NSubstitute.dll</HintPath>
       <Private>True</Private>
@@ -131,6 +135,7 @@
     <Compile Include="Models\Inifile.cs" />
     <Compile Include="Models\Metro.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\PointViewModel.cs" />
     <Compile Include="Views\BottomCamera1.xaml.cs">
       <DependentUpon>BottomCamera1.xaml</DependentUpon>
     </Compile>

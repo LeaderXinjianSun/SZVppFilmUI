@@ -363,7 +363,7 @@ namespace HalconViewer
                     Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
                     string imgFileName;
 
-                    sfd.Filter = "PNG图像|*.png|BMP图像|*.bmp|JPEG图像|*.jpg|所有文件|*.*";
+                    sfd.Filter = "BMP图像|*.bmp|PNG图像|*.png|JPEG图像|*.jpg|所有文件|*.*";
 
                     if (sfd.ShowDialog() == true)
                     {
@@ -371,7 +371,7 @@ namespace HalconViewer
                             return;
 
                         imgFileName = sfd.FileName;
-                        Image.WriteImage("png", 0, imgFileName);
+                        Image.WriteImage("bmp", 0, imgFileName);
                     }
                 }
             }
@@ -388,7 +388,7 @@ namespace HalconViewer
                 Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
                 string imgFileName;
 
-                sfd.Filter = "PNG图像|*.png|BMP图像|*.bmp|JPEG图像|*.jpg|所有文件|*.*";
+                sfd.Filter = "BMP图像|*.bmp|PNG图像|*.png|JPEG图像|*.jpg|所有文件|*.*";
 
                 if (sfd.ShowDialog() == true)
                 {
@@ -396,7 +396,7 @@ namespace HalconViewer
                         return;
 
                     imgFileName = sfd.FileName;
-                    WPF_HWindow.HalconWindow.DumpWindow("png", imgFileName);
+                    WPF_HWindow.HalconWindow.DumpWindow("bmp", imgFileName);
                 }
             }
             catch (Exception ex)
