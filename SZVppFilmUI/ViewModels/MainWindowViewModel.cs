@@ -1467,51 +1467,59 @@ namespace SZVppFilmUI.ViewModels
             TopCameraRadius = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraRadius", "0"));
             BottomCamera1Radius = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera1Radius", "0"));
             BottomCamera2Radius = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera2Radius", "0"));
-            if (topCamera.OpenCamera(TopCameraName, "GigEVision"))
+            try
             {
-                AddMessage("TopCamera Open Success!");
-                TopCameraExposureValue = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraExposureValue", "3500"));
-                topCamera.SetExpose(TopCameraExposureValue);
-                if (topCamera.GrabImage(TopCameraRadius))
+                if (topCamera.OpenCamera(TopCameraName, "GigEVision"))
                 {
-                    AddMessage("TopCamera拍照成功");
-                    TopCameraIamge = topCamera.CurrentImage;
+                    AddMessage("TopCamera Open Success!");
+                    TopCameraExposureValue = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraExposureValue", "3500"));
+                    topCamera.SetExpose(TopCameraExposureValue);
+                    if (topCamera.GrabImage(TopCameraRadius))
+                    {
+                        AddMessage("TopCamera拍照成功");
+                        TopCameraIamge = topCamera.CurrentImage;
+                    }
+                }
+                else
+                {
+                    AddMessage("TopCamera Open Fail!");
+                }
+                if (bottomCamera1.OpenCamera(BottomCamera1Name, "GigEVision"))
+                {
+                    AddMessage("BottomCamera1 Open Success!");
+                    BottomCamera1ExposureValue = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera1ExposureValue", "3500"));
+                    bottomCamera1.SetExpose(BottomCamera1ExposureValue);
+                    if (bottomCamera1.GrabImage(BottomCamera1Radius))
+                    {
+                        AddMessage("BottomCamera1拍照成功");
+                        BottomCamera1Iamge = bottomCamera1.CurrentImage;
+                    }
+                }
+                else
+                {
+                    AddMessage("BottomCamera1 Open Fail!");
+                }
+                if (bottomCamera2.OpenCamera(BottomCamera2Name, "GigEVision"))
+                {
+                    BottomCamera2ExposureValue = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera2ExposureValue", "3500"));
+                    bottomCamera2.SetExpose(BottomCamera2ExposureValue);
+                    AddMessage("BottomCamera2 Open Success!");
+                    if (bottomCamera2.GrabImage(BottomCamera2Radius))
+                    {
+                        AddMessage("BottomCamera2拍照成功");
+                        BottomCamera2Iamge = bottomCamera2.CurrentImage;
+                    }
+                }
+                else
+                {
+                    AddMessage("BottomCamera2 Open Fail!");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                AddMessage("TopCamera Open Fail!");
+                AddMessage(ex.Message);
             }
-            if (bottomCamera1.OpenCamera(BottomCamera1Name, "GigEVision"))
-            {
-                AddMessage("BottomCamera1 Open Success!");
-                BottomCamera1ExposureValue = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera1ExposureValue", "3500"));
-                bottomCamera1.SetExpose(BottomCamera1ExposureValue);
-                if (bottomCamera1.GrabImage(BottomCamera1Radius))
-                {
-                    AddMessage("BottomCamera1拍照成功");
-                    BottomCamera1Iamge = bottomCamera1.CurrentImage;
-                }
-            }
-            else
-            {
-                AddMessage("BottomCamera1 Open Fail!");
-            }
-            if (bottomCamera2.OpenCamera(BottomCamera2Name, "GigEVision"))
-            {
-                BottomCamera2ExposureValue = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera2ExposureValue", "3500"));
-                bottomCamera2.SetExpose(BottomCamera2ExposureValue);
-                AddMessage("BottomCamera2 Open Success!");
-                if (bottomCamera2.GrabImage(BottomCamera2Radius))
-                {
-                    AddMessage("BottomCamera2拍照成功");
-                    BottomCamera2Iamge = bottomCamera2.CurrentImage;
-                }
-            }
-            else
-            {
-                AddMessage("BottomCamera2 Open Fail!");
-            }
+            
             string plc_ip = Inifile.INIGetStringValue(iniParameterPath, "System", "PLCIP", "192.168.1.13");
             int plc_port = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "PLCPORT", "3900"));
 
