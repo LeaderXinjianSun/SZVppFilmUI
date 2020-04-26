@@ -287,8 +287,8 @@ namespace SZVppFilmUI.ViewModels
                 this.RaisePropertyChanged("IniName");
             }
         }
-        private string iniValue;
 
+        private string iniValue;
         public string IniValue
         {
             get { return iniValue; }
@@ -298,9 +298,6 @@ namespace SZVppFilmUI.ViewModels
                 this.RaisePropertyChanged("IniValue");
             }
         }
-
-
-
 
         private HObject topCameraAppendHObject;
 
@@ -490,6 +487,7 @@ namespace SZVppFilmUI.ViewModels
                 this.RaisePropertyChanged("BottomCamera2Radius");
             }
         }
+        
 
         #endregion
         #region 方法绑定
@@ -723,8 +721,10 @@ namespace SZVppFilmUI.ViewModels
         {
             try
             {
-                var rst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
-                AddMessage(rst.Item1[0].ToString() + "," + rst.Item1[1].ToString() + "," + rst.Item1[2].ToString());
+                //var rst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
+                ////var rst = BottomCamera2Calc(TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
+                //AddMessage(rst.Item1[0].ToString() + "," + rst.Item1[1].ToString() + "," + rst.Item1[2].ToString());
+                
 
             }
             catch (Exception ex)
@@ -1001,16 +1001,16 @@ namespace SZVppFilmUI.ViewModels
                         image = bottomCamera1.CurrentImage;
                         path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom1");
                         imageViewer = Global.BottonCamera1ImageViewer;
-                        edges_sub_pix_low = 20;
-                        edges_sub_pix_high = 40;
+                        edges_sub_pix_low = 10;
+                        edges_sub_pix_high = 30;
                         camera = bottomCamera1;
                         break;
                     case "2":
                         image = bottomCamera2.CurrentImage;
                         path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom2");
                         imageViewer = Global.BottonCamera2ImageViewer;
-                        edges_sub_pix_low = 20;
-                        edges_sub_pix_high = 40;
+                        edges_sub_pix_low = 10;
+                        edges_sub_pix_high = 30;
                         camera = bottomCamera2;
                         break;
                     default:
@@ -1181,8 +1181,8 @@ namespace SZVppFilmUI.ViewModels
                 };
                     int[][] diff_r = new int[3][] {
                     new int[] { 0,0,0},
-                    new int[] { 0,0,8},
-                    new int[] { 0,0,-8}
+                    new int[] { 0,0,5},
+                    new int[] { 0,0,-5}
                 };
                     string MoveStart = "M3210";
                     string MoveFinish = "M3110";
@@ -1218,45 +1218,45 @@ namespace SZVppFilmUI.ViewModels
 
                     //9点标定拍照
                     int[] camerap = Fx5u.ReadMultiW(CameraP, 3);
-                    for (int i = 0; i < 9; i++)
-                    {
-                        int[] senddata = new int[3] { camerap[0] + diff[i][0] * 100, camerap[1] + diff[i][1] * 100, camerap[2] + diff[i][2] * 100 };
-                        Fx5u.WriteMultW(MoveData, senddata);
-                        Fx5u.SetM(MoveFinish, false);
-                        Fx5u.SetM(MoveStart, true);
-                        AddMessage("运动到位，按启动开始拍照");
-                        while (true)
-                        {
-                            try
-                            {
-                                if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
-                                    break;
-                            }
-                            catch { }
-                            System.Threading.Thread.Sleep(100);
-                        }
-                        camera.GrabImageVoid(radius);
-                        switch (p.ToString())
-                        {
-                            case "1":
-                                BottomCamera1Iamge = camera.CurrentImage;
-                                break;
+                    //for (int i = 0; i < 9; i++)
+                    //{
+                    //    int[] senddata = new int[3] { camerap[0] + diff[i][0] * 100, camerap[1] + diff[i][1] * 100, camerap[2] + diff[i][2] * 100 };
+                    //    Fx5u.WriteMultW(MoveData, senddata);
+                    //    Fx5u.SetM(MoveFinish, false);
+                    //    Fx5u.SetM(MoveStart, true);
+                    //    AddMessage("运动到位，按启动开始拍照");
+                    //    while (true)
+                    //    {
+                    //        try
+                    //        {
+                    //            if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
+                    //                break;
+                    //        }
+                    //        catch { }
+                    //        System.Threading.Thread.Sleep(100);
+                    //    }
+                    //    camera.GrabImageVoid(radius);
+                    //    switch (p.ToString())
+                    //    {
+                    //        case "1":
+                    //            BottomCamera1Iamge = camera.CurrentImage;
+                    //            break;
 
-                            case "2":
-                                BottomCamera2Iamge = camera.CurrentImage;
-                                break;
-                            default:
-                                TopCameraIamge = camera.CurrentImage;
-                                break;
-                        }
-                        if (!Directory.Exists(Path.Combine(path, "Calib")))
-                        {
-                            Directory.CreateDirectory(Path.Combine(path, "Calib"));
-                        }
-                        camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1).ToString() + ".bmp"));
+                    //        case "2":
+                    //            BottomCamera2Iamge = camera.CurrentImage;
+                    //            break;
+                    //        default:
+                    //            TopCameraIamge = camera.CurrentImage;
+                    //            break;
+                    //    }
+                    //    if (!Directory.Exists(Path.Combine(path, "Calib")))
+                    //    {
+                    //        Directory.CreateDirectory(Path.Combine(path, "Calib"));
+                    //    }
+                    //    camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1).ToString() + ".bmp"));
 
 
-                    }
+                    //}
                     double[][] Array1 = new double[9][];
                     int muli = p.ToString() == "0" ? -1 : 1;
                     for (int i = 0; i < 9; i++)
@@ -1284,44 +1284,44 @@ namespace SZVppFilmUI.ViewModels
                         new HTuple(Array1[0][3]).TupleConcat(Array1[1][3]).TupleConcat(Array1[2][3]).TupleConcat(Array1[3][3]).TupleConcat(Array1[4][3]).TupleConcat(Array1[5][3]).TupleConcat(Array1[6][3]).TupleConcat(Array1[7][3]).TupleConcat(Array1[8][3])
                         , out homMat2D);
                     //旋转标定拍照
-                    camerap = Fx5u.ReadMultiW(CameraRP, 3);
-                    for (int i = 0; i < 3; i++)
-                    {
-                        int[] senddata = new int[3] { camerap[0] + diff_r[i][0] * 100, camerap[1] + diff_r[i][1] * 100, camerap[2] + diff_r[i][2] * 100 };
-                        Fx5u.WriteMultW(MoveData, senddata);
-                        Fx5u.SetM(MoveFinish, false);
-                        Fx5u.SetM(MoveStart, true);
-                        AddMessage("运动到位，按启动开始拍照");
-                        while (true)
-                        {
-                            try
-                            {
-                                if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
-                                    break;
-                            }
-                            catch { }
-                            System.Threading.Thread.Sleep(100);
-                        }
-                        camera.GrabImageVoid(radius);
-                        switch (p.ToString())
-                        {
-                            case "1":
-                                BottomCamera1Iamge = camera.CurrentImage;
-                                break;
+                    int[] camerap1 = Fx5u.ReadMultiW(CameraRP, 3);
+                    //for (int i = 0; i < 3; i++)
+                    //{
+                    //    int[] senddata = new int[3] { camerap1[0] + diff_r[i][0] * 100, camerap1[1] + diff_r[i][1] * 100, camerap1[2] + diff_r[i][2] * 100 };
+                    //    Fx5u.WriteMultW(MoveData, senddata);
+                    //    Fx5u.SetM(MoveFinish, false);
+                    //    Fx5u.SetM(MoveStart, true);
+                    //    AddMessage("运动到位，按启动开始拍照");
+                    //    while (true)
+                    //    {
+                    //        try
+                    //        {
+                    //            if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
+                    //                break;
+                    //        }
+                    //        catch { }
+                    //        System.Threading.Thread.Sleep(100);
+                    //    }
+                    //    camera.GrabImageVoid(radius);
+                    //    switch (p.ToString())
+                    //    {
+                    //        case "1":
+                    //            BottomCamera1Iamge = camera.CurrentImage;
+                    //            break;
 
-                            case "2":
-                                BottomCamera2Iamge = camera.CurrentImage;
-                                break;
-                            default:
-                                TopCameraIamge = camera.CurrentImage;
-                                break;
-                        }
-                        if (!Directory.Exists(Path.Combine(path, "Calib")))
-                        {
-                            Directory.CreateDirectory(Path.Combine(path, "Calib"));
-                        }
-                        camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1 + 9).ToString() + ".bmp"));
-                    }
+                    //        case "2":
+                    //            BottomCamera2Iamge = camera.CurrentImage;
+                    //            break;
+                    //        default:
+                    //            TopCameraIamge = camera.CurrentImage;
+                    //            break;
+                    //    }
+                    //    if (!Directory.Exists(Path.Combine(path, "Calib")))
+                    //    {
+                    //        Directory.CreateDirectory(Path.Combine(path, "Calib"));
+                    //    }
+                    //    camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1 + 9).ToString() + ".bmp"));
+                    //}
                     double[][] Array2 = new double[3][];
                     for (int i = 0; i < 3; i++)
                     {
@@ -1452,7 +1452,7 @@ namespace SZVppFilmUI.ViewModels
         private void Init()
         {
             MessageStr = "";
-            WindowTitle = "SZVppFilmUI20200414";
+            WindowTitle = "SZVppFilmUI20200426";
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -1511,7 +1511,7 @@ namespace SZVppFilmUI.ViewModels
             else
             {
                 AddMessage("BottomCamera2 Open Fail!");
-            }            
+            }
             string plc_ip = Inifile.INIGetStringValue(iniParameterPath, "System", "PLCIP", "192.168.1.13");
             int plc_port = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "PLCPORT", "3900"));
 
@@ -1796,20 +1796,20 @@ namespace SZVppFilmUI.ViewModels
                 HTuple CamImage_x1, CamImage_y1;
                 HOperatorSet.AffineTransPoint2d(homMat2D, row1, column1, out CamImage_x1, out CamImage_y1);
                 HTuple T3;
-                HOperatorSet.VectorAngleToRigid(CamImage_x, CamImage_y, new HTuple(lineAngle1).TupleRad(), CamImage_x1, CamImage_y1, new HTuple(lineAngle2).TupleRad(), out T3);//T3是模板料移动到新料位置的变换
+                HOperatorSet.VectorAngleToRigid(CamImage_x, CamImage_y, new HTuple(lineAngle1).TupleRad(), CamImage_x1 + _x, CamImage_y1 + _y, new HTuple(lineAngle2 + _u).TupleRad(), out T3);//T3是模板料移动到新料位置的变换
                 HTuple FitRobot_x1, FitRobot_y1;
                 HOperatorSet.AffineTransPoint2d(T3, (double)targetp[0] / 100, (double)targetp[1] / 100, out FitRobot_x1, out FitRobot_y1);//移动到新料与模板料重合
 
                 #endregion
-
+                #region 范围
                 bool result = true;
-                if (FitRobot_x1.D * 100 - targetp[0] > 500 || FitRobot_x1.D * 100 - targetp[0] < -500)
+                if (FitRobot_x1.D * 100 - targetp[0] > 2000 || FitRobot_x1.D * 100 - targetp[0] < -2000)
                 {
                     result = false;
                 }
                 else
                 {
-                    if (FitRobot_y1.D * 100 - targetp[1] > 500 || FitRobot_y1.D * 100 - targetp[1] < -500)
+                    if (FitRobot_y1.D * 100 - targetp[1] > 2000 || FitRobot_y1.D * 100 - targetp[1] < -2000)
                     {
                         result = false;
                     }
@@ -1821,7 +1821,8 @@ namespace SZVppFilmUI.ViewModels
                         }
                     }
                 }
-                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)((lineAngle1 - lineAngle2) * 100) }, result); ;
+                #endregion
+                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)((lineAngle2 + _u - lineAngle1) * 100) }, result); ;
             }
             catch (Exception ex)
             {
@@ -1869,7 +1870,7 @@ namespace SZVppFilmUI.ViewModels
                 HObject imageReduced1;
                 HOperatorSet.ReduceDomain(ModelImage, lineRegion, out imageReduced1);
                 HObject edges1;
-                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 20, 40);
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 10, 30);
                 HObject contoursSplit1;
                 HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
                 HObject selectedContours1;
@@ -1884,7 +1885,7 @@ namespace SZVppFilmUI.ViewModels
                 HObject regionLineAffineTrans;
                 HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
                 HOperatorSet.ReduceDomain(bottomCamera1.CurrentImage, regionLineAffineTrans, out imageReduced1);
-                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 20, 40);
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 10, 30);
                 HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
                 HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
                 HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
@@ -1909,6 +1910,7 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.AffineTransPoint2d(T1, CamRobot_x1, CamRobot_y1, out FitRobot_x1, out FitRobot_y1);//移动到贴合位置
 
                 #endregion
+                #region 范围
                 bool result = true;
                 if (FitRobot_x1.D * 100 - targetp[0] > 500 || FitRobot_x1.D * 100 - targetp[0] < -500)
                 {
@@ -1928,7 +1930,8 @@ namespace SZVppFilmUI.ViewModels
                         }
                     }
                 }
-                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)((lineAngle1 - lineAngle2) * -1 * 100) }, result);
+                #endregion
+                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)(((lineAngle1 - lineAngle2) * -1 + _u) * 100) }, result);
             }
             catch (Exception ex)
             {
@@ -1977,7 +1980,7 @@ namespace SZVppFilmUI.ViewModels
                 HObject imageReduced1;
                 HOperatorSet.ReduceDomain(ModelImage, lineRegion, out imageReduced1);
                 HObject edges1;
-                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 20, 40);
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 10, 30);
                 HObject contoursSplit1;
                 HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
                 HObject selectedContours1;
@@ -1992,7 +1995,7 @@ namespace SZVppFilmUI.ViewModels
                 HObject regionLineAffineTrans;
                 HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
                 HOperatorSet.ReduceDomain(bottomCamera2.CurrentImage, regionLineAffineTrans, out imageReduced1);
-                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 20, 40);
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 10, 30);
                 HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
                 HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
                 HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
@@ -2021,6 +2024,7 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.AffineTransPoint2d(T1, CamRobot_x1, CamRobot_y1, out FitRobot_x1, out FitRobot_y1);//移动到贴合位置
 
                 #endregion
+                #region 范围
                 bool result = true;
                 if (FitRobot_x1.D * 100 - targetp[0] > 500 || FitRobot_x1.D * 100 - targetp[0] < -500)
                 {
@@ -2040,7 +2044,8 @@ namespace SZVppFilmUI.ViewModels
                         }
                     }
                 }
-                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)((lineAngle1 - lineAngle2) * -1 * 100) }, result);
+                #endregion
+                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)(((lineAngle1 - lineAngle2) * -1 + _u) * 100) }, result);
             }
             catch (Exception ex)
             {
