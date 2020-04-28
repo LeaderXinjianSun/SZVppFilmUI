@@ -11,7 +11,7 @@
             <RowDefinition Height="4*"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <TabControl>
+        <TabControl SelectedIndex="{Binding TabControlSelectedIndex}">
             <TabItem Header="TopCamera">
                 <local:TopCamera></local:TopCamera>
             </TabItem>
