@@ -487,7 +487,7 @@ namespace SZVppFilmUI.ViewModels
                 this.RaisePropertyChanged("BottomCamera2Radius");
             }
         }
-        
+
 
         #endregion
         #region 方法绑定
@@ -724,8 +724,6 @@ namespace SZVppFilmUI.ViewModels
                 //var rst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
                 ////var rst = BottomCamera2Calc(TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
                 //AddMessage(rst.Item1[0].ToString() + "," + rst.Item1[1].ToString() + "," + rst.Item1[2].ToString());
-                
-
             }
             catch (Exception ex)
             {
@@ -1200,10 +1198,14 @@ namespace SZVppFilmUI.ViewModels
                                 case "1":
                                     CameraP = "D4134";
                                     CameraRP = "D4134";
+                                    diff_r[1][2] = 8;
+                                    diff_r[2][2] = -8;
                                     break;
                                 case "2":
                                     CameraP = "D4134";
                                     CameraRP = "D4134";
+                                    diff_r[1][2] = 8;
+                                    diff_r[2][2] = -8;
                                     break;
                                 default:
                                     CameraP = "D4128";
@@ -1211,52 +1213,75 @@ namespace SZVppFilmUI.ViewModels
                                     break;
                             }
                             break;
-
+                        case "B":
+                            MoveStart = "M3230";
+                            MoveFinish = "M3130";
+                            MoveData = "D3240";
+                            switch (p.ToString())
+                            {
+                                case "1":
+                                    CameraP = "D4240";
+                                    CameraRP = "D4240";
+                                    diff_r[1][2] = 8;
+                                    diff_r[2][2] = -8;
+                                    break;
+                                case "2":
+                                    CameraP = "D4240";
+                                    CameraRP = "D4240";
+                                    diff_r[1][2] = 8;
+                                    diff_r[2][2] = -8;
+                                    break;
+                                default:
+                                    CameraP = "D4234";
+                                    CameraRP = "D4286";
+                                    break;
+                            }
+                            break;
                         default:
                             break;
                     }
 
                     //9点标定拍照
                     int[] camerap = Fx5u.ReadMultiW(CameraP, 3);
-                    //for (int i = 0; i < 9; i++)
-                    //{
-                    //    int[] senddata = new int[3] { camerap[0] + diff[i][0] * 100, camerap[1] + diff[i][1] * 100, camerap[2] + diff[i][2] * 100 };
-                    //    Fx5u.WriteMultW(MoveData, senddata);
-                    //    Fx5u.SetM(MoveFinish, false);
-                    //    Fx5u.SetM(MoveStart, true);
-                    //    AddMessage("运动到位，按启动开始拍照");
-                    //    while (true)
-                    //    {
-                    //        try
-                    //        {
-                    //            if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
-                    //                break;
-                    //        }
-                    //        catch { }
-                    //        System.Threading.Thread.Sleep(100);
-                    //    }
-                    //    camera.GrabImageVoid(radius);
-                    //    switch (p.ToString())
-                    //    {
-                    //        case "1":
-                    //            BottomCamera1Iamge = camera.CurrentImage;
-                    //            break;
+                    for (int i = 0; i < 9; i++)
+                    {
+                        int[] senddata = new int[3] { camerap[0] + diff[i][0] * 100, camerap[1] + diff[i][1] * 100, camerap[2] + diff[i][2] * 100 };
+                        Fx5u.WriteMultW(MoveData, senddata);
+                        Fx5u.SetM(MoveFinish, false);
+                        Fx5u.SetM(MoveStart, true);
+                        AddMessage("运动到位，按启动开始拍照");
+                        while (true)
+                        {
+                            try
+                            {
+                                if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
+                                    break;
+                            }
+                            catch { }
+                            System.Threading.Thread.Sleep(100);
+                        }
+                        camera.GrabImageVoid(radius);
+                        switch (p.ToString())
+                        {
+                            case "1":
+                                BottomCamera1Iamge = camera.CurrentImage;
+                                break;
 
-                    //        case "2":
-                    //            BottomCamera2Iamge = camera.CurrentImage;
-                    //            break;
-                    //        default:
-                    //            TopCameraIamge = camera.CurrentImage;
-                    //            break;
-                    //    }
-                    //    if (!Directory.Exists(Path.Combine(path, "Calib")))
-                    //    {
-                    //        Directory.CreateDirectory(Path.Combine(path, "Calib"));
-                    //    }
-                    //    camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1).ToString() + ".bmp"));
+                            case "2":
+                                BottomCamera2Iamge = camera.CurrentImage;
+                                break;
+                            default:
+                                TopCameraIamge = camera.CurrentImage;
+                                break;
+                        }
+                        if (!Directory.Exists(Path.Combine(path, "Calib")))
+                        {
+                            Directory.CreateDirectory(Path.Combine(path, "Calib"));
+                        }
+                        camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1).ToString() + ".bmp"));
 
 
-                    //}
+                    }
                     double[][] Array1 = new double[9][];
                     int muli = p.ToString() == "0" ? -1 : 1;
                     for (int i = 0; i < 9; i++)
@@ -1285,43 +1310,43 @@ namespace SZVppFilmUI.ViewModels
                         , out homMat2D);
                     //旋转标定拍照
                     int[] camerap1 = Fx5u.ReadMultiW(CameraRP, 3);
-                    //for (int i = 0; i < 3; i++)
-                    //{
-                    //    int[] senddata = new int[3] { camerap1[0] + diff_r[i][0] * 100, camerap1[1] + diff_r[i][1] * 100, camerap1[2] + diff_r[i][2] * 100 };
-                    //    Fx5u.WriteMultW(MoveData, senddata);
-                    //    Fx5u.SetM(MoveFinish, false);
-                    //    Fx5u.SetM(MoveStart, true);
-                    //    AddMessage("运动到位，按启动开始拍照");
-                    //    while (true)
-                    //    {
-                    //        try
-                    //        {
-                    //            if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
-                    //                break;
-                    //        }
-                    //        catch { }
-                    //        System.Threading.Thread.Sleep(100);
-                    //    }
-                    //    camera.GrabImageVoid(radius);
-                    //    switch (p.ToString())
-                    //    {
-                    //        case "1":
-                    //            BottomCamera1Iamge = camera.CurrentImage;
-                    //            break;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        int[] senddata = new int[3] { camerap1[0] + diff_r[i][0] * 100, camerap1[1] + diff_r[i][1] * 100, camerap1[2] + diff_r[i][2] * 100 };
+                        Fx5u.WriteMultW(MoveData, senddata);
+                        Fx5u.SetM(MoveFinish, false);
+                        Fx5u.SetM(MoveStart, true);
+                        AddMessage("运动到位，按启动开始拍照");
+                        while (true)
+                        {
+                            try
+                            {
+                                if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
+                                    break;
+                            }
+                            catch { }
+                            System.Threading.Thread.Sleep(100);
+                        }
+                        camera.GrabImageVoid(radius);
+                        switch (p.ToString())
+                        {
+                            case "1":
+                                BottomCamera1Iamge = camera.CurrentImage;
+                                break;
 
-                    //        case "2":
-                    //            BottomCamera2Iamge = camera.CurrentImage;
-                    //            break;
-                    //        default:
-                    //            TopCameraIamge = camera.CurrentImage;
-                    //            break;
-                    //    }
-                    //    if (!Directory.Exists(Path.Combine(path, "Calib")))
-                    //    {
-                    //        Directory.CreateDirectory(Path.Combine(path, "Calib"));
-                    //    }
-                    //    camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1 + 9).ToString() + ".bmp"));
-                    //}
+                            case "2":
+                                BottomCamera2Iamge = camera.CurrentImage;
+                                break;
+                            default:
+                                TopCameraIamge = camera.CurrentImage;
+                                break;
+                        }
+                        if (!Directory.Exists(Path.Combine(path, "Calib")))
+                        {
+                            Directory.CreateDirectory(Path.Combine(path, "Calib"));
+                        }
+                        camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1 + 9).ToString() + ".bmp"));
+                    }
                     double[][] Array2 = new double[3][];
                     for (int i = 0; i < 3; i++)
                     {
@@ -1452,7 +1477,8 @@ namespace SZVppFilmUI.ViewModels
         private void Init()
         {
             MessageStr = "";
-            WindowTitle = "SZVppFilmUI20200426";
+            string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
+            WindowTitle = "SZVppFilmUI20200426:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -1682,7 +1708,7 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst1)
                                     {
                                         BottomCamera1Iamge = bottomCamera1.CurrentImage;
-                                        var calcrst = BottomCamera1Calc(BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
+                                        var calcrst = BottomCamera1Calc("D4134", "D4086", BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3212", calcrst.Item1);
                                         Fx5u.SetM("M3205", calcrst.Item2);
@@ -1690,7 +1716,7 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst2)
                                     {
                                         BottomCamera2Iamge = bottomCamera2.CurrentImage;
-                                        var calcrst = BottomCamera2Calc(BottomCamera2Diff.X, BottomCamera2Diff.Y, BottomCamera2Diff.U);
+                                        var calcrst = BottomCamera2Calc("D4134", "D4092",BottomCamera2Diff.X, BottomCamera2Diff.Y, BottomCamera2Diff.U);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3218", calcrst.Item1);
                                         Fx5u.SetM("M3206", calcrst.Item2);
@@ -1708,6 +1734,103 @@ namespace SZVppFilmUI.ViewModels
                             }
                             break;
                         case "B":
+                            if (Fx5u.ReadM("M3120"))
+                            {
+                                Fx5u.SetM("M3120", false);
+                                Fx5u.SetMultiM("M3220", new bool[] { false, false });
+                                AddMessage("上相机拍照1");
+                                try
+                                {
+                                    bool rst = topCamera.GrabImage(TopCameraRadius);
+                                    if (rst)
+                                    {
+                                        TopCameraIamge = topCamera.CurrentImage;
+                                        var calcrst = TopCameraCalc("D4222", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U);
+                                        AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
+                                        Fx5u.WriteMultW("D3246", calcrst.Item1);
+                                        Fx5u.SetM("M3221", calcrst.Item2);
+                                    }
+                                    else
+                                    {
+                                        AddMessage("上相机拍照1失败");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    AddMessage(ex.Message);
+                                }
+                                Fx5u.SetM("M3220", true);
+                            }
+
+                            if (Fx5u.ReadM("M3121"))
+                            {
+                                Fx5u.SetM("M3121", false);
+                                Fx5u.SetMultiM("M3222", new bool[] { false, false });
+                                AddMessage("上相机拍照2");
+                                try
+                                {
+                                    bool rst = topCamera.GrabImage(TopCameraRadius);
+                                    if (rst)
+                                    {
+                                        TopCameraIamge = topCamera.CurrentImage;
+                                        var calcrst = TopCameraCalc("D4128", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
+                                        AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
+                                        Fx5u.WriteMultW("D3246", calcrst.Item1);
+                                        Fx5u.SetM("M3223", calcrst.Item2);
+                                    }
+                                    else
+                                    {
+                                        AddMessage("上相机拍照2失败");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    AddMessage(ex.Message);
+                                }
+                                Fx5u.SetM("M3222", true);
+                            }
+
+                            if (Fx5u.ReadM("M3122"))
+                            {
+                                Fx5u.SetM("M3122", false);
+                                Fx5u.SetMultiM("M3224", new bool[] { false, false, false });
+                                AddMessage("下相机拍照");
+                                try
+                                {
+                                    bool rst1 = false, rst2 = false, finish1 = false, finish2 = false;
+                                    Task.Run(() => { rst1 = bottomCamera1.GrabImage(BottomCamera1Radius); finish1 = true; });
+                                    Task.Run(() => { rst2 = bottomCamera2.GrabImage(BottomCamera2Radius); finish2 = true; });
+                                    while (!finish1 || !finish2)
+                                    {
+                                        System.Threading.Thread.Sleep(10);
+                                    }
+                                    if (rst1)
+                                    {
+                                        BottomCamera1Iamge = bottomCamera1.CurrentImage;
+                                        var calcrst = BottomCamera1Calc("D4240", "D4192",BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
+                                        AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
+                                        Fx5u.WriteMultW("D3252", calcrst.Item1);
+                                        Fx5u.SetM("M3225", calcrst.Item2);
+                                    }
+                                    if (rst2)
+                                    {
+                                        BottomCamera2Iamge = bottomCamera2.CurrentImage;
+                                        var calcrst = BottomCamera2Calc("D4240", "D4198", BottomCamera2Diff.X, BottomCamera2Diff.Y, BottomCamera2Diff.U);
+                                        AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
+                                        Fx5u.WriteMultW("D3258", calcrst.Item1);
+                                        Fx5u.SetM("M3226", calcrst.Item2);
+                                    }
+                                    if (!rst1 || !rst2)
+                                    {
+                                        AddMessage("下相机拍照失败");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    AddMessage(ex.Message);
+                                }
+                                Fx5u.SetM("M3224", true);
+                            }
                             break;
                         default:
                             break;
@@ -1725,7 +1848,7 @@ namespace SZVppFilmUI.ViewModels
             try
             {
                 #region 读取PLC坐标
-                int[] camerap = Fx5u.ReadMultiW("D4128", 3);
+                //int[] camerap = Fx5u.ReadMultiW("D4128", 3);
                 int[] targetp = Fx5u.ReadMultiW(TargetD, 3);
                 #endregion
                 #region 识别图像
@@ -1831,13 +1954,13 @@ namespace SZVppFilmUI.ViewModels
             }
 
         }
-        private Tuple<int[], bool> BottomCamera1Calc(double _x, double _y, double _u)
+        private Tuple<int[], bool> BottomCamera1Calc(string CameraD,string TargetD, double _x, double _y, double _u)
         {
             try
             {
                 #region 读取PLC坐标
-                int[] camerap = Fx5u.ReadMultiW("D4134", 3);
-                int[] targetp = Fx5u.ReadMultiW("D4086", 3);
+                int[] camerap = Fx5u.ReadMultiW(CameraD, 3);
+                int[] targetp = Fx5u.ReadMultiW(TargetD, 3);
                 #endregion
                 #region 识别图像
                 //找模板
@@ -1938,9 +2061,9 @@ namespace SZVppFilmUI.ViewModels
                 AddMessage(ex.Message);
                 return new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, false);
             }
-            
+
         }
-        private Tuple<int[], bool> BottomCamera2Calc(double _x, double _y, double _u)
+        private Tuple<int[], bool> BottomCamera2Calc(string CameraD, string TargetD, double _x, double _y, double _u)
         {
             try
             {
