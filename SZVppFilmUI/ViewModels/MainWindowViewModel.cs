@@ -565,6 +565,17 @@ namespace SZVppFilmUI.ViewModels
                 this.RaisePropertyChanged("BottomCamera2Low");
             }
         }
+        private bool onlyImage;
+
+        public bool OnlyImage
+        {
+            get { return onlyImage; }
+            set
+            {
+                onlyImage = value;
+                this.RaisePropertyChanged("OnlyImage");
+            }
+        }
 
         #endregion
         #region 方法绑定
@@ -1380,45 +1391,49 @@ namespace SZVppFilmUI.ViewModels
 
                     //9点标定拍照
                     int[] camerap = Fx5u.ReadMultiW(CameraP, 3);
-                    for (int i = 0; i < 9; i++)
+                    if (!OnlyImage)
                     {
-                        int[] senddata = new int[3] { camerap[0] + diff[i][0] * 100, camerap[1] + diff[i][1] * 100, camerap[2] + diff[i][2] * 100 };
-                        Fx5u.WriteMultW(MoveData, senddata);
-                        Fx5u.SetM(MoveFinish, false);
-                        Fx5u.SetM(MoveStart, true);
-                        AddMessage("运动到位，按启动开始拍照");
-                        while (true)
+                        for (int i = 0; i < 9; i++)
                         {
-                            try
+                            int[] senddata = new int[3] { camerap[0] + diff[i][0] * 100, camerap[1] + diff[i][1] * 100, camerap[2] + diff[i][2] * 100 };
+                            Fx5u.WriteMultW(MoveData, senddata);
+                            Fx5u.SetM(MoveFinish, false);
+                            Fx5u.SetM(MoveStart, true);
+                            AddMessage("运动到位，按启动开始拍照");
+                            while (true)
                             {
-                                if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
+                                try
+                                {
+                                    if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
+                                        break;
+                                }
+                                catch { }
+                                System.Threading.Thread.Sleep(100);
+                            }
+                            camera.GrabImageVoid(radius);
+                            switch (p.ToString())
+                            {
+                                case "1":
+                                    BottomCamera1Iamge = camera.CurrentImage;
+                                    break;
+
+                                case "2":
+                                    BottomCamera2Iamge = camera.CurrentImage;
+                                    break;
+                                default:
+                                    TopCameraIamge = camera.CurrentImage;
                                     break;
                             }
-                            catch { }
-                            System.Threading.Thread.Sleep(100);
-                        }
-                        camera.GrabImageVoid(radius);
-                        switch (p.ToString())
-                        {
-                            case "1":
-                                BottomCamera1Iamge = camera.CurrentImage;
-                                break;
-
-                            case "2":
-                                BottomCamera2Iamge = camera.CurrentImage;
-                                break;
-                            default:
-                                TopCameraIamge = camera.CurrentImage;
-                                break;
-                        }
-                        if (!Directory.Exists(Path.Combine(path, "Calib")))
-                        {
-                            Directory.CreateDirectory(Path.Combine(path, "Calib"));
-                        }
-                        camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1).ToString() + ".bmp"));
+                            if (!Directory.Exists(Path.Combine(path, "Calib")))
+                            {
+                                Directory.CreateDirectory(Path.Combine(path, "Calib"));
+                            }
+                            camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1).ToString() + ".bmp"));
 
 
+                        }
                     }
+                    
                     double[][] Array1 = new double[9][];
                     int muli = p.ToString() == "0" ? -1 : 1;
                     for (int i = 0; i < 9; i++)
@@ -1447,43 +1462,47 @@ namespace SZVppFilmUI.ViewModels
                         , out homMat2D);
                     //旋转标定拍照
                     int[] camerap1 = Fx5u.ReadMultiW(CameraRP, 3);
-                    for (int i = 0; i < 3; i++)
+                    if (!OnlyImage)
                     {
-                        int[] senddata = new int[3] { camerap1[0] + diff_r[i][0] * 100, camerap1[1] + diff_r[i][1] * 100, camerap1[2] + diff_r[i][2] * 100 };
-                        Fx5u.WriteMultW(MoveData, senddata);
-                        Fx5u.SetM(MoveFinish, false);
-                        Fx5u.SetM(MoveStart, true);
-                        AddMessage("运动到位，按启动开始拍照");
-                        while (true)
+                        for (int i = 0; i < 3; i++)
                         {
-                            try
+                            int[] senddata = new int[3] { camerap1[0] + diff_r[i][0] * 100, camerap1[1] + diff_r[i][1] * 100, camerap1[2] + diff_r[i][2] * 100 };
+                            Fx5u.WriteMultW(MoveData, senddata);
+                            Fx5u.SetM(MoveFinish, false);
+                            Fx5u.SetM(MoveStart, true);
+                            AddMessage("运动到位，按启动开始拍照");
+                            while (true)
                             {
-                                if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
+                                try
+                                {
+                                    if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
+                                        break;
+                                }
+                                catch { }
+                                System.Threading.Thread.Sleep(100);
+                            }
+                            camera.GrabImageVoid(radius);
+                            switch (p.ToString())
+                            {
+                                case "1":
+                                    BottomCamera1Iamge = camera.CurrentImage;
+                                    break;
+
+                                case "2":
+                                    BottomCamera2Iamge = camera.CurrentImage;
+                                    break;
+                                default:
+                                    TopCameraIamge = camera.CurrentImage;
                                     break;
                             }
-                            catch { }
-                            System.Threading.Thread.Sleep(100);
+                            if (!Directory.Exists(Path.Combine(path, "Calib")))
+                            {
+                                Directory.CreateDirectory(Path.Combine(path, "Calib"));
+                            }
+                            camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1 + 9).ToString() + ".bmp"));
                         }
-                        camera.GrabImageVoid(radius);
-                        switch (p.ToString())
-                        {
-                            case "1":
-                                BottomCamera1Iamge = camera.CurrentImage;
-                                break;
-
-                            case "2":
-                                BottomCamera2Iamge = camera.CurrentImage;
-                                break;
-                            default:
-                                TopCameraIamge = camera.CurrentImage;
-                                break;
-                        }
-                        if (!Directory.Exists(Path.Combine(path, "Calib")))
-                        {
-                            Directory.CreateDirectory(Path.Combine(path, "Calib"));
-                        }
-                        camera.SaveImage("bmp", Path.Combine(path, "Calib", (i + 1 + 9).ToString() + ".bmp"));
                     }
+                    
                     double[][] Array2 = new double[3][];
                     for (int i = 0; i < 3; i++)
                     {
@@ -1614,6 +1633,7 @@ namespace SZVppFilmUI.ViewModels
         private void Init()
         {
             MessageStr = "";
+            OnlyImage = true;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
             WindowTitle = "SZVppFilmUI20200508:" + Station;
             TopCameraName = "cam3";

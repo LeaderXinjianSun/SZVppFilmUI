@@ -69,7 +69,12 @@
                     <Button Grid.Column="2" Style="{StaticResource AccentedSquareButtonStyle}" Content="直线" Margin="5" FontSize="18" Command="{Binding CreateLineCommand}" CommandParameter="0"></Button>
                     <Button Grid.Column="3" Style="{StaticResource AccentedSquareButtonStyle}" Content="识别&#13;模板" Margin="5" FontSize="12" Command="{Binding FindShapeModelOperateCommand}" CommandParameter="0"></Button>
                     <Button Grid.Row="1" Grid.Column="3" Style="{StaticResource AccentedSquareButtonStyle}" Content="识别&#13;直线" Margin="5" FontSize="12" Command="{Binding FindLineOperateCommand}" CommandParameter="0"></Button>
-                    <Button Grid.Column="4" Style="{StaticResource AccentedSquareButtonStyle}" Content="标定" Margin="5" FontSize="18" Command="{Binding ClibOperateCommand}" CommandParameter="0" IsEnabled="{Binding ClibButtonIsEnabled}"></Button>
+                    <Grid Grid.Column="4">
+                        <StackPanel>
+                            <CheckBox Content="仅图片" IsChecked="{Binding OnlyImage}"></CheckBox>
+                            <Button Style="{StaticResource AccentedSquareButtonStyle}" Content="标定" Margin="5" FontSize="18" Command="{Binding ClibOperateCommand}" CommandParameter="0" IsEnabled="{Binding ClibButtonIsEnabled}"></Button>
+                        </StackPanel>
+                    </Grid>
                     <Button Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="读取" Margin="5" FontSize="18" Command="{Binding ReadImageOperateCommand}" CommandParameter="0"></Button>
                     <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="模板2" Margin="5" FontSize="18" Command="{Binding CreateShapeModel2}"></Button>
                     <Button Grid.Row="1" Grid.Column="2" Style="{StaticResource AccentedSquareButtonStyle}" Content="识别2" Margin="5" FontSize="18" Command="{Binding FindShapeModel2}"></Button>
