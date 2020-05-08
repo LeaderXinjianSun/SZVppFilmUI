@@ -11,7 +11,7 @@
             <RowDefinition Height="4*"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <TabControl>
+        <TabControl SelectedIndex="{Binding TabControlSelectedIndex}">
             <TabItem Header="TopCamera">
                 <local:TopCamera></local:TopCamera>
             </TabItem>
@@ -40,7 +40,7 @@
                 <StackPanel Orientation="Horizontal" Margin="0,1">
                     <!--<Label Width="60">Value</Label>
                     <TextBox Width="60" Text="{Binding IniValue}"></TextBox>-->
-                    <Button Width="60" Margin="10,0,0,0" Content="功能" Command="{Binding FuncBtnCommand}"></Button>
+                    <!--<Button Width="60" Margin="10,0,0,0" Content="功能" Command="{Binding FuncBtnCommand}"></Button>-->
                 </StackPanel>
             </StackPanel>
         </Grid>

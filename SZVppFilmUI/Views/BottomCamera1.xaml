@@ -69,14 +69,19 @@
                     <Button Grid.Column="2" Style="{StaticResource AccentedSquareButtonStyle}" Content="直线" Margin="5" FontSize="18" Command="{Binding CreateLineCommand}" CommandParameter="1"></Button>
                     <Button Grid.Column="3" Style="{StaticResource AccentedSquareButtonStyle}" Content="识别&#13;模板" Margin="5" FontSize="12" Command="{Binding FindShapeModelOperateCommand}" CommandParameter="1"></Button>
                     <Button Grid.Row="1" Grid.Column="3" Style="{StaticResource AccentedSquareButtonStyle}" Content="识别&#13;直线" Margin="5" FontSize="12" Command="{Binding FindLineOperateCommand}" CommandParameter="1"></Button>
-                    <Button Grid.Column="4" Style="{StaticResource AccentedSquareButtonStyle}" Content="标定" Margin="5" FontSize="18" Command="{Binding ClibOperateCommand}" CommandParameter="1" IsEnabled="{Binding ClibButtonIsEnabled}"></Button>
+                    <Grid Grid.Column="4">
+                        <StackPanel>
+                            <CheckBox Content="仅图片" IsChecked="{Binding OnlyImage}"></CheckBox>
+                            <Button Style="{StaticResource AccentedSquareButtonStyle}" Content="标定" Margin="5" FontSize="18" Command="{Binding ClibOperateCommand}" CommandParameter="1" IsEnabled="{Binding ClibButtonIsEnabled}"></Button>
+                        </StackPanel>
+                    </Grid>
                     <Button Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="读取" Margin="5" FontSize="18" Command="{Binding ReadImageOperateCommand}" CommandParameter="1"></Button>
                     <Button Grid.Column="4" Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="保存" Margin="5" FontSize="18" Command="{Binding SaveParamOperateCommand}" CommandParameter="1"></Button>
                 </Grid>
                 <Grid Grid.Row="2" Grid.ColumnSpan="4" Grid.RowSpan="2">
                     <Grid.RowDefinitions>
                         <RowDefinition></RowDefinition>
-                        <RowDefinition Height="40"></RowDefinition>
+                        <RowDefinition Height="60"></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition></ColumnDefinition>
@@ -101,11 +106,19 @@
                             </StackPanel>
                         </StackPanel>
                     </GroupBox>
-                    <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,1">
-                        <Label Content="曝光:" Width="50" VerticalAlignment="Center"></Label>
-                        <TextBox Width="60" Text="{Binding BottomCamera1ExposureValue}" VerticalAlignment="Center"></TextBox>
-                        <Label Content="预处理半径:" Width="80" VerticalAlignment="Center"></Label>
-                        <TextBox Width="60" Text="{Binding BottomCamera1Radius}" VerticalAlignment="Center"></TextBox>
+                    <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Vertical" Margin="0,1">
+                        <StackPanel Orientation="Horizontal" Margin="0,1">
+                            <Label Content="曝光:" Width="80" VerticalAlignment="Center"></Label>
+                            <TextBox Width="60" Text="{Binding BottomCamera1ExposureValue}" VerticalAlignment="Center"></TextBox>
+                            <Label Content="预处理半径:" Width="80" VerticalAlignment="Center"></Label>
+                            <TextBox Width="60" Text="{Binding BottomCamera1Radius}" VerticalAlignment="Center"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,1">
+                            <Label Content="模板对比度:" Width="80" VerticalAlignment="Center"></Label>
+                            <TextBox Width="60" Text="{Binding BottomCamera1Contrast}" VerticalAlignment="Center"></TextBox>
+                            <Label Content="直线低阈值:" Width="80" VerticalAlignment="Center"></Label>
+                            <TextBox Width="60" Text="{Binding BottomCamera1Low}" VerticalAlignment="Center"></TextBox>
+                        </StackPanel>
                     </StackPanel>
                 </Grid>
             </Grid>
