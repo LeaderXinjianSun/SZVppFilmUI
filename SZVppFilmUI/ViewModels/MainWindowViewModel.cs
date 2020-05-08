@@ -499,6 +499,72 @@ namespace SZVppFilmUI.ViewModels
             }
         }
 
+        private int topCameraContrast;
+
+        public int TopCameraContrast
+        {
+            get { return topCameraContrast; }
+            set
+            {
+                topCameraContrast = value;
+                this.RaisePropertyChanged("TopCameraContrast");
+            }
+        }
+        private int topCameraLow;
+
+        public int TopCameraLow
+        {
+            get { return topCameraLow; }
+            set
+            {
+                topCameraLow = value;
+                this.RaisePropertyChanged("TopCameraLow");
+            }
+        }
+        private int bottomCamera1Contrast;
+
+        public int BottomCamera1Contrast
+        {
+            get { return bottomCamera1Contrast; }
+            set
+            {
+                bottomCamera1Contrast = value;
+                this.RaisePropertyChanged("BottomCamera1Contrast");
+            }
+        }
+        private int bottomCamera1Low;
+
+        public int BottomCamera1Low
+        {
+            get { return bottomCamera1Low; }
+            set
+            {
+                bottomCamera1Low = value;
+                this.RaisePropertyChanged("BottomCamera1Low");
+            }
+        }
+        private int bottomCamera2Contrast;
+
+        public int BottomCamera2Contrast
+        {
+            get { return bottomCamera2Contrast; }
+            set
+            {
+                bottomCamera2Contrast = value;
+                this.RaisePropertyChanged("BottomCamera2Contrast");
+            }
+        }
+        private int bottomCamera2Low;
+
+        public int BottomCamera2Low
+        {
+            get { return bottomCamera2Low; }
+            set
+            {
+                bottomCamera2Low = value;
+                this.RaisePropertyChanged("BottomCamera2Low");
+            }
+        }
 
         #endregion
         #region 方法绑定
@@ -783,9 +849,9 @@ namespace SZVppFilmUI.ViewModels
         {
             try
             {
-                //var rst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
+                var rst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
                 ////var rst = BottomCamera2Calc(TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
-                //AddMessage(rst.Item1[0].ToString() + "," + rst.Item1[1].ToString() + "," + rst.Item1[2].ToString());
+                AddMessage(rst.Item1[0].ToString() + "," + rst.Item1[1].ToString() + "," + rst.Item1[2].ToString());
             }
             catch (Exception ex)
             {
@@ -802,6 +868,8 @@ namespace SZVppFilmUI.ViewModels
                     WriteToJson(TopCameraDiff2, Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top", "TopCameraDiff2.json"));
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraExposureValue", TopCameraExposureValue.ToString());
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraRadius", TopCameraRadius.ToString());
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraContrast", TopCameraContrast.ToString());
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraLow", TopCameraLow.ToString());
                     topCamera.SetExpose(TopCameraExposureValue);
                     AddMessage("上相机参数保存完成");
                     break;
@@ -809,6 +877,8 @@ namespace SZVppFilmUI.ViewModels
                     WriteToJson(BottomCamera1Diff, Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom1", "BottomCamera1Diff.json"));
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera1ExposureValue", BottomCamera1ExposureValue.ToString());
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera1Radius", BottomCamera1Radius.ToString());
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera1Contrast", BottomCamera1Contrast.ToString());
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera1Low", BottomCamera1Low.ToString());
                     bottomCamera1.SetExpose(BottomCamera1ExposureValue);
                     AddMessage("下相机1参数保存完成");
                     break;
@@ -816,6 +886,8 @@ namespace SZVppFilmUI.ViewModels
                     WriteToJson(BottomCamera2Diff, Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom2", "BottomCamera2Diff.json"));
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera2ExposureValue", BottomCamera2ExposureValue.ToString());
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera2Radius", BottomCamera2Radius.ToString());
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera2Contrast", BottomCamera2Contrast.ToString());
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera2Low", BottomCamera2Low.ToString());
                     bottomCamera2.SetExpose(BottomCamera2ExposureValue);
                     AddMessage("下相机2参数保存完成");
                     break;
@@ -838,7 +910,7 @@ namespace SZVppFilmUI.ViewModels
                     ImageViewer imageViewer;
                     ObservableCollection<ROI> rOIList;
                     CameraOperate camera;
-
+                    HTuple Contrast;
                     string path;
                     switch (p.ToString())
                     {
@@ -849,6 +921,7 @@ namespace SZVppFilmUI.ViewModels
                             rOIList = BottomCamera1ROIList;
                             camera = bottomCamera1;
                             BottomCamera1AppendHObject = null;
+                            Contrast = BottomCamera1Contrast;
                             break;
                         case "2":
                             image = bottomCamera2.CurrentImage;
@@ -857,6 +930,7 @@ namespace SZVppFilmUI.ViewModels
                             rOIList = BottomCamera2ROIList;
                             camera = bottomCamera2;
                             BottomCamera2AppendHObject = null;
+                            Contrast = BottomCamera2Contrast;
                             break;
                         default:
                             image = topCamera.CurrentImage;
@@ -865,6 +939,7 @@ namespace SZVppFilmUI.ViewModels
                             rOIList = TopCameraROIList;
                             camera = topCamera;
                             TopCameraAppendHObject = null;
+                            Contrast = TopCameraContrast;
                             break;
                     }
 
@@ -876,7 +951,7 @@ namespace SZVppFilmUI.ViewModels
                     HObject ReduceDomainImage;
                     HOperatorSet.ReduceDomain(image, roi.getRegion(), out ReduceDomainImage);
                     HObject modelImages, modelRegions;
-                    HOperatorSet.InspectShapeModel(ReduceDomainImage, out modelImages, out modelRegions, 7, 25);
+                    HOperatorSet.InspectShapeModel(ReduceDomainImage, out modelImages, out modelRegions, 7, Contrast);
                     HObject objectSelected;
                     HOperatorSet.SelectObj(modelRegions, out objectSelected, 1);
                     HOperatorSet.WriteRegion(objectSelected, Path.Combine(path, "ModelRegion.hobj"));
@@ -897,7 +972,7 @@ namespace SZVppFilmUI.ViewModels
                             break;
                     }
                     HTuple ModelID;
-                    HOperatorSet.CreateShapeModel(ReduceDomainImage, 7, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), (new HTuple(0.1)).TupleRad(), "no_pregeneration", "use_polarity", 25, 10, out ModelID);
+                    HOperatorSet.CreateShapeModel(ReduceDomainImage, 7, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), (new HTuple(0.1)).TupleRad(), "no_pregeneration", "use_polarity", Contrast, 10, out ModelID);
                     HOperatorSet.WriteShapeModel(ModelID, Path.Combine(path, "ShapeModel.shm"));
                     camera.SaveImage("bmp", Path.Combine(path, "ModelImage.bmp"));
                     AddMessage("创建模板完成");
@@ -933,7 +1008,7 @@ namespace SZVppFilmUI.ViewModels
                     HObject ReduceDomainImage;
                     HOperatorSet.ReduceDomain(topCamera.CurrentImage, roi.getRegion(), out ReduceDomainImage);
                     HObject modelImages, modelRegions;
-                    HOperatorSet.InspectShapeModel(ReduceDomainImage, out modelImages, out modelRegions, 7, 30);
+                    HOperatorSet.InspectShapeModel(ReduceDomainImage, out modelImages, out modelRegions, 7, TopCameraContrast);
 
                     HObject objectSelected;
                     HOperatorSet.SelectObj(modelRegions, out objectSelected, 1);
@@ -943,7 +1018,7 @@ namespace SZVppFilmUI.ViewModels
                     TopCameraAppendHObject = null;
                     TopCameraAppendHObject = objectSelected;
                     HTuple ModelID;
-                    HOperatorSet.CreateShapeModel(ReduceDomainImage, 7, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), (new HTuple(0.1)).TupleRad(), "no_pregeneration", "use_polarity", 30, 10, out ModelID);
+                    HOperatorSet.CreateShapeModel(ReduceDomainImage, 7, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), (new HTuple(0.1)).TupleRad(), "no_pregeneration", "use_polarity", TopCameraContrast, 10, out ModelID);
                     HOperatorSet.WriteShapeModel(ModelID, Path.Combine(path, "ShapeModel2.shm"));
                     topCamera.SaveImage("bmp", Path.Combine(path, "ModelImage2.bmp"));
                     AddMessage("创建模板2完成");
@@ -1061,24 +1136,24 @@ namespace SZVppFilmUI.ViewModels
                         image = bottomCamera1.CurrentImage;
                         path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom1");
                         imageViewer = Global.BottonCamera1ImageViewer;
-                        edges_sub_pix_low = 10;
-                        edges_sub_pix_high = 30;
+                        edges_sub_pix_low = BottomCamera1Low;
+                        edges_sub_pix_high = BottomCamera1Low + 20;
                         camera = bottomCamera1;
                         break;
                     case "2":
                         image = bottomCamera2.CurrentImage;
                         path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom2");
                         imageViewer = Global.BottonCamera2ImageViewer;
-                        edges_sub_pix_low = 10;
-                        edges_sub_pix_high = 30;
+                        edges_sub_pix_low = BottomCamera2Low;
+                        edges_sub_pix_high = BottomCamera2Low + 20;
                         camera = bottomCamera2;
                         break;
                     default:
                         image = topCamera.CurrentImage;
                         path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
                         imageViewer = Global.TopCameraImageViewer;
-                        edges_sub_pix_low = 10;
-                        edges_sub_pix_high = 30;
+                        edges_sub_pix_low = TopCameraLow;
+                        edges_sub_pix_high = TopCameraLow + 20;
                         camera = topCamera;
                         break;
                 }
@@ -1106,7 +1181,7 @@ namespace SZVppFilmUI.ViewModels
                 HObject contoursSplit1;
                 HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
                 HObject selectedContours1;
-                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
                 HObject unionContours1;
                 HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
                 HTuple rowBegin1, colBegin1, rowEnd1, colEnd1, nr1, nc1, dist1;
@@ -1540,7 +1615,7 @@ namespace SZVppFilmUI.ViewModels
         {
             MessageStr = "";
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
-            WindowTitle = "SZVppFilmUI20200426:" + Station;
+            WindowTitle = "SZVppFilmUI20200508:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -1555,7 +1630,13 @@ namespace SZVppFilmUI.ViewModels
             TopCameraRadius = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraRadius", "0"));
             BottomCamera1Radius = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera1Radius", "0"));
             BottomCamera2Radius = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera2Radius", "0"));
-            
+            TopCameraContrast = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraContrast", "30"));
+            BottomCamera1Contrast = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera1Contrast", "30"));
+            BottomCamera2Contrast = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera2Contrast", "30"));
+            TopCameraLow = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraLow", "20"));
+            BottomCamera1Low = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera1Low", "20"));
+            BottomCamera2Low = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera2Low", "20"));
+
             string plc_ip = Inifile.INIGetStringValue(iniParameterPath, "System", "PLCIP", "192.168.1.13");
             int plc_port = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "PLCPORT", "3900"));
 
@@ -1902,30 +1983,32 @@ namespace SZVppFilmUI.ViewModels
                 HObject imageReduced1;
                 HOperatorSet.ReduceDomain(ModelImage, lineRegion, out imageReduced1);
                 HObject edges1;
-                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 10, 30);
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, TopCameraLow, TopCameraLow + 20);
                 HObject contoursSplit1;
                 HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
                 HObject selectedContours1;
-                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
                 HObject unionContours1;
                 HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
                 HTuple rowBegin1, colBegin1, rowEnd1, colEnd1, nr1, nc1, dist1;
                 HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
-
-                double lineAngle1 = Math.Atan2((nc1), (nr1)) * 180 / Math.PI - 90;
+                HObject regionLine;
+                HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
+                var index = FindMaxLine(regionLine);
+                double lineAngle1 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
 
                 HObject regionLineAffineTrans;
                 HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
                 HOperatorSet.ReduceDomain(topCamera.CurrentImage, regionLineAffineTrans, out imageReduced1);
-                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 10, 30);
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, TopCameraLow, TopCameraLow + 20);
                 HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
-                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
                 HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
                 HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
-                HObject regionLine;
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 TopCameraAppendHObject = regionLine;
-                double lineAngle2 = Math.Atan2((nc1), (nr1)) * 180 / Math.PI - 90;
+                index = FindMaxLine(regionLine);
+                double lineAngle2 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
 
 
 
@@ -1957,7 +2040,7 @@ namespace SZVppFilmUI.ViewModels
                     }
                     else
                     {
-                        if (lineAngle1 - lineAngle2 > 10 || lineAngle1 - lineAngle2 < -10)
+                        if (lineAngle1 - lineAngle2 > 30 || lineAngle1 - lineAngle2 < -30)
                         {
                             result = false;
                         }
@@ -2012,30 +2095,32 @@ namespace SZVppFilmUI.ViewModels
                 HObject imageReduced1;
                 HOperatorSet.ReduceDomain(ModelImage, lineRegion, out imageReduced1);
                 HObject edges1;
-                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 10, 30);
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, BottomCamera1Low, BottomCamera1Low + 20);
                 HObject contoursSplit1;
                 HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
                 HObject selectedContours1;
-                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
                 HObject unionContours1;
                 HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
                 HTuple rowBegin1, colBegin1, rowEnd1, colEnd1, nr1, nc1, dist1;
                 HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
-
-                double lineAngle1 = Math.Atan2((nc1), (nr1)) * 180 / Math.PI - 90;
+                HObject regionLine;
+                HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
+                var index = FindMaxLine(regionLine);
+                double lineAngle1 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
 
                 HObject regionLineAffineTrans;
                 HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
                 HOperatorSet.ReduceDomain(bottomCamera1.CurrentImage, regionLineAffineTrans, out imageReduced1);
-                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 10, 30);
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, BottomCamera1Low, BottomCamera1Low + 20);
                 HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
-                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
                 HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
                 HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
-                HObject regionLine;
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 BottomCamera1AppendHObject = regionLine;
-                double lineAngle2 = Math.Atan2((nc1), (nr1)) * 180 / Math.PI - 90;
+                index = FindMaxLine(regionLine);
+                double lineAngle2 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
                 //坐标变换
                 HOperatorSet.ReadTuple(Path.Combine(path, "homMat2D.tup"), out homMat2D);
                 HTuple CamImage_x, CamImage_y;
@@ -2066,7 +2151,7 @@ namespace SZVppFilmUI.ViewModels
                     }
                     else
                     {
-                        if (lineAngle1 - lineAngle2 > 10 || lineAngle1 - lineAngle2 < -10)
+                        if (lineAngle1 - lineAngle2 > 15 || lineAngle1 - lineAngle2 < -15)
                         {
                             result = false;
                         }
@@ -2122,30 +2207,32 @@ namespace SZVppFilmUI.ViewModels
                 HObject imageReduced1;
                 HOperatorSet.ReduceDomain(ModelImage, lineRegion, out imageReduced1);
                 HObject edges1;
-                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 10, 30);
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, BottomCamera2Low, BottomCamera2Low + 20);
                 HObject contoursSplit1;
                 HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
                 HObject selectedContours1;
-                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
                 HObject unionContours1;
                 HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
                 HTuple rowBegin1, colBegin1, rowEnd1, colEnd1, nr1, nc1, dist1;
                 HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
-
-                double lineAngle1 = Math.Atan2((nc1), (nr1)) * 180 / Math.PI - 90;
+                HObject regionLine;
+                HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
+                var index = FindMaxLine(regionLine);
+                double lineAngle1 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
 
                 HObject regionLineAffineTrans;
                 HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
                 HOperatorSet.ReduceDomain(bottomCamera2.CurrentImage, regionLineAffineTrans, out imageReduced1);
-                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, 10, 30);
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, BottomCamera2Low, BottomCamera2Low + 20);
                 HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
-                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 50, 500, -0.5, 0.5);
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
                 HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
                 HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
-                HObject regionLine;
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 BottomCamera2AppendHObject = regionLine;
-                double lineAngle2 = Math.Atan2((nc1), (nr1)) * 180 / Math.PI - 90;
+                index = FindMaxLine(regionLine);
+                double lineAngle2 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
 
 
 
@@ -2180,7 +2267,7 @@ namespace SZVppFilmUI.ViewModels
                     }
                     else
                     {
-                        if (lineAngle1 - lineAngle2 > 10 || lineAngle1 - lineAngle2 < -10)
+                        if (lineAngle1 - lineAngle2 > 15 || lineAngle1 - lineAngle2 < -15)
                         {
                             result = false;
                         }
@@ -2247,6 +2334,22 @@ namespace SZVppFilmUI.ViewModels
             {
                 AddMessage(ex.Message);
             }
+        }
+        private int FindMaxLine(HObject LineRegion)
+        {
+            HTuple area, row, column;
+            HOperatorSet.AreaCenter(LineRegion, out area, out row, out column);
+            HTuple max;
+            HOperatorSet.TupleMax(area, out max);
+
+            for (int i = 0; i < area.LArr.Length; i++)
+            {
+                if (area.LArr[i] == max)
+                {
+                    return i;
+                }
+            }
+            return 0;
         }
         #endregion
     }

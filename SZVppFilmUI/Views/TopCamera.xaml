@@ -80,7 +80,7 @@
                 <Grid Grid.Row="2" Grid.ColumnSpan="4" Grid.RowSpan="2">
                     <Grid.RowDefinitions>
                         <RowDefinition></RowDefinition>
-                        <RowDefinition Height="40"></RowDefinition>
+                        <RowDefinition Height="60"></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition></ColumnDefinition>
@@ -124,11 +124,19 @@
                             </StackPanel>
                         </StackPanel>
                     </GroupBox>
-                    <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,1">
-                        <Label Content="曝光:" Width="50" VerticalAlignment="Center"></Label>
-                        <TextBox Width="60" Text="{Binding TopCameraExposureValue}" VerticalAlignment="Center"></TextBox>
-                        <Label Content="预处理半径:" Width="80" VerticalAlignment="Center"></Label>
-                        <TextBox Width="60" Text="{Binding TopCameraRadius}" VerticalAlignment="Center"></TextBox>
+                    <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Vertical" Margin="0,1">
+                        <StackPanel Orientation="Horizontal" Margin="0,1">
+                            <Label Content="曝光:" Width="80" VerticalAlignment="Center"></Label>
+                            <TextBox Width="60" Text="{Binding TopCameraExposureValue}" VerticalAlignment="Center"></TextBox>
+                            <Label Content="预处理半径:" Width="80" VerticalAlignment="Center"></Label>
+                            <TextBox Width="60" Text="{Binding TopCameraRadius}" VerticalAlignment="Center"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,1">
+                            <Label Content="模板对比度:" Width="80" VerticalAlignment="Center"></Label>
+                            <TextBox Width="60" Text="{Binding TopCameraContrast}" VerticalAlignment="Center"></TextBox>
+                            <Label Content="直线低阈值:" Width="80" VerticalAlignment="Center"></Label>
+                            <TextBox Width="60" Text="{Binding TopCameraLow}" VerticalAlignment="Center"></TextBox>
+                        </StackPanel>
                     </StackPanel>
                 </Grid>
             </Grid>
