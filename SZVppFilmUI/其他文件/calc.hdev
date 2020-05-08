@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hdevelop file_version="1.1" halcon_version="13.0">
+<procedure name="main">
+<interface/>
+<body>
+<l>read_image (ModelImage, 'C:/Debug/Camera/Top/ModelImage.bmp')</l>
+<l>read_shape_model ('C:/Debug/Camera/Top/ShapeModel.shm', ModelID)</l>
+<l>read_region (ImageRegion, 'C:/Debug/Camera/Top/Region.hobj')</l>
+<l>reduce_domain (ModelImage, ImageRegion, ImageReduced)</l>
+<l>find_shape_model (ImageReduced, ModelID, rad(-45), rad(90), 0.5, 1, 0.5, 'least_squares', 0, 0.9, Row, Column, Angle, Score)</l>
+<l>read_image (CurrentImage, 'C:/Users/KC/Desktop/TOP20200508100800.bmp')</l>
+<l>reduce_domain (CurrentImage, ImageRegion, ImageReduced)</l>
+<l>find_shape_model (ImageReduced, ModelID, rad(-45), rad(90), 0.5, 1, 0.5, 'least_squares', 0, 0.9, Row1, Column1, Angle1, Score1)</l>
+<l>vector_angle_to_rigid (Row, Column, Angle, Row1, Column1, Angle1, HomMat2D)</l>
+<l>* read_region (modelRegion, 'C:/Debug/Camera/Top/ModelRegion.hobj')</l>
+<l>* affine_trans_region (modelRegion, regionAffineTrans, HomMat2D, 'nearest_neighbor')</l>
+<l>read_region (lineRegion, 'C:/Debug/Camera/Top/Line.hobj')</l>
+<l>affine_trans_region (lineRegion, regionLineAffineTrans, HomMat2D, 'nearest_neighbor')</l>
+<l>reduce_domain (CurrentImage, regionLineAffineTrans, ImageReduced1)</l>
+<l>edges_sub_pix (ImageReduced1, Edges, 'canny', 1, 15, 35)</l>
+<l>segment_contours_xld (Edges, ContoursSplit, 'lines_circles', 5, 4, 2)</l>
+<l>select_contours_xld (ContoursSplit, SelectedContours, 'contour_length', 30, 500, -0.5, 0.5)</l>
+<l>union_adjacent_contours_xld (SelectedContours, UnionContours, 10, 1, 'attr_keep')</l>
+<l>fit_line_contour_xld (UnionContours, 'tukey', -1, 0, 5, 2, RowBegin, ColBegin, RowEnd, ColEnd, Nr, Nc, Dist)</l>
+<l>gen_region_line (RegionLines, RowBegin, ColBegin, RowEnd, ColEnd)</l>
+<l>area_center (RegionLines, Area, Row2, Column2)</l>
+<l>tuple_max (Area, Max)</l>
+</body>
+<docu id="main">
+<parameters/>
+</docu>
+</procedure>
+</hdevelop>

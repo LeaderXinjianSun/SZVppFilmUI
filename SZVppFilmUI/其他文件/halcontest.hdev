@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hdevelop file_version="1.1" halcon_version="13.0">
+<procedure name="main">
+<interface/>
+<body>
+<l>read_image (Image, 'C:/Users/KC/Desktop/202005081143.bmp')</l>
+<l>* draw_circle (200000, Row, Column, Radius)</l>
+<l>gen_circle (Circle, 1256.04, 1440.9, 82.4215)</l>
+<l>reduce_domain (Image, Circle, ImageReduced)</l>
+<l>threshold (ImageReduced, Region, 0, 128)</l>
+<l>area_center (Region, Area, Row1, Column1)</l>
+<l>read_tuple ('D:/WORK/VPP/SZVppFilmUI/SZVppFilmUI/bin/Debug/Camera/Top/homMat2D.tup', Tuple)</l>
+<l>affine_trans_point_2d (Tuple, Column1, Row1, Qx, Qy)</l>
+</body>
+<docu id="main">
+<parameters/>
+</docu>
+</procedure>
+</hdevelop>
