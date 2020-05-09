@@ -130,7 +130,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Global.cs" />
+    <Compile Include="Models\AlarmData.cs" />
     <Compile Include="Models\CameraOperate.cs" />
+    <Compile Include="Models\Csvfile.cs" />
     <Compile Include="Models\Fx5u.cs" />
     <Compile Include="Models\Inifile.cs" />
     <Compile Include="Models\Metro.cs" />

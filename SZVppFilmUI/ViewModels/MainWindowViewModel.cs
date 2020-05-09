@@ -16,6 +16,8 @@ using System.IO;
 using HalconViewer;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json;
+using OfficeOpenXml;
+using BingLibrary.hjb;
 
 namespace SZVppFilmUI.ViewModels
 {
@@ -604,6 +606,7 @@ namespace SZVppFilmUI.ViewModels
         private CameraOperate bottomCamera2 = new CameraOperate();
         Fx5u Fx5u;
         private string iniParameterPath = System.Environment.CurrentDirectory + "\\Parameter.ini";
+        List<AlarmData> AlarmList = new List<AlarmData>(); bool[] M300;
         #endregion
         #region 构造函数
         public MainWindowViewModel()
@@ -1635,7 +1638,7 @@ namespace SZVppFilmUI.ViewModels
             MessageStr = "";
             OnlyImage = true;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
-            WindowTitle = "SZVppFilmUI20200508:" + Station;
+            WindowTitle = "SZVppFilmUI20200509:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -1714,7 +1717,43 @@ namespace SZVppFilmUI.ViewModels
                 BottomCamera2Diff = new PointViewModel();
                 AddMessage(ex.Message);
             }
+            #region 报警文档
+            try
+            {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                string alarmExcelPath = Path.Combine(System.Environment.CurrentDirectory, "VPP贴膜下料机报警.xlsx");
+                if (File.Exists(alarmExcelPath))
+                {
 
+                    FileInfo existingFile = new FileInfo(alarmExcelPath);
+                    using (ExcelPackage package = new ExcelPackage(existingFile))
+                    {
+                        // get the first worksheet in the workbook
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                        for (int i = 1; i <= worksheet.Dimension.End.Row; i++)
+                        {
+                            AlarmData ad = new AlarmData();
+                            ad.Code = worksheet.Cells["A" + i.ToString()].Value == null ? "Null" : worksheet.Cells["A" + i.ToString()].Value.ToString();
+                            ad.Content = worksheet.Cells["B" + i.ToString()].Value == null ? "Null" : worksheet.Cells["B" + i.ToString()].Value.ToString();
+                            ad.Type = worksheet.Cells["C" + i.ToString()].Value == null ? "Null" : worksheet.Cells["C" + i.ToString()].Value.ToString();
+                            ad.Start = DateTime.Now;
+                            ad.End = DateTime.Now;
+                            ad.State = false;
+                            AlarmList.Add(ad);
+                        }
+                        AddMessage("读取到" + worksheet.Dimension.End.Row.ToString() + "条报警");
+                    }
+                }
+                else
+                {
+                    AddMessage("VPP贴膜下料机报警.xlsx 文件不存在");
+                }
+            }
+            catch (Exception ex)
+            {
+                AddMessage(ex.Message);
+            }
+            #endregion
         }
         private void AddMessage(string str)
         {
@@ -1731,6 +1770,11 @@ namespace SZVppFilmUI.ViewModels
         }
         private async void UIRun()
         {
+            string CurrentAlarm = "";
+            if (!Directory.Exists("D:\\报警记录"))
+            {
+                Directory.CreateDirectory("D:\\报警记录");
+            }
             while (true)
             {
                 await Task.Delay(100);
@@ -1739,7 +1783,45 @@ namespace SZVppFilmUI.ViewModels
                 StatusBottom1 = bottomCamera1.Connected;
                 StatusBottom2 = bottomCamera2.Connected;
                 #endregion
+                #region 报警记录
+                try
+                {
+                    if (M300 != null && StatusPLC)
+                    {
+                        for (int i = 0; i < AlarmList.Count; i++)
+                        {
+                            if (M300[i] != AlarmList[i].State && AlarmList[i].Content != "Null")
+                            {
+                                AlarmList[i].State = M300[i];
+                                if (AlarmList[i].State)
+                                {
+                                    AlarmList[i].Start = DateTime.Now;
+                                    AlarmList[i].End = DateTime.Now;
+                                    AddMessage(AlarmList[i].Code + AlarmList[i].Content + "发生");
+                                    if (CurrentAlarm != AlarmList[i].Content)
+                                    {
+                                        string banci = GetBanci();
+                                        if (!File.Exists(Path.Combine("D:\\报警记录", "VPP贴膜下料机报警记录" + banci + ".csv")))
+                                        {
+                                            string[] heads = new string[] { "时间", "内容"};
+                                            Csvfile.savetocsv(Path.Combine("D:\\报警记录", "VPP贴膜下料机报警记录" + banci + ".csv"), heads);
+                                        }
+                                        string[] conts = new string[] { AlarmList[i].Start.ToString(), AlarmList[i].Content };
+                                        Csvfile.savetocsv(Path.Combine("D:\\报警记录", "VPP贴膜下料机报警记录" + banci + ".csv"), conts);
+                                        CurrentAlarm = AlarmList[i].Content;
+                                    }
+                                }
 
+                            }
+                        }
+
+                    }
+                }
+                catch 
+                {
+
+                }
+                #endregion
             }
         }
         private void SystemRun()
@@ -1955,6 +2037,8 @@ namespace SZVppFilmUI.ViewModels
                         default:
                             break;
                     }
+                    //读报警
+                    M300 = Fx5u.ReadMultiM("M300", 64);
                 }
                 catch (Exception ex)
                 {
@@ -2370,6 +2454,26 @@ namespace SZVppFilmUI.ViewModels
                 }
             }
             return 0;
+        }
+        private string GetBanci()
+        {
+            string rs = "";
+            if (DateTime.Now.Hour >= 8 && DateTime.Now.Hour < 20)
+            {
+                rs += DateTime.Now.ToString("yyyyMMdd") + "_D";
+            }
+            else
+            {
+                if (DateTime.Now.Hour >= 0 && DateTime.Now.Hour < 8)
+                {
+                    rs += DateTime.Now.AddDays(-1).ToString("yyyyMMdd") + "_N";
+                }
+                else
+                {
+                    rs += DateTime.Now.ToString("yyyyMMdd") + "_N";
+                }
+            }
+            return rs;
         }
         #endregion
     }
