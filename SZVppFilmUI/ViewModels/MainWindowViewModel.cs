@@ -578,6 +578,39 @@ namespace SZVppFilmUI.ViewModels
                 this.RaisePropertyChanged("OnlyImage");
             }
         }
+        private double topCameraCalibRadius;
+
+        public double TopCameraCalibRadius
+        {
+            get { return topCameraCalibRadius; }
+            set
+            {
+                topCameraCalibRadius = value;
+                this.RaisePropertyChanged("TopCameraCalibRadius");
+            }
+        }
+        private double bottomCamera1CalibRadius;
+
+        public double BottomCamera1CalibRadius
+        {
+            get { return bottomCamera1CalibRadius; }
+            set
+            {
+                bottomCamera1CalibRadius = value;
+                this.RaisePropertyChanged("BottomCamera1CalibRadius");
+            }
+        }
+        private double bottomCamera2CalibRadius;
+
+        public double BottomCamera2CalibRadius
+        {
+            get { return bottomCamera2CalibRadius; }
+            set
+            {
+                bottomCamera2CalibRadius = value;
+                this.RaisePropertyChanged("BottomCamera2CalibRadius");
+            }
+        }
 
         #endregion
         #region 方法绑定
@@ -884,6 +917,7 @@ namespace SZVppFilmUI.ViewModels
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraRadius", TopCameraRadius.ToString());
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraContrast", TopCameraContrast.ToString());
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraLow", TopCameraLow.ToString());
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraCalibRadius", TopCameraCalibRadius.ToString());
                     topCamera.SetExpose(TopCameraExposureValue);
                     AddMessage("上相机参数保存完成");
                     break;
@@ -893,6 +927,7 @@ namespace SZVppFilmUI.ViewModels
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera1Radius", BottomCamera1Radius.ToString());
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera1Contrast", BottomCamera1Contrast.ToString());
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera1Low", BottomCamera1Low.ToString());
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera1CalibRadius", BottomCamera1CalibRadius.ToString());
                     bottomCamera1.SetExpose(BottomCamera1ExposureValue);
                     AddMessage("下相机1参数保存完成");
                     break;
@@ -902,6 +937,7 @@ namespace SZVppFilmUI.ViewModels
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera2Radius", BottomCamera2Radius.ToString());
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera2Contrast", BottomCamera2Contrast.ToString());
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera2Low", BottomCamera2Low.ToString());
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera2CalibRadius", BottomCamera2CalibRadius.ToString());
                     bottomCamera2.SetExpose(BottomCamera2ExposureValue);
                     AddMessage("下相机2参数保存完成");
                     break;
@@ -1328,10 +1364,10 @@ namespace SZVppFilmUI.ViewModels
                     new int[] { -5,5,0},
                     new int[] { -5,0,0}
                 };
-                    int[][] diff_r = new int[3][] {
-                    new int[] { 0,0,0},
-                    new int[] { 0,0,5},
-                    new int[] { 0,0,-5}
+                    double[][] diff_r = new double[3][] {
+                    new double[] { 0,0,0},
+                    new double[] { 0,0,TopCameraCalibRadius},
+                    new double[] { 0,0, TopCameraCalibRadius * -1 }
                 };
                     string MoveStart = "M3210";
                     string MoveFinish = "M3110";
@@ -1349,14 +1385,14 @@ namespace SZVppFilmUI.ViewModels
                                 case "1":
                                     CameraP = "D4134";
                                     CameraRP = "D4134";
-                                    diff_r[1][2] = 8;
-                                    diff_r[2][2] = -8;
+                                    diff_r[1][2] = BottomCamera1CalibRadius;
+                                    diff_r[2][2] = BottomCamera1CalibRadius * -1;
                                     break;
                                 case "2":
                                     CameraP = "D4134";
                                     CameraRP = "D4134";
-                                    diff_r[1][2] = 8;
-                                    diff_r[2][2] = -8;
+                                    diff_r[1][2] = BottomCamera2CalibRadius;
+                                    diff_r[2][2] = BottomCamera2CalibRadius * -1;
                                     break;
                                 default:
                                     CameraP = "D4128";
@@ -1373,14 +1409,14 @@ namespace SZVppFilmUI.ViewModels
                                 case "1":
                                     CameraP = "D4240";
                                     CameraRP = "D4240";
-                                    diff_r[1][2] = 8;
-                                    diff_r[2][2] = -8;
+                                    diff_r[1][2] = BottomCamera1CalibRadius;
+                                    diff_r[2][2] = BottomCamera1CalibRadius * -1;
                                     break;
                                 case "2":
                                     CameraP = "D4240";
                                     CameraRP = "D4240";
-                                    diff_r[1][2] = 8;
-                                    diff_r[2][2] = -8;
+                                    diff_r[1][2] = BottomCamera2CalibRadius;
+                                    diff_r[2][2] = BottomCamera2CalibRadius * -1;
                                     break;
                                 default:
                                     CameraP = "D4234";
@@ -1469,7 +1505,7 @@ namespace SZVppFilmUI.ViewModels
                     {
                         for (int i = 0; i < 3; i++)
                         {
-                            int[] senddata = new int[3] { camerap1[0] + diff_r[i][0] * 100, camerap1[1] + diff_r[i][1] * 100, camerap1[2] + diff_r[i][2] * 100 };
+                            int[] senddata = new int[3] { camerap1[0] + (int)(diff_r[i][0] * 100), camerap1[1] + (int)(diff_r[i][1] * 100), camerap1[2] + (int)(diff_r[i][2] * 100) };
                             Fx5u.WriteMultW(MoveData, senddata);
                             Fx5u.SetM(MoveFinish, false);
                             Fx5u.SetM(MoveStart, true);
@@ -1638,7 +1674,7 @@ namespace SZVppFilmUI.ViewModels
             MessageStr = "";
             OnlyImage = true;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
-            WindowTitle = "SZVppFilmUI20200509:" + Station;
+            WindowTitle = "SZVppFilmUI20200510:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -1659,7 +1695,9 @@ namespace SZVppFilmUI.ViewModels
             TopCameraLow = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraLow", "20"));
             BottomCamera1Low = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera1Low", "20"));
             BottomCamera2Low = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera2Low", "20"));
-
+            TopCameraCalibRadius = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraCalibRadius", "5"));
+            BottomCamera1CalibRadius = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera1CalibRadius", "5"));
+            BottomCamera2CalibRadius = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera2CalibRadius", "5"));
             string plc_ip = Inifile.INIGetStringValue(iniParameterPath, "System", "PLCIP", "192.168.1.13");
             int plc_port = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "PLCPORT", "3900"));
 
@@ -2243,13 +2281,13 @@ namespace SZVppFilmUI.ViewModels
                 #endregion
                 #region 范围
                 bool result = true;
-                if (FitRobot_x1.D * 100 - targetp[0] > 500 || FitRobot_x1.D * 100 - targetp[0] < -500)
+                if (FitRobot_x1.D * 100 - targetp[0] > 1000 || FitRobot_x1.D * 100 - targetp[0] < -1000)
                 {
                     result = false;
                 }
                 else
                 {
-                    if (FitRobot_y1.D * 100 - targetp[1] > 500 || FitRobot_y1.D * 100 - targetp[1] < -500)
+                    if (FitRobot_y1.D * 100 - targetp[1] > 1000 || FitRobot_y1.D * 100 - targetp[1] < -1000)
                     {
                         result = false;
                     }
@@ -2359,13 +2397,13 @@ namespace SZVppFilmUI.ViewModels
                 #endregion
                 #region 范围
                 bool result = true;
-                if (FitRobot_x1.D * 100 - targetp[0] > 500 || FitRobot_x1.D * 100 - targetp[0] < -500)
+                if (FitRobot_x1.D * 100 - targetp[0] > 1000 || FitRobot_x1.D * 100 - targetp[0] < -1000)
                 {
                     result = false;
                 }
                 else
                 {
-                    if (FitRobot_y1.D * 100 - targetp[1] > 500 || FitRobot_y1.D * 100 - targetp[1] < -500)
+                    if (FitRobot_y1.D * 100 - targetp[1] > 1000 || FitRobot_y1.D * 100 - targetp[1] < -1000)
                     {
                         result = false;
                     }
