@@ -41,6 +41,9 @@
                     <!--<Label Width="60">Value</Label>
                     <TextBox Width="60" Text="{Binding IniValue}"></TextBox>-->
                     <!--<Button Width="60" Margin="10,0,0,0" Content="功能" Command="{Binding FuncBtnCommand}"></Button>-->
+                    <Label Width="60">噪声值</Label>
+                    <TextBlock Text="{Binding NoiseValue}" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock Text="dB" VerticalAlignment="Center"></TextBlock>
                 </StackPanel>
             </StackPanel>
         </Grid>

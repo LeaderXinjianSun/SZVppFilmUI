@@ -18,6 +18,8 @@ using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using OfficeOpenXml;
 using BingLibrary.hjb;
+using ModbusServo;
+using System.IO.Ports;
 
 namespace SZVppFilmUI.ViewModels
 {
@@ -609,6 +611,17 @@ namespace SZVppFilmUI.ViewModels
             {
                 bottomCamera2CalibRadius = value;
                 this.RaisePropertyChanged("BottomCamera2CalibRadius");
+            }
+        }
+        private double noiseValue;
+
+        public double NoiseValue
+        {
+            get { return noiseValue; }
+            set
+            {
+                noiseValue = value;
+                this.RaisePropertyChanged("NoiseValue");
             }
         }
 
@@ -1672,9 +1685,10 @@ namespace SZVppFilmUI.ViewModels
         private void Init()
         {
             MessageStr = "";
+            NoiseValue = 0;
             OnlyImage = true;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
-            WindowTitle = "SZVppFilmUI20200510:" + Station;
+            WindowTitle = "SZVppFilmUI20200511:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -1865,7 +1879,17 @@ namespace SZVppFilmUI.ViewModels
         private void SystemRun()
         {
             Stopwatch sw = new Stopwatch();
+            ModbusRTURead MESDriverRead = new ModbusRTURead();
+            bool serialportconnect = false;
+            int noisereadcount = 0;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
+            string _COM = Inifile.INIGetStringValue(iniParameterPath, "System", "NoiseCOM", "COM16");
+            MESDriverRead.ModbusInit(_COM, 4800, Parity.None, 8, StopBits.One);
+            if (Station == "A")
+            {
+                serialportconnect = MESDriverRead.ModbusConnect();
+                AddMessage("噪声监控设备端口打开" + (serialportconnect ? "成功" : "失败"));
+            }
             while (true)
             {
                 sw.Restart();
@@ -1875,6 +1899,7 @@ namespace SZVppFilmUI.ViewModels
                     switch (Station)
                     {
                         case "A":
+                            #region PLC部分
                             if (Fx5u.ReadM("M3100"))
                             {
                                 Fx5u.SetM("M3100", false);
@@ -1956,7 +1981,7 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst2)
                                     {
                                         BottomCamera2Iamge = bottomCamera2.CurrentImage;
-                                        var calcrst = BottomCamera2Calc("D4134", "D4092",BottomCamera2Diff.X, BottomCamera2Diff.Y, BottomCamera2Diff.U);
+                                        var calcrst = BottomCamera2Calc("D4134", "D4092", BottomCamera2Diff.X, BottomCamera2Diff.Y, BottomCamera2Diff.U);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3218", calcrst.Item1);
                                         Fx5u.SetM("M3206", calcrst.Item2);
@@ -1972,8 +1997,31 @@ namespace SZVppFilmUI.ViewModels
                                 }
                                 Fx5u.SetM("M3204", true);
                             }
+                            #endregion
+                            #region 噪声检测部分
+                            if (noisereadcount++ > 10)
+                            {
+                                noisereadcount = 0;
+                                try
+                                {
+                                    if (serialportconnect)
+                                    {
+                                        string s1 = MESDriverRead.Read("0000", "01", "0001");
+                                        short v1 = Convert.ToInt16(s1, 16);                                        
+                                        NoiseValue = (double)v1 / 10;
+                                        Fx5u.WriteD("D4510", v1);
+                                    }
+                                }
+                                catch
+                                {
+
+                                }
+                            }
+
+                            #endregion
                             break;
                         case "B":
+                            #region PLC部分
                             if (Fx5u.ReadM("M3120"))
                             {
                                 Fx5u.SetM("M3120", false);
@@ -2047,7 +2095,7 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst1)
                                     {
                                         BottomCamera1Iamge = bottomCamera1.CurrentImage;
-                                        var calcrst = BottomCamera1Calc("D4240", "D4192",BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
+                                        var calcrst = BottomCamera1Calc("D4240", "D4192", BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3252", calcrst.Item1);
                                         Fx5u.SetM("M3225", calcrst.Item2);
@@ -2070,6 +2118,12 @@ namespace SZVppFilmUI.ViewModels
                                     AddMessage(ex.Message);
                                 }
                                 Fx5u.SetM("M3224", true);
+                            }
+                            #endregion
+                            if (noisereadcount++ > 10)
+                            {
+                                noisereadcount = 0;
+                                NoiseValue = (double)Fx5u.ReadD("D4510") / 10;
                             }
                             break;
                         default:

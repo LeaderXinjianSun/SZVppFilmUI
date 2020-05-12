@@ -136,6 +136,7 @@
     <Compile Include="Models\Fx5u.cs" />
     <Compile Include="Models\Inifile.cs" />
     <Compile Include="Models\Metro.cs" />
+    <Compile Include="Models\ServoPosRead.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\PointViewModel.cs" />
     <Compile Include="Views\BottomCamera1.xaml.cs">

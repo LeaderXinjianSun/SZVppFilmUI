@@ -53,11 +53,11 @@ namespace SXJLibrary
             }
         }
         /// <summary>
-        /// 读双字
+        /// 读单字
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        public int ReadW(string address)
+        public int ReadD(string address)
         {
             OperateResult<byte[]> read = melsec_net.Read(address, 1);
             if (read.IsSuccess)
@@ -138,6 +138,23 @@ namespace SXJLibrary
             }
         }
         public void SetMultiM(string address, bool[] value)
+        {
+            OperateResult write = melsec_net.Write(address, value);
+            if (write.IsSuccess)
+            {
+                _Connect = true;
+            }
+            else
+            {
+                _Connect = false;
+            }
+        }
+        /// <summary>
+        /// 写单字
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="value"></param>
+        public void WriteD(string address, short value)
         {
             OperateResult write = melsec_net.Write(address, value);
             if (write.IsSuccess)
