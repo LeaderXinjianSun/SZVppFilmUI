@@ -909,7 +909,7 @@ namespace SZVppFilmUI.ViewModels
         {
             try
             {
-                var rst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
+                var rst = TopCameraCalc("D4116", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
                 ////var rst = BottomCamera2Calc(TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
                 AddMessage(rst.Item1[0].ToString() + "," + rst.Item1[1].ToString() + "," + rst.Item1[2].ToString());
             }
@@ -1506,12 +1506,20 @@ namespace SZVppFilmUI.ViewModels
                             AddMessage(ex.Message);
                         }
                     }
-                    HTuple homMat2D;
-                    HOperatorSet.VectorToHomMat2d(new HTuple(Array1[0][0]).TupleConcat(Array1[1][0]).TupleConcat(Array1[2][0]).TupleConcat(Array1[3][0]).TupleConcat(Array1[4][0]).TupleConcat(Array1[5][0]).TupleConcat(Array1[6][0]).TupleConcat(Array1[7][0]).TupleConcat(Array1[8][0]),
-                        new HTuple(Array1[0][1]).TupleConcat(Array1[1][1]).TupleConcat(Array1[2][1]).TupleConcat(Array1[3][1]).TupleConcat(Array1[4][1]).TupleConcat(Array1[5][1]).TupleConcat(Array1[6][1]).TupleConcat(Array1[7][1]).TupleConcat(Array1[8][1]),
-                        new HTuple(Array1[0][2]).TupleConcat(Array1[1][2]).TupleConcat(Array1[2][2]).TupleConcat(Array1[3][2]).TupleConcat(Array1[4][2]).TupleConcat(Array1[5][2]).TupleConcat(Array1[6][2]).TupleConcat(Array1[7][2]).TupleConcat(Array1[8][2]),
-                        new HTuple(Array1[0][3]).TupleConcat(Array1[1][3]).TupleConcat(Array1[2][3]).TupleConcat(Array1[3][3]).TupleConcat(Array1[4][3]).TupleConcat(Array1[5][3]).TupleConcat(Array1[6][3]).TupleConcat(Array1[7][3]).TupleConcat(Array1[8][3])
-                        , out homMat2D);
+                    HTuple homMat2D = new HTuple();
+                    try
+                    {
+                        HOperatorSet.VectorToHomMat2d(new HTuple(Array1[0][0]).TupleConcat(Array1[1][0]).TupleConcat(Array1[2][0]).TupleConcat(Array1[3][0]).TupleConcat(Array1[4][0]).TupleConcat(Array1[5][0]).TupleConcat(Array1[6][0]).TupleConcat(Array1[7][0]).TupleConcat(Array1[8][0]),
+    new HTuple(Array1[0][1]).TupleConcat(Array1[1][1]).TupleConcat(Array1[2][1]).TupleConcat(Array1[3][1]).TupleConcat(Array1[4][1]).TupleConcat(Array1[5][1]).TupleConcat(Array1[6][1]).TupleConcat(Array1[7][1]).TupleConcat(Array1[8][1]),
+    new HTuple(Array1[0][2]).TupleConcat(Array1[1][2]).TupleConcat(Array1[2][2]).TupleConcat(Array1[3][2]).TupleConcat(Array1[4][2]).TupleConcat(Array1[5][2]).TupleConcat(Array1[6][2]).TupleConcat(Array1[7][2]).TupleConcat(Array1[8][2]),
+    new HTuple(Array1[0][3]).TupleConcat(Array1[1][3]).TupleConcat(Array1[2][3]).TupleConcat(Array1[3][3]).TupleConcat(Array1[4][3]).TupleConcat(Array1[5][3]).TupleConcat(Array1[6][3]).TupleConcat(Array1[7][3]).TupleConcat(Array1[8][3])
+    , out homMat2D);
+                    }
+                    catch (Exception ex)
+                    {
+                        AddMessage(ex.Message);
+                    }
+
                     //旋转标定拍照
                     int[] camerap1 = Fx5u.ReadMultiW(CameraRP, 3);
                     if (!OnlyImage)
@@ -1575,18 +1583,27 @@ namespace SZVppFilmUI.ViewModels
                         }
                     }
                     double[] circleCenter = rotateCenter(Array2[0][0], Array2[0][1], Array2[1][0], Array2[1][1], Array2[2][0], Array2[2][1]);
-                    HTuple qx0, qy0;
-                    HOperatorSet.AffineTransPoint2d(homMat2D, circleCenter[0], circleCenter[1], out qx0, out qy0);
-                    double delta_x = (double)camerap[0] / 100 - qx0;
-                    double delta_y = (double)camerap[1] / 100 - qy0;
-                    AddMessage(delta_x.ToString() + " , " + delta_y.ToString());
-                    HOperatorSet.VectorToHomMat2d(new HTuple(Array1[0][0]).TupleConcat(Array1[1][0]).TupleConcat(Array1[2][0]).TupleConcat(Array1[3][0]).TupleConcat(Array1[4][0]).TupleConcat(Array1[5][0]).TupleConcat(Array1[6][0]).TupleConcat(Array1[7][0]).TupleConcat(Array1[8][0]),
-                        new HTuple(Array1[0][1]).TupleConcat(Array1[1][1]).TupleConcat(Array1[2][1]).TupleConcat(Array1[3][1]).TupleConcat(Array1[4][1]).TupleConcat(Array1[5][1]).TupleConcat(Array1[6][1]).TupleConcat(Array1[7][1]).TupleConcat(Array1[8][1]),
-                        new HTuple(Array1[0][2] + delta_x).TupleConcat(Array1[1][2] + delta_x).TupleConcat(Array1[2][2] + delta_x).TupleConcat(Array1[3][2] + delta_x).TupleConcat(Array1[4][2] + delta_x).TupleConcat(Array1[5][2] + delta_x).TupleConcat(Array1[6][2] + delta_x).TupleConcat(Array1[7][2] + delta_x).TupleConcat(Array1[8][2] + delta_x),
-                        new HTuple(Array1[0][3] + delta_y).TupleConcat(Array1[1][3] + delta_y).TupleConcat(Array1[2][3] + delta_y).TupleConcat(Array1[3][3] + delta_y).TupleConcat(Array1[4][3] + delta_y).TupleConcat(Array1[5][3] + delta_y).TupleConcat(Array1[6][3] + delta_y).TupleConcat(Array1[7][3] + delta_y).TupleConcat(Array1[8][3] + delta_y)
-                        , out homMat2D);
-                    HOperatorSet.WriteTuple(homMat2D, Path.Combine(path, "homMat2D.tup"));
-                    AddMessage("保存标定文件成功");
+                    
+                    try
+                    {
+                        HTuple qx0, qy0;
+                        HOperatorSet.AffineTransPoint2d(homMat2D, circleCenter[0], circleCenter[1], out qx0, out qy0);
+                        double delta_x = (double)camerap[0] / 100 - qx0;
+                        double delta_y = (double)camerap[1] / 100 - qy0;
+                        AddMessage(delta_x.ToString() + " , " + delta_y.ToString());
+                        HOperatorSet.VectorToHomMat2d(new HTuple(Array1[0][0]).TupleConcat(Array1[1][0]).TupleConcat(Array1[2][0]).TupleConcat(Array1[3][0]).TupleConcat(Array1[4][0]).TupleConcat(Array1[5][0]).TupleConcat(Array1[6][0]).TupleConcat(Array1[7][0]).TupleConcat(Array1[8][0]),
+                            new HTuple(Array1[0][1]).TupleConcat(Array1[1][1]).TupleConcat(Array1[2][1]).TupleConcat(Array1[3][1]).TupleConcat(Array1[4][1]).TupleConcat(Array1[5][1]).TupleConcat(Array1[6][1]).TupleConcat(Array1[7][1]).TupleConcat(Array1[8][1]),
+                            new HTuple(Array1[0][2] + delta_x).TupleConcat(Array1[1][2] + delta_x).TupleConcat(Array1[2][2] + delta_x).TupleConcat(Array1[3][2] + delta_x).TupleConcat(Array1[4][2] + delta_x).TupleConcat(Array1[5][2] + delta_x).TupleConcat(Array1[6][2] + delta_x).TupleConcat(Array1[7][2] + delta_x).TupleConcat(Array1[8][2] + delta_x),
+                            new HTuple(Array1[0][3] + delta_y).TupleConcat(Array1[1][3] + delta_y).TupleConcat(Array1[2][3] + delta_y).TupleConcat(Array1[3][3] + delta_y).TupleConcat(Array1[4][3] + delta_y).TupleConcat(Array1[5][3] + delta_y).TupleConcat(Array1[6][3] + delta_y).TupleConcat(Array1[7][3] + delta_y).TupleConcat(Array1[8][3] + delta_y)
+                            , out homMat2D);
+                        HOperatorSet.WriteTuple(homMat2D, Path.Combine(path, "homMat2D.tup"));
+                        AddMessage("保存标定文件成功");
+                    }
+                    catch (Exception ex)
+                    {
+                        AddMessage(ex.Message);
+                    }
+                    
                     HOperatorSet.SetColor(imageViewer.viewController.viewPort.HalconWindow, "green");
                     for (int i = 0; i < 9; i++)
                     {
@@ -1688,7 +1705,7 @@ namespace SZVppFilmUI.ViewModels
             NoiseValue = 0;
             OnlyImage = true;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
-            WindowTitle = "SZVppFilmUI20200511:" + Station;
+            WindowTitle = "SZVppFilmUI20200514:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -2208,8 +2225,6 @@ namespace SZVppFilmUI.ViewModels
 
 
 
-
-
                 //坐标变换
                 HOperatorSet.ReadTuple(Path.Combine(path, "homMat2D.tup"), out homMat2D);
                 HTuple CamImage_x, CamImage_y;
@@ -2220,7 +2235,7 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.VectorAngleToRigid(CamImage_x, CamImage_y, new HTuple(lineAngle1).TupleRad(), CamImage_x1 + _x, CamImage_y1 + _y, new HTuple(lineAngle2 + _u).TupleRad(), out T3);//T3是模板料移动到新料位置的变换
                 HTuple FitRobot_x1, FitRobot_y1;
                 HOperatorSet.AffineTransPoint2d(T3, (double)targetp[0] / 100, (double)targetp[1] / 100, out FitRobot_x1, out FitRobot_y1);//移动到新料与模板料重合
-
+                //HOperatorSet.AffineTransPoint2d(T3, CamImage_x - 90, CamImage_y, out FitRobot_x1, out FitRobot_y1);//移动到新料与模板料重合
                 #endregion
                 #region 范围
                 bool result = true;
