@@ -1387,12 +1387,14 @@ namespace SZVppFilmUI.ViewModels
                     string MoveData = "D3200";
                     string CameraP = "D4128";
                     string CameraRP = "D4280";
+                    string StartButton = "M120";
                     switch (Station)
                     {
                         case "A":
                             MoveStart = "M3210";
                             MoveFinish = "M3110";
                             MoveData = "D3200";
+                            StartButton = "M120";
                             switch (p.ToString())
                             {
                                 case "1":
@@ -1417,6 +1419,7 @@ namespace SZVppFilmUI.ViewModels
                             MoveStart = "M3230";
                             MoveFinish = "M3130";
                             MoveData = "D3240";
+                            StartButton = "M124";
                             switch (p.ToString())
                             {
                                 case "1":
@@ -1456,7 +1459,7 @@ namespace SZVppFilmUI.ViewModels
                             {
                                 try
                                 {
-                                    if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
+                                    if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM(StartButton))
                                         break;
                                 }
                                 catch { }
@@ -1535,7 +1538,7 @@ namespace SZVppFilmUI.ViewModels
                             {
                                 try
                                 {
-                                    if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM("M120"))
+                                    if (Fx5u.ReadM(MoveFinish) && Fx5u.ReadM(StartButton))
                                         break;
                                 }
                                 catch { }
@@ -1705,7 +1708,7 @@ namespace SZVppFilmUI.ViewModels
             NoiseValue = 0;
             OnlyImage = true;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
-            WindowTitle = "SZVppFilmUI20200514:" + Station;
+            WindowTitle = "SZVppFilmUI20200515:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
