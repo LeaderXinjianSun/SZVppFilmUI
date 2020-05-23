@@ -1708,7 +1708,7 @@ namespace SZVppFilmUI.ViewModels
             NoiseValue = 0;
             OnlyImage = true;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
-            WindowTitle = "SZVppFilmUI20200515:" + Station;
+            WindowTitle = "SZVppFilmUI20200523:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -2081,7 +2081,7 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst)
                                     {
                                         TopCameraIamge = topCamera.CurrentImage;
-                                        var calcrst = TopCameraCalc("D4128", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
+                                        var calcrst = TopCameraCalc("D4228", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3246", calcrst.Item1);
                                         Fx5u.SetM("M3223", calcrst.Item2);
@@ -2386,8 +2386,8 @@ namespace SZVppFilmUI.ViewModels
             try
             {
                 #region 读取PLC坐标
-                int[] camerap = Fx5u.ReadMultiW("D4134", 3);
-                int[] targetp = Fx5u.ReadMultiW("D4092", 3);
+                int[] camerap = Fx5u.ReadMultiW(CameraD, 3);
+                int[] targetp = Fx5u.ReadMultiW(TargetD, 3);
                 #endregion
                 #region 识别图像
                 //找模板
