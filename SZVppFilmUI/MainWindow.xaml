@@ -52,12 +52,6 @@
             </StatusBarItem>
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock VerticalAlignment="Center">Bottom2</TextBlock>
-                    <Ellipse Style="{StaticResource EllipseStatusBottom2}"></Ellipse>
-                </StackPanel>
-            </StatusBarItem>
-            <StatusBarItem>
-                <StackPanel Orientation="Horizontal">
                     <TextBlock VerticalAlignment="Center">PLC</TextBlock>
                     <Ellipse Style="{StaticResource EllipseStatusPLC}"></Ellipse>
                 </StackPanel>

@@ -58,12 +58,12 @@
                 <Button Grid.Column="2" Style="{StaticResource AccentedSquareButtonStyle}" Content="直线" Margin="5" FontSize="18" Command="{Binding CreateLineCommand}" CommandParameter="2"></Button>
                 <Button Grid.Column="3" Style="{StaticResource AccentedSquareButtonStyle}" Content="识别&#13;模板" Margin="5" FontSize="12" Command="{Binding FindShapeModelOperateCommand}" CommandParameter="2"></Button>
                 <Button Grid.Row="1" Grid.Column="3" Style="{StaticResource AccentedSquareButtonStyle}" Content="识别&#13;直线" Margin="5" FontSize="12" Command="{Binding FindLineOperateCommand}" CommandParameter="2"></Button>
-                <Grid Grid.Column="4">
+                <!--<Grid Grid.Column="4">
                     <StackPanel>
                         <CheckBox Content="仅图片" IsChecked="{Binding OnlyImage}"></CheckBox>
                         <Button Style="{StaticResource AccentedSquareButtonStyle}" Content="标定" Margin="5" FontSize="18" Command="{Binding ClibOperateCommand}" CommandParameter="2" IsEnabled="{Binding ClibButtonIsEnabled}"></Button>
                     </StackPanel>
-                </Grid>
+                </Grid>-->
                 <Button Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="读取" Margin="5" FontSize="18" Command="{Binding ReadImageOperateCommand}" CommandParameter="2"></Button>
                 <Button Grid.Column="4" Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="保存" Margin="5" FontSize="18" Command="{Binding SaveParamOperateCommand}" CommandParameter="2"></Button>
             </Grid>
@@ -99,7 +99,7 @@
                 <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Vertical" Margin="0,1">
                     <StackPanel Orientation="Horizontal" Margin="0,1">
                         <Label Content="曝光:" Width="90" VerticalAlignment="Center"></Label>
-                        <TextBox Width="60" Text="{Binding BottomCamera2ExposureValue}" VerticalAlignment="Center"></TextBox>
+                        <TextBox Width="60" Text="{Binding BottomCamera1ExposureValue}" IsEnabled="False" VerticalAlignment="Center"></TextBox>
                         <Label Content="预处理半径:" Width="90" VerticalAlignment="Center"></Label>
                         <TextBox Width="60" Text="{Binding BottomCamera2Radius}" VerticalAlignment="Center"></TextBox>
                     </StackPanel>
