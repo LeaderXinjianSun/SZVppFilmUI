@@ -56,7 +56,7 @@ namespace BingLibrary.HVision
         /// 拍摄一张图片
         /// </summary>
         /// <returns></returns>
-        public bool GrabImage(int medianRadius)
+        public bool GrabImage(int medianRadius,bool isMirror)
         {
             try
             {
@@ -68,11 +68,25 @@ namespace BingLibrary.HVision
                     {
                         HObject medianedImage;
                         HOperatorSet.MedianImage(image, out medianedImage, "circle", medianRadius, "mirrored");
-                        CurrentImage = new HImage(medianedImage);
+                        if (isMirror)
+                        {
+                            HObject imageMirror;
+                            HOperatorSet.MirrorImage(medianedImage,out imageMirror, "column");
+                            CurrentImage = new HImage(imageMirror);
+                        }
+                        else
+                            CurrentImage = new HImage(medianedImage);
                     }
                     else
                     {
-                        CurrentImage = image;
+                        if (isMirror)
+                        {
+                            HObject imageMirror;
+                            HOperatorSet.MirrorImage(image, out imageMirror, "column");
+                            CurrentImage = new HImage(imageMirror);
+                        }
+                        else
+                            CurrentImage = image;
                     }
                     return true;
                 }
@@ -85,7 +99,7 @@ namespace BingLibrary.HVision
             }
         }
 
-        public void GrabImageVoid(int medianRadius)
+        public void GrabImageVoid(int medianRadius,bool isMirror)
         {
             try
             {
@@ -96,11 +110,25 @@ namespace BingLibrary.HVision
                     {
                         HObject medianedImage;
                         HOperatorSet.MedianImage(image, out medianedImage, "circle", medianRadius, "mirrored");
-                        CurrentImage = new HImage(medianedImage);
+                        if (isMirror)
+                        {
+                            HObject imageMirror;
+                            HOperatorSet.MirrorImage(medianedImage, out imageMirror, "column");
+                            CurrentImage = new HImage(imageMirror);
+                        }
+                        else
+                            CurrentImage = new HImage(medianedImage);
                     }
                     else
                     {
-                        CurrentImage = image;
+                        if (isMirror)
+                        {
+                            HObject imageMirror;
+                            HOperatorSet.MirrorImage(image, out imageMirror, "column");
+                            CurrentImage = new HImage(imageMirror);
+                        }
+                        else
+                            CurrentImage = image;
                     }
                 }
 
