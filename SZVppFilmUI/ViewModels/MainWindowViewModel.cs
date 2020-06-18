@@ -1538,7 +1538,15 @@ namespace SZVppFilmUI.ViewModels
                             HObject img;
                             HOperatorSet.ReadImage(out img, Path.Combine(path, "Calib", (i + 1).ToString() + ".bmp"));
                             HTuple ModelID, row, column, angle, score;
-                            HOperatorSet.ReadShapeModel(Path.Combine(path, "OFF", "ShapeModel.shm"), out ModelID);
+                            if (p.ToString() == "0")
+                            {
+                                HOperatorSet.ReadShapeModel(Path.Combine(path, "OFF", "ShapeModel.shm"), out ModelID);
+                            }
+                            else
+                            {
+                                HOperatorSet.ReadShapeModel(Path.Combine(path, "ShapeModel.shm"), out ModelID);
+                            }
+                            
                             HOperatorSet.FindShapeModel(img, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
 
                             Array1[i] = new double[4] { row.D, column.D, (double)camerap[0] / 100 + diff[i][0] * muli, (double)camerap[1] / 100 + diff[i][1] * muli };
@@ -1639,7 +1647,16 @@ namespace SZVppFilmUI.ViewModels
                             new HTuple(Array1[0][2] + delta_x).TupleConcat(Array1[1][2] + delta_x).TupleConcat(Array1[2][2] + delta_x).TupleConcat(Array1[3][2] + delta_x).TupleConcat(Array1[4][2] + delta_x).TupleConcat(Array1[5][2] + delta_x).TupleConcat(Array1[6][2] + delta_x).TupleConcat(Array1[7][2] + delta_x).TupleConcat(Array1[8][2] + delta_x),
                             new HTuple(Array1[0][3] + delta_y).TupleConcat(Array1[1][3] + delta_y).TupleConcat(Array1[2][3] + delta_y).TupleConcat(Array1[3][3] + delta_y).TupleConcat(Array1[4][3] + delta_y).TupleConcat(Array1[5][3] + delta_y).TupleConcat(Array1[6][3] + delta_y).TupleConcat(Array1[7][3] + delta_y).TupleConcat(Array1[8][3] + delta_y)
                             , out homMat2D);
-                        HOperatorSet.WriteTuple(homMat2D, Path.Combine(path, "homMat2D.tup"));
+
+                        if (p.ToString() == "0")
+                        {
+                            HOperatorSet.WriteTuple(homMat2D, Path.Combine(path, "OFF", "homMat2D.tup"));
+                            HOperatorSet.WriteTuple(homMat2D, Path.Combine(path, "ON", "homMat2D.tup"));
+                        }
+                        else
+                        {
+                            HOperatorSet.WriteTuple(homMat2D, Path.Combine(path, "homMat2D.tup"));
+                        }
                         AddMessage("保存标定文件成功");
                     }
                     catch (Exception ex)
