@@ -2252,7 +2252,7 @@ namespace SZVppFilmUI.ViewModels
                 #region 识别图像
                 //找模板
                 string path;
-                switch (TopCameraProductIndex)
+                switch (pindex)
                 {
                     case 1:
                         path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
