@@ -40,6 +40,12 @@
                 <TextBlock Text="{Binding TopCameraName,StringFormat=相机名称:{0},FallbackValue=相机名称}" FontSize="24"></TextBlock>
             </StackPanel>
             <Button Grid.Column="3" Style="{StaticResource AccentedSquareButtonStyle}" Margin="10" Content="拍照" FontSize="24" Command="{Binding TopCameraFunctionCommand}"></Button>
+            <Grid Grid.Column="2" Style="{StaticResource GridLoginStatus}">
+                <StackPanel  Orientation="Vertical" VerticalAlignment="Center">
+                    <RadioButton Content="旋转OFF" IsChecked="True" Command="{Binding TopCameraProductSelectCommand}" CommandParameter="0"></RadioButton>
+                    <RadioButton Content="旋转ON" Command="{Binding TopCameraProductSelectCommand}" CommandParameter="1"></RadioButton>
+                </StackPanel>
+            </Grid>
             <Grid Grid.Row="1" Grid.ColumnSpan="4" Grid.RowSpan="3" Style="{StaticResource GridLoginStatus}">
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>

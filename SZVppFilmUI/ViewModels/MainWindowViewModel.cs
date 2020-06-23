@@ -644,6 +644,7 @@ namespace SZVppFilmUI.ViewModels
         public DelegateCommand CreateShapeModel2 { get; set; }
         public DelegateCommand FindShapeModel2 { get; set; }
         public DelegateCommand AppClosedEventCommand { get; set; }
+        public DelegateCommand<object> TopCameraProductSelectCommand { get; set; }
         #endregion
         #region 变量
         private Metro metro = new Metro();
@@ -653,6 +654,7 @@ namespace SZVppFilmUI.ViewModels
         Fx5u Fx5u;
         private string iniParameterPath = System.Environment.CurrentDirectory + "\\Parameter.ini";
         List<AlarmData> AlarmList = new List<AlarmData>(); bool[] M300;
+        int TopCameraProductIndex = 0;
         #endregion
         #region 构造函数
         public MainWindowViewModel()
@@ -674,6 +676,7 @@ namespace SZVppFilmUI.ViewModels
             CreateShapeModel2 = new DelegateCommand(new Action(this.CreateShapeModel2Execute));
             FindShapeModel2 = new DelegateCommand(new Action(this.FindShapeModel2Execute));
             CreateLineCommand = new DelegateCommand<object>(new Action<object>(this.CreateLineCommandExecute));
+            TopCameraProductSelectCommand = new DelegateCommand<object>(new Action<object>(this.TopCameraProductSelectCommandExecute));
         }
         #endregion
         #region 方法绑定函数
@@ -835,7 +838,16 @@ namespace SZVppFilmUI.ViewModels
                         break;
                     default:
                         image = topCamera.CurrentImage;
-                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
+                        switch (TopCameraProductIndex)
+                        {
+                            case 1:
+                                path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
+                                break;
+                            case 0:
+                            default:
+                                path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
+                                break;
+                        }
                         imageViewer = Global.TopCameraImageViewer;
                         rOIList = TopCameraROIList;
                         break;
@@ -910,7 +922,7 @@ namespace SZVppFilmUI.ViewModels
         {
             try
             {
-                var rst = TopCameraCalc("D4116", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
+                var rst = TopCameraCalc("D4116", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 0);
                 ////var rst = BottomCamera2Calc(TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
                 AddMessage(rst.Item1[0].ToString() + "," + rst.Item1[1].ToString() + "," + rst.Item1[2].ToString());
             }
@@ -998,7 +1010,16 @@ namespace SZVppFilmUI.ViewModels
                             break;
                         default:
                             image = topCamera.CurrentImage;
-                            path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
+                            switch (TopCameraProductIndex)
+                            {
+                                case 1:
+                                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
+                                    break;
+                                case 0:
+                                default:
+                                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
+                                    break;
+                            }
                             imageViewer = Global.TopCameraImageViewer;
                             rOIList = TopCameraROIList;
                             camera = topCamera;
@@ -1128,7 +1149,16 @@ namespace SZVppFilmUI.ViewModels
                         break;
                     default:
                         image = topCamera.CurrentImage;
-                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
+                        switch (TopCameraProductIndex)
+                        {
+                            case 1:
+                                path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
+                                break;
+                            case 0:
+                            default:
+                                path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
+                                break;
+                        }
                         imageViewer = Global.TopCameraImageViewer;
                         rOIList = TopCameraROIList;
                         camera = topCamera;
@@ -1214,7 +1244,16 @@ namespace SZVppFilmUI.ViewModels
                         break;
                     default:
                         image = topCamera.CurrentImage;
-                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
+                        switch (TopCameraProductIndex)
+                        {
+                            case 1:
+                                path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
+                                break;
+                            case 0:
+                            default:
+                                path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
+                                break;
+                        }
                         imageViewer = Global.TopCameraImageViewer;
                         edges_sub_pix_low = TopCameraLow;
                         edges_sub_pix_high = TopCameraLow + 20;
@@ -1506,7 +1545,14 @@ namespace SZVppFilmUI.ViewModels
                             HObject img;
                             HOperatorSet.ReadImage(out img, Path.Combine(path, "Calib", (i + 1).ToString() + ".bmp"));
                             HTuple ModelID, row, column, angle, score;
-                            HOperatorSet.ReadShapeModel(Path.Combine(path, "ShapeModel.shm"), out ModelID);
+                            if (p.ToString() == "0")
+                            {
+                                HOperatorSet.ReadShapeModel(Path.Combine(path, "OFF", "ShapeModel.shm"), out ModelID);
+                            }
+                            else
+                            {
+                                HOperatorSet.ReadShapeModel(Path.Combine(path, "ShapeModel.shm"), out ModelID);
+                            }
                             HOperatorSet.FindShapeModel(img, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
 
                             Array1[i] = new double[4] { row.D, column.D, (double)camerap[0] / 100 + diff[i][0], (double)camerap[1] / 100 + diff[i][1] };
@@ -1607,7 +1653,15 @@ namespace SZVppFilmUI.ViewModels
                             new HTuple(Array1[0][2] + delta_x).TupleConcat(Array1[1][2] + delta_x).TupleConcat(Array1[2][2] + delta_x).TupleConcat(Array1[3][2] + delta_x).TupleConcat(Array1[4][2] + delta_x).TupleConcat(Array1[5][2] + delta_x).TupleConcat(Array1[6][2] + delta_x).TupleConcat(Array1[7][2] + delta_x).TupleConcat(Array1[8][2] + delta_x),
                             new HTuple(Array1[0][3] + delta_y).TupleConcat(Array1[1][3] + delta_y).TupleConcat(Array1[2][3] + delta_y).TupleConcat(Array1[3][3] + delta_y).TupleConcat(Array1[4][3] + delta_y).TupleConcat(Array1[5][3] + delta_y).TupleConcat(Array1[6][3] + delta_y).TupleConcat(Array1[7][3] + delta_y).TupleConcat(Array1[8][3] + delta_y)
                             , out homMat2D);
-                        HOperatorSet.WriteTuple(homMat2D, Path.Combine(path, "homMat2D.tup"));
+                        if (p.ToString() == "0")
+                        {
+                            HOperatorSet.WriteTuple(homMat2D, Path.Combine(path, "OFF", "homMat2D.tup"));
+                            HOperatorSet.WriteTuple(homMat2D, Path.Combine(path, "ON", "homMat2D.tup"));
+                        }
+                        else
+                        {
+                            HOperatorSet.WriteTuple(homMat2D, Path.Combine(path, "homMat2D.tup"));
+                        }
                         AddMessage("保存标定文件成功");
                     }
                     catch (Exception ex)
@@ -1668,7 +1722,16 @@ namespace SZVppFilmUI.ViewModels
                             break;
                         default:
                             image = topCamera.CurrentImage;
-                            path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
+                            switch (TopCameraProductIndex)
+                            {
+                                case 1:
+                                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
+                                    break;
+                                case 0:
+                                default:
+                                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
+                                    break;
+                            }
                             imageViewer = Global.TopCameraImageViewer;
                             camera = topCamera;
                             TopCameraAppendHObject = null;
@@ -1706,6 +1769,22 @@ namespace SZVppFilmUI.ViewModels
             {
                 metro.ChangeAccent("Blue");
                 HalconWindowVisibility = "Visible";
+            }
+        }
+        private void TopCameraProductSelectCommandExecute(object p)
+        {
+            switch (p.ToString())
+            {
+                case "0":
+                    TopCameraProductIndex = 0;
+                    AddMessage("上相机选择：旋转OFF");
+                    break;
+                case "1":
+                    TopCameraProductIndex = 1;
+                    AddMessage("上相机选择：旋转ON");
+                    break;
+                default:
+                    break;
             }
         }
         #endregion
@@ -1939,7 +2018,7 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst)
                                     {
                                         TopCameraIamge = topCamera.CurrentImage;
-                                        var calcrst = TopCameraCalc("D4116", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U);
+                                        var calcrst = TopCameraCalc("D4116", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 0);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3206", calcrst.Item1);
                                         Fx5u.SetM("M3201", calcrst.Item2);
@@ -1967,7 +2046,7 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst)
                                     {
                                         TopCameraIamge = topCamera.CurrentImage;
-                                        var calcrst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
+                                        var calcrst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 1);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3206", calcrst.Item1);
                                         Fx5u.SetM("M3203", calcrst.Item2);
@@ -2061,7 +2140,7 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst)
                                     {
                                         TopCameraIamge = topCamera.CurrentImage;
-                                        var calcrst = TopCameraCalc("D4222", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U);
+                                        var calcrst = TopCameraCalc("D4222", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 0);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3246", calcrst.Item1);
                                         Fx5u.SetM("M3221", calcrst.Item2);
@@ -2089,7 +2168,7 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst)
                                     {
                                         TopCameraIamge = topCamera.CurrentImage;
-                                        var calcrst = TopCameraCalc("D4228", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
+                                        var calcrst = TopCameraCalc("D4228", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 1);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3246", calcrst.Item1);
                                         Fx5u.SetM("M3223", calcrst.Item2);
@@ -2167,7 +2246,7 @@ namespace SZVppFilmUI.ViewModels
                 Cycle = sw.ElapsedMilliseconds;
             }
         }
-        private Tuple<int[], bool> TopCameraCalc(string TargetD, double _x, double _y, double _u)
+        private Tuple<int[], bool> TopCameraCalc(string TargetD, double _x, double _y, double _u, int pindex)
         {
             try
             {
@@ -2177,7 +2256,17 @@ namespace SZVppFilmUI.ViewModels
                 #endregion
                 #region 识别图像
                 //找模板
-                string path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
+                string path;
+                switch (pindex)
+                {
+                    case 1:
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
+                        break;
+                    case 0:
+                    default:
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
+                        break;
+                }
                 HObject ModelImage;
                 HOperatorSet.ReadImage(out ModelImage, Path.Combine(path, "ModelImage.bmp"));
                 HTuple ModelID, row, column, angle, score, row1, column1, angle1, score1;
