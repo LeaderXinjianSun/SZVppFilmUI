@@ -1795,7 +1795,7 @@ namespace SZVppFilmUI.ViewModels
             NoiseValue = 0;
             OnlyImage = true;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
-            WindowTitle = "SZVppFilmUI20200528:" + Station;
+            WindowTitle = "SZVppFilmUI20200626:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -2018,7 +2018,8 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst)
                                     {
                                         TopCameraIamge = topCamera.CurrentImage;
-                                        var calcrst = TopCameraCalc("D4116", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 0);
+                                        //var calcrst = TopCameraCalc("D4116", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 1);
+                                        Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3]{ 0, 0, 0 }, true );
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3206", calcrst.Item1);
                                         Fx5u.SetM("M3201", calcrst.Item2);
@@ -2046,7 +2047,8 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst)
                                     {
                                         TopCameraIamge = topCamera.CurrentImage;
-                                        var calcrst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 1);
+                                        //var calcrst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 0);
+                                        Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, true);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3206", calcrst.Item1);
                                         Fx5u.SetM("M3203", calcrst.Item2);
@@ -2140,7 +2142,8 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst)
                                     {
                                         TopCameraIamge = topCamera.CurrentImage;
-                                        var calcrst = TopCameraCalc("D4222", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 0);
+                                        //var calcrst = TopCameraCalc("D4222", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 1);
+                                        Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, true);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3246", calcrst.Item1);
                                         Fx5u.SetM("M3221", calcrst.Item2);
@@ -2168,7 +2171,8 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst)
                                     {
                                         TopCameraIamge = topCamera.CurrentImage;
-                                        var calcrst = TopCameraCalc("D4228", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 1);
+                                        //var calcrst = TopCameraCalc("D4228", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 0);
+                                        Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, true);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         Fx5u.WriteMultW("D3246", calcrst.Item1);
                                         Fx5u.SetM("M3223", calcrst.Item2);
