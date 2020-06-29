@@ -1455,7 +1455,7 @@ namespace SZVppFilmUI.ViewModels
                                     break;
                                 default:
                                     CameraP = "D4128";
-                                    CameraRP = "D4280";
+                                    CameraRP = "D4128";
                                     isMirror = true;
                                     break;
                             }
@@ -1483,7 +1483,7 @@ namespace SZVppFilmUI.ViewModels
                                     break;
                                 default:
                                     CameraP = "D4234";
-                                    CameraRP = "D4286";
+                                    CameraRP = "D4234";
                                     isMirror = true;
                                     break;
                             }
@@ -1795,7 +1795,7 @@ namespace SZVppFilmUI.ViewModels
             NoiseValue = 0;
             OnlyImage = true;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
-            WindowTitle = "SZVppFilmUI20200626:" + Station;
+            WindowTitle = "SZVppFilmUI20200629:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
