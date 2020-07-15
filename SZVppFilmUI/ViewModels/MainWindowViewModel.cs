@@ -1456,7 +1456,7 @@ namespace SZVppFilmUI.ViewModels
                                 default:
                                     CameraP = "D4128";
                                     CameraRP = "D4128";
-                                    isMirror = true;
+                                    isMirror = false;
                                     break;
                             }
                             break;
@@ -1484,7 +1484,7 @@ namespace SZVppFilmUI.ViewModels
                                 default:
                                     CameraP = "D4234";
                                     CameraRP = "D4234";
-                                    isMirror = true;
+                                    isMirror = false;
                                     break;
                             }
                             break;
@@ -1628,8 +1628,14 @@ namespace SZVppFilmUI.ViewModels
                             HObject img;
                             HOperatorSet.ReadImage(out img, Path.Combine(path, "Calib", (i + 1 + 9).ToString() + ".bmp"));
                             HTuple ModelID, row, column, angle, score;
-                            string shapmodelname = p.ToString() == "0" ? "ShapeModel2.shm" : "ShapeModel.shm";
-                            HOperatorSet.ReadShapeModel(Path.Combine(path, shapmodelname), out ModelID);
+                            if (p.ToString() == "0")
+                            {
+                                HOperatorSet.ReadShapeModel(Path.Combine(path, "OFF", "ShapeModel.shm"), out ModelID);
+                            }
+                            else
+                            {
+                                HOperatorSet.ReadShapeModel(Path.Combine(path, "ShapeModel.shm"), out ModelID);
+                            }
                             HOperatorSet.FindShapeModel(img, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
                             Array2[i] = new double[2] { row.D, column.D };
                         }
@@ -1795,7 +1801,7 @@ namespace SZVppFilmUI.ViewModels
             NoiseValue = 0;
             OnlyImage = true;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
-            WindowTitle = "SZVppFilmUI20200710:" + Station;
+            WindowTitle = "SZVppFilmUI20200714:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -2050,8 +2056,8 @@ namespace SZVppFilmUI.ViewModels
                                         {
                                             topCamera.SaveImage("bmp", Path.Combine("E:\\RecordImages\\top1", DateTime.Now.ToString("yyyyMMddHHmmss") + "Top1.bmp"));
                                         }
-                                        //var calcrst = TopCameraCalc("D4116", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 0);
-                                        Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3]{ 0, 0, 0 }, true );
+                                        var calcrst = TopCameraCalc("D4116", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 0);
+                                        //Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3]{ 0, 0, 0 }, true );
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(0, calcrst);
                                         Fx5u.WriteMultW("D3206", calcrst.Item1);
@@ -2084,8 +2090,8 @@ namespace SZVppFilmUI.ViewModels
                                         {
                                             topCamera.SaveImage("bmp", Path.Combine("E:\\RecordImages\\top2", DateTime.Now.ToString("yyyyMMddHHmmss") + "Top2.bmp"));
                                         }
-                                        //var calcrst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 1);
-                                        Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, true);
+                                        var calcrst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 1);
+                                        //Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, true);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(1, calcrst);
                                         Fx5u.WriteMultW("D3206", calcrst.Item1);
@@ -2194,8 +2200,8 @@ namespace SZVppFilmUI.ViewModels
                                         {
                                             topCamera.SaveImage("bmp", Path.Combine("E:\\RecordImages\\top1", DateTime.Now.ToString("yyyyMMddHHmmss") + "Top1.bmp"));
                                         }
-                                        //var calcrst = TopCameraCalc("D4222", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 0);
-                                        Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, true);
+                                        var calcrst = TopCameraCalc("D4222", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 0);
+                                        //Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, true);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(0, calcrst);
                                         Fx5u.WriteMultW("D3246", calcrst.Item1);
@@ -2228,8 +2234,8 @@ namespace SZVppFilmUI.ViewModels
                                         {
                                             topCamera.SaveImage("bmp", Path.Combine("E:\\RecordImages\\top2", DateTime.Now.ToString("yyyyMMddHHmmss") + "Top2.bmp"));
                                         }
-                                        //var calcrst = TopCameraCalc("D4228", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 1);
-                                        Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, true);
+                                        var calcrst = TopCameraCalc("D4228", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 1);
+                                        //Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, true);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(1, calcrst);
                                         Fx5u.WriteMultW("D3246", calcrst.Item1);
@@ -2459,7 +2465,7 @@ namespace SZVppFilmUI.ViewModels
                 HTuple CamImage_x1, CamImage_y1;
                 HOperatorSet.AffineTransPoint2d(homMat2D, row1, column1, out CamImage_x1, out CamImage_y1);
                 HTuple T3;
-                HOperatorSet.VectorAngleToRigid(CamImage_x, CamImage_y, new HTuple(lineAngle1).TupleRad(), CamImage_x1 + _x, CamImage_y1 + _y, new HTuple(lineAngle2 + _u).TupleRad(), out T3);//T3是模板料移动到新料位置的变换
+                HOperatorSet.VectorAngleToRigid(CamImage_x, CamImage_y, new HTuple(lineAngle1 * -1).TupleRad(), CamImage_x1 + _x, CamImage_y1 + _y, new HTuple((lineAngle2 + _u) * -1).TupleRad(), out T3);//T3是模板料移动到新料位置的变换
                 HTuple FitRobot_x1, FitRobot_y1;
                 HOperatorSet.AffineTransPoint2d(T3, (double)targetp[0] / 100, (double)targetp[1] / 100, out FitRobot_x1, out FitRobot_y1);//移动到新料与模板料重合
                 //HOperatorSet.AffineTransPoint2d(T3, CamImage_x - 90, CamImage_y, out FitRobot_x1, out FitRobot_y1);//移动到新料与模板料重合
@@ -2485,7 +2491,7 @@ namespace SZVppFilmUI.ViewModels
                     }
                 }
                 #endregion
-                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)((lineAngle2 + _u - lineAngle1) * 100) }, result); ;
+                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)((lineAngle2 + _u - lineAngle1) * -1 * 100) }, result); ;
             }
             catch (Exception ex)
             {
