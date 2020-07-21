@@ -1059,7 +1059,7 @@ namespace SZVppFilmUI.ViewModels
                             break;
                     }
                     HTuple ModelID;
-                    HOperatorSet.CreateShapeModel(ReduceDomainImage, 7, (new HTuple(0)).TupleRad(), (new HTuple(360)).TupleRad(), (new HTuple(0.1)).TupleRad(), "no_pregeneration", "use_polarity", Contrast, 10, out ModelID);
+                    HOperatorSet.CreateShapeModel(ReduceDomainImage, 7, (new HTuple(-180)).TupleRad(), (new HTuple(180)).TupleRad(), (new HTuple(0.1)).TupleRad(), "no_pregeneration", "use_polarity", Contrast, 10, out ModelID);
                     HOperatorSet.WriteShapeModel(ModelID, Path.Combine(path, "ShapeModel.shm"));
                     camera.SaveImage("bmp", Path.Combine(path, "ModelImage.bmp"));
                     AddMessage("创建模板完成");
@@ -1175,8 +1175,8 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.ReadShapeModel(Path.Combine(path, "ShapeModel.shm"), out ModelID);
                 HObject ModelImage;
                 HOperatorSet.ReadImage(out ModelImage, Path.Combine(path, "ModelImage.bmp"));
-                HOperatorSet.FindShapeModel(ModelImage, ModelID, (new HTuple(0)).TupleRad(), (new HTuple(360)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
-                HOperatorSet.FindShapeModel(camera.CurrentImage, ModelID, (new HTuple(0)).TupleRad(), (new HTuple(360)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row1, out column1, out angle1, out score1);
+                HOperatorSet.FindShapeModel(ModelImage, ModelID, (new HTuple(-180)).TupleRad(), (new HTuple(180)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
+                HOperatorSet.FindShapeModel(camera.CurrentImage, ModelID, (new HTuple(-180)).TupleRad(), (new HTuple(180)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row1, out column1, out angle1, out score1);
                 HTuple homMat2D;
                 HOperatorSet.VectorAngleToRigid(row, column, angle, row1, column1, angle1, out homMat2D);
                 HObject modelRegion;
@@ -1555,7 +1555,7 @@ namespace SZVppFilmUI.ViewModels
                             {
                                 HOperatorSet.ReadShapeModel(Path.Combine(path, "ShapeModel.shm"), out ModelID);
                             }
-                            HOperatorSet.FindShapeModel(img, ModelID, (new HTuple(0)).TupleRad(), (new HTuple(360)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
+                            HOperatorSet.FindShapeModel(img, ModelID, (new HTuple(-180)).TupleRad(), (new HTuple(180)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
 
                             Array1[i] = new double[4] { row.D, column.D, (double)camerap[0] / 100 + diff[i][0], (double)camerap[1] / 100 + diff[i][1] };
                         }
@@ -1638,7 +1638,7 @@ namespace SZVppFilmUI.ViewModels
                             {
                                 HOperatorSet.ReadShapeModel(Path.Combine(path, "ShapeModel.shm"), out ModelID);
                             }
-                            HOperatorSet.FindShapeModel(img, ModelID, (new HTuple(0)).TupleRad(), (new HTuple(360)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
+                            HOperatorSet.FindShapeModel(img, ModelID, (new HTuple(-180)).TupleRad(), (new HTuple(180)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
                             Array2[i] = new double[2] { row.D, column.D };
                         }
                         catch (Exception ex)
@@ -1803,7 +1803,7 @@ namespace SZVppFilmUI.ViewModels
             NoiseValue = 0;
             OnlyImage = true;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
-            WindowTitle = "SZVppFilmUI20200721:" + Station;
+            WindowTitle = "SZVppFilmUI20200722:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -2062,7 +2062,9 @@ namespace SZVppFilmUI.ViewModels
                                         //Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3]{ 0, 0, 0 }, true );
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(0, calcrst);
-                                        Fx5u.WriteMultW("D3206", calcrst.Item1);
+                                        int[] backvalue = calcrst.Item1;
+                                        backvalue[2] = 0;
+                                        Fx5u.WriteMultW("D3206", backvalue);
                                         Fx5u.SetM("M3201", calcrst.Item2);
                                     }
                                     else
@@ -2096,7 +2098,9 @@ namespace SZVppFilmUI.ViewModels
                                         //Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, true);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(1, calcrst);
-                                        Fx5u.WriteMultW("D3206", calcrst.Item1);
+                                        int[] backvalue = calcrst.Item1;
+                                        backvalue[2] = 0;
+                                        Fx5u.WriteMultW("D3206", backvalue);
                                         Fx5u.SetM("M3203", calcrst.Item2);
                                     }
                                     else
@@ -2206,7 +2210,9 @@ namespace SZVppFilmUI.ViewModels
                                         //Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, true);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(0, calcrst);
-                                        Fx5u.WriteMultW("D3246", calcrst.Item1);
+                                        int[] backvalue = calcrst.Item1;
+                                        backvalue[2] = 0;
+                                        Fx5u.WriteMultW("D3246", backvalue);
                                         Fx5u.SetM("M3221", calcrst.Item2);
                                     }
                                     else
@@ -2240,7 +2246,9 @@ namespace SZVppFilmUI.ViewModels
                                         //Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, true);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(1, calcrst);
-                                        Fx5u.WriteMultW("D3246", calcrst.Item1);
+                                        int[] backvalue = calcrst.Item1;
+                                        backvalue[2] = 0;
+                                        Fx5u.WriteMultW("D3246", backvalue);
                                         Fx5u.SetM("M3223", calcrst.Item2);
                                     }
                                     else
@@ -2493,7 +2501,7 @@ namespace SZVppFilmUI.ViewModels
                     }
                 }
                 #endregion
-                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)((FitRobot_y1.D * 100 - targetp[1]) * -1), 0 }, result); ;
+                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)((FitRobot_y1.D * 100 - targetp[1]) * -1), (int)((GetAnglein180(angle1.TupleDeg()) - GetAnglein180(angle.TupleDeg())) * 100 * -1) }, result); ;
             }
             catch (Exception ex)
             {
