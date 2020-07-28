@@ -1803,7 +1803,7 @@ namespace SZVppFilmUI.ViewModels
             NoiseValue = 0;
             OnlyImage = true;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
-            WindowTitle = "SZVppFilmUI20200722:" + Station;
+            WindowTitle = "SZVppFilmUI20200728:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -2482,19 +2482,19 @@ namespace SZVppFilmUI.ViewModels
                 #endregion
                 #region 范围
                 bool result = true;
-                if (FitRobot_x1.D * 100 - targetp[0] > 1000 || FitRobot_x1.D * 100 - targetp[0] < -1000)
+                if (FitRobot_x1.D * 100 - targetp[0] > 2000 || FitRobot_x1.D * 100 - targetp[0] < -2000)
                 {
                     result = false;
                 }
                 else
                 {
-                    if (FitRobot_y1.D * 100 - targetp[1] > 1000 || FitRobot_y1.D * 100 - targetp[1] < -1000)
+                    if (FitRobot_y1.D * 100 - targetp[1] > 2000 || FitRobot_y1.D * 100 - targetp[1] < -2000)
                     {
                         result = false;
                     }
                     else
                     {
-                        if (GetAnglein180(angle.TupleDeg()) - GetAnglein180(angle1.TupleDeg()) > 6 || GetAnglein180(angle.TupleDeg()) - GetAnglein180(angle1.TupleDeg()) < -6)
+                        if (GetAnglein180(angle.TupleDeg()) - GetAnglein180(angle1.TupleDeg()) > 15 || GetAnglein180(angle.TupleDeg()) - GetAnglein180(angle1.TupleDeg()) < -15)
                         {
                             result = false;
                         }
@@ -2593,13 +2593,13 @@ namespace SZVppFilmUI.ViewModels
                 #endregion
                 #region 范围
                 bool result = true;
-                if (FitRobot_x1.D * 100 - targetp[0] > 1000 || FitRobot_x1.D * 100 - targetp[0] < -1000)
+                if (FitRobot_x1.D * 100 - targetp[0] > 2000 || FitRobot_x1.D * 100 - targetp[0] < -2000)
                 {
                     result = false;
                 }
                 else
                 {
-                    if (FitRobot_y1.D * 100 - targetp[1] > 1000 || FitRobot_y1.D * 100 - targetp[1] < -1000)
+                    if (FitRobot_y1.D * 100 - targetp[1] > 2000 || FitRobot_y1.D * 100 - targetp[1] < -2000)
                     {
                         result = false;
                     }
@@ -2709,13 +2709,13 @@ namespace SZVppFilmUI.ViewModels
                 #endregion
                 #region 范围
                 bool result = true;
-                if (FitRobot_x1.D * 100 - targetp[0] > 1000 || FitRobot_x1.D * 100 - targetp[0] < -1000)
+                if (FitRobot_x1.D * 100 - targetp[0] > 2000 || FitRobot_x1.D * 100 - targetp[0] < -2000)
                 {
                     result = false;
                 }
                 else
                 {
-                    if (FitRobot_y1.D * 100 - targetp[1] > 1000 || FitRobot_y1.D * 100 - targetp[1] < -1000)
+                    if (FitRobot_y1.D * 100 - targetp[1] > 2000 || FitRobot_y1.D * 100 - targetp[1] < -2000)
                     {
                         result = false;
                     }
