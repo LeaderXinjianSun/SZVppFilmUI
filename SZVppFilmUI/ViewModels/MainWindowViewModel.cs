@@ -2518,24 +2518,24 @@ namespace SZVppFilmUI.ViewModels
                 #endregion
                 #region 范围
                 bool result = true;
-                if (FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100 > 2000 || FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100 < -2000)
-                {
-                    result = false;
-                }
-                else
-                {
-                    if (FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 * -1 > 2000 || FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 * -1 < -2000)
-                    {
-                        result = false;
-                    }
-                    else
-                    {
-                        if ((lineAngle2 - lineAngle1) * 100 * -1 * -1 > 15 || (lineAngle2 - lineAngle1) * 100 * -1 * -1 < -15)
-                        {
-                            result = false;
-                        }
-                    }
-                }
+                //if (FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100 > 2000 || FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100 < -2000)
+                //{
+                //    result = false;
+                //}
+                //else
+                //{
+                //    if (FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 * -1 > 2000 || FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 * -1 < -2000)
+                //    {
+                //        result = false;
+                //    }
+                //    else
+                //    {
+                //        if ((lineAngle2 - lineAngle1) * 100 * -1 * -1 > 15 || (lineAngle2 - lineAngle1) * 100 * -1 * -1 < -15)
+                //        {
+                //            result = false;
+                //        }
+                //    }
+                //}
                 #endregion
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100), (int)(FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 * -1), (int)((lineAngle2 - lineAngle1) * 100 * -1 * -1) }, result);
             }
