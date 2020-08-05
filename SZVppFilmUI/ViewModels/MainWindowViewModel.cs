@@ -2163,11 +2163,9 @@ namespace SZVppFilmUI.ViewModels
                                         }
                                         
                                         var calcrst = TopCameraCalc("D4116", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 0);
-                                        //Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3]{ 0, 0, 0 }, true );
+                                        
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(0, calcrst);
-                                        //int[] backvalue = calcrst.Item1;
-                                        //backvalue[2] = 0;
                                         Fx5u.WriteMultW("D3206", calcrst.Item1);
                                         Fx5u.SetM("M3201", calcrst.Item2);
                                     }
@@ -2199,11 +2197,10 @@ namespace SZVppFilmUI.ViewModels
                                             topCamera.SaveImage("bmp", Path.Combine("E:\\RecordImages\\top2", DateTime.Now.ToString("yyyyMMddHHmmss") + "Top2.bmp"));
                                         }                                        
                                         var calcrst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 1);
-                                        //Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, true);
+                                        
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(1, calcrst);
-                                        //int[] backvalue = calcrst.Item1;
-                                        //backvalue[2] = 0;
+
                                         Fx5u.WriteMultW("D3206", calcrst.Item1);
                                         Fx5u.SetM("M3203", calcrst.Item2);
                                     }
@@ -2311,11 +2308,10 @@ namespace SZVppFilmUI.ViewModels
                                             topCamera.SaveImage("bmp", Path.Combine("E:\\RecordImages\\top1", DateTime.Now.ToString("yyyyMMddHHmmss") + "Top1.bmp"));
                                         }                                        
                                         var calcrst = TopCameraCalc("D4222", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 0);
-                                        //Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, true);
+                                        
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(0, calcrst);
-                                        //int[] backvalue = calcrst.Item1;
-                                        //backvalue[2] = 0;
+                   
                                         Fx5u.WriteMultW("D3246", calcrst.Item1);
                                         Fx5u.SetM("M3221", calcrst.Item2);
                                     }
@@ -2347,11 +2343,10 @@ namespace SZVppFilmUI.ViewModels
                                             topCamera.SaveImage("bmp", Path.Combine("E:\\RecordImages\\top2", DateTime.Now.ToString("yyyyMMddHHmmss") + "Top2.bmp"));
                                         }                                        
                                         var calcrst = TopCameraCalc("D4228", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 1);
-                                        //Tuple<int[], bool> calcrst = new Tuple<int[], bool>(new int[3] { 0, 0, 0 }, true);
+                                        
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(1, calcrst);
-                                        //int[] backvalue = calcrst.Item1;
-                                        //backvalue[2] = 0;
+
                                         Fx5u.WriteMultW("D3246", calcrst.Item1);
                                         Fx5u.SetM("M3223", calcrst.Item2);
                                     }
