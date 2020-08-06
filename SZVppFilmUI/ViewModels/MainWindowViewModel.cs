@@ -2613,6 +2613,15 @@ namespace SZVppFilmUI.ViewModels
                 //    }
                 //}
                 #endregion
+                #region 重膜检测
+                HTuple areaModel = GetDarkAreaValue(row, column, ModelImage, 70, 200);
+                HTuple areaNewImage = GetDarkAreaValue(row1, column1, topCamera.CurrentImage, 70, 200);
+                if (Math.Abs(areaModel.D - areaNewImage.D) > areaModel.D / 4)
+                {
+                    result = false;
+                    AddMessage("上相机:可能重膜");
+                }                
+                #endregion
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100), (int)(FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100), (int)((lineAngle2 - lineAngle1) * 100) }, result);
             }
             catch (Exception ex)
@@ -2722,6 +2731,15 @@ namespace SZVppFilmUI.ViewModels
                             result = false;
                         }
                     }
+                }
+                #endregion
+                #region 重膜检测
+                HTuple areaModel = GetDarkAreaValue(row, column, ModelImage, 70, 200);
+                HTuple areaNewImage = GetDarkAreaValue(row1, column1, bottomCamera1.CurrentImage, 70, 200);
+                if (Math.Abs(areaModel.D - areaNewImage.D) > areaModel.D / 4)
+                {
+                    result = false;
+                    AddMessage("下相机1:可能重膜");
                 }
                 #endregion
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)(((lineAngle1 - lineAngle2) * -1 + _u) * 100) }, result);
@@ -2840,6 +2858,15 @@ namespace SZVppFilmUI.ViewModels
                     }
                 }
                 #endregion
+                #region 重膜检测
+                HTuple areaModel = GetDarkAreaValue(row, column, ModelImage, 70, 200);
+                HTuple areaNewImage = GetDarkAreaValue(row1, column1, bottomCamera2.CurrentImage, 70, 200);
+                if (Math.Abs(areaModel.D - areaNewImage.D) > areaModel.D / 4)
+                {
+                    result = false;
+                    AddMessage("下相机2:可能重膜");
+                }
+                #endregion
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)(((lineAngle1 - lineAngle2) * -1 + _u) * 100) }, result);
             }
             catch (Exception ex)
@@ -2955,6 +2982,18 @@ namespace SZVppFilmUI.ViewModels
                     return _angle;
                 }
             }
+        }
+        private HTuple GetDarkAreaValue(HTuple row, HTuple column, HObject image, HTuple thresholdGray, HTuple radius)
+        {
+            HObject circle;
+            HOperatorSet.GenCircle(out circle, row, column, radius);
+            HObject imageReduced;
+            HOperatorSet.ReduceDomain(image, circle, out imageReduced);
+            HObject darkArea;
+            HOperatorSet.Threshold(imageReduced, out darkArea, 0, thresholdGray);
+            HTuple area, row1, column1;
+            HOperatorSet.AreaCenter(darkArea,out area,out row1,out column1);
+            return area;
         }
         #endregion
     }
