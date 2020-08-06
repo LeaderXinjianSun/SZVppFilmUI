@@ -66,6 +66,8 @@
                 </Grid>
                 <Button Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="读取" Margin="5" FontSize="18" Command="{Binding ReadImageOperateCommand}" CommandParameter="1"></Button>
                 <Button Grid.Column="4" Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="保存" Margin="5" FontSize="18" Command="{Binding SaveParamOperateCommand}" CommandParameter="1"></Button>
+                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="产品1&#13;MIC1" Margin="5" FontSize="12" Command="{Binding GetMic1PositionCommand}" CommandParameter="0"></Button>
+                <Button Grid.Row="1" Grid.Column="2" Style="{StaticResource AccentedSquareButtonStyle}" Content="产品2&#13;MIC1" Margin="5" FontSize="12" Command="{Binding GetMic1PositionCommand}" CommandParameter="1"></Button>
             </Grid>
             <Grid Grid.Row="3" Grid.ColumnSpan="4" Grid.RowSpan="4" Style="{StaticResource GridLoginStatus}">
                 <Grid.RowDefinitions>

@@ -645,6 +645,7 @@ namespace SZVppFilmUI.ViewModels
         public DelegateCommand FindShapeModel2 { get; set; }
         public DelegateCommand AppClosedEventCommand { get; set; }
         public DelegateCommand<object> TopCameraProductSelectCommand { get; set; }
+        public DelegateCommand<object> GetMic1PositionCommand { get; set; }
         #endregion
         #region 变量
         private Metro metro = new Metro();
@@ -677,6 +678,7 @@ namespace SZVppFilmUI.ViewModels
             FindShapeModel2 = new DelegateCommand(new Action(this.FindShapeModel2Execute));
             CreateLineCommand = new DelegateCommand<object>(new Action<object>(this.CreateLineCommandExecute));
             TopCameraProductSelectCommand = new DelegateCommand<object>(new Action<object>(this.TopCameraProductSelectCommandExecute));
+            GetMic1PositionCommand = new DelegateCommand<object>(new Action<object>(this.GetMic1PositionCommandExecute));
         }
         #endregion
         #region 方法绑定函数
@@ -922,10 +924,10 @@ namespace SZVppFilmUI.ViewModels
         {
             try
             {
-                var rst = TopCameraCalc("D4116", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 0);
-                ////var rst = BottomCamera2Calc(TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
-                AddMessage(rst.Item1[0].ToString() + "," + rst.Item1[1].ToString() + "," + rst.Item1[2].ToString());
-                CalcRecord(1, rst);
+                //var rst = TopCameraCalc("D4116", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 0);
+                //var rst = BottomCamera2Calc(TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U);
+                //AddMessage(rst.Item1[0].ToString() + "," + rst.Item1[1].ToString() + "," + rst.Item1[2].ToString());
+                //CalcRecord(1, rst);
             }
             catch (Exception ex)
             {
@@ -1786,6 +1788,100 @@ namespace SZVppFilmUI.ViewModels
                     break;
             }
         }
+        private async void GetMic1PositionCommandExecute(object p)
+        {
+            metro.ChangeAccent("Red");
+            HalconWindowVisibility = "Collapsed";
+            var r = await metro.ShowConfirm("确认", "请确认需要重新确认MIC1膜位置吗？");
+            if (r)
+            {
+                metro.ChangeAccent("Blue");
+                HalconWindowVisibility = "Visible";
+                try
+                {
+                    string path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top");
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+                    ImageViewer imageViewer = Global.BottonCamera1ImageViewer;
+                    ROI roi = imageViewer.DrawROI(ROI.ROI_TYPE_CIRCLE);
+                    Tuple<string, object> t = new Tuple<string, object>("Color", "red");
+                    BottomCamera1GCStyle = t;
+                    BottomCamera1AppendHObject = null;
+                    BottomCamera1AppendHObject = roi.getRegion();
+                    HTuple area, row, column;
+                    HOperatorSet.AreaCenter(roi.getRegion(), out area, out row, out column);
+                    AddMessage($"图像坐标Row:{row} Column:{column}");
+                    HTuple homMat2D;
+                    HOperatorSet.ReadTuple(Path.Combine(System.Environment.CurrentDirectory, @"Camera\Bottom1", "homMat2D.tup"), out homMat2D);
+                    HTuple CamImage_x, CamImage_y;
+                    HOperatorSet.AffineTransPoint2d(homMat2D, row, column, out CamImage_x, out CamImage_y);
+                    AddMessage($"实际坐标X:{CamImage_x} Y:{CamImage_y}");
+                    int[] centerPosition;
+                    string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
+                    if (Station == "A")
+                    {
+                        switch (p.ToString())
+                        {
+                            case "1":
+                                centerPosition = Fx5u.ReadMultiW("D4322", 3);
+                                break;
+                            case "0":
+                            default:
+                                centerPosition = Fx5u.ReadMultiW("D4316", 3);
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        switch (p.ToString())
+                        {
+                            case "1":
+                                centerPosition = Fx5u.ReadMultiW("D4334", 3);
+                                break;
+                            case "0":
+                            default:
+                                centerPosition = Fx5u.ReadMultiW("D4328", 3);
+                                break;
+                        }
+                    }
+                    if (centerPosition != null)
+                    {
+                        AddMessage($"读取到PLC坐标 X:{centerPosition[0]} Y:{centerPosition[1]} U:{centerPosition[2]}");
+                        switch (p.ToString())
+                        {
+                            case "1":
+                                WriteToJson(new PointViewModel() { X = (double)centerPosition[0] / 100, Y = (double)centerPosition[1] / 100, U = (double)centerPosition[2] / 100 }, Path.Combine(path, "CenterP2.json"));
+                                WriteToJson(new PointViewModel() { X = CamImage_x.D, Y = CamImage_y.D, U = 0 }, Path.Combine(path, "MIC1P2.json"));
+                                AddMessage("产品2MIC1位置确认完成");
+                                break;
+                            case "0":
+                            default:
+                                WriteToJson(new PointViewModel() { X = (double)centerPosition[0] / 100, Y = (double)centerPosition[1] / 100, U = (double)centerPosition[2] / 100 }, Path.Combine(path, "CenterP1.json"));
+                                WriteToJson(new PointViewModel() { X = CamImage_x.D, Y = CamImage_y.D, U = 0 }, Path.Combine(path, "MIC1P1.json"));
+                                AddMessage("产品1MIC1位置确认完成");
+                                break;
+                        }
+
+                    }
+                    else
+                    {
+                        AddMessage("读取PLC坐标失败");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AddMessage(ex.Message);
+                }
+
+            }
+            else
+            {
+                metro.ChangeAccent("Blue");
+                HalconWindowVisibility = "Visible";
+            }
+        }
         #endregion
         #region 自定义函数
         private void Init()
@@ -1794,7 +1890,7 @@ namespace SZVppFilmUI.ViewModels
             NoiseValue = 0;
             OnlyImage = true;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
-            WindowTitle = "SZVppFilmUI20200725_1:" + Station;
+            WindowTitle = "SZVppFilmUI20200806_1:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -2046,9 +2142,8 @@ namespace SZVppFilmUI.ViewModels
                                         var calcrst = TopCameraCalc("D4116", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 1);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(0, calcrst);
-                                        int[] backvalue = calcrst.Item1;
-                                        backvalue[2] = 0;
-                                        Fx5u.WriteMultW("D3206", backvalue);
+
+                                        Fx5u.WriteMultW("D3206", calcrst.Item1);
                                         Fx5u.SetM("M3201", calcrst.Item2);
                                     }
                                     else
@@ -2081,9 +2176,8 @@ namespace SZVppFilmUI.ViewModels
                                         var calcrst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 0);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(1, calcrst);
-                                        int[] backvalue = calcrst.Item1;
-                                        backvalue[2] = 0;
-                                        Fx5u.WriteMultW("D3206", backvalue);
+
+                                        Fx5u.WriteMultW("D3206", calcrst.Item1);
                                         Fx5u.SetM("M3203", calcrst.Item2);
                                     }
                                     else
@@ -2192,9 +2286,8 @@ namespace SZVppFilmUI.ViewModels
                                         var calcrst = TopCameraCalc("D4222", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 1);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(0, calcrst);
-                                        int[] backvalue = calcrst.Item1;
-                                        backvalue[2] = 0;
-                                        Fx5u.WriteMultW("D3246", backvalue);
+
+                                        Fx5u.WriteMultW("D3246", calcrst.Item1);
                                         Fx5u.SetM("M3221", calcrst.Item2);
                                     }
                                     else
@@ -2227,9 +2320,8 @@ namespace SZVppFilmUI.ViewModels
                                         var calcrst = TopCameraCalc("D4228", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 0);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(1, calcrst);
-                                        int[] backvalue = calcrst.Item1;
-                                        backvalue[2] = 0;
-                                        Fx5u.WriteMultW("D3246", backvalue);
+
+                                        Fx5u.WriteMultW("D3246", calcrst.Item1);
                                         Fx5u.SetM("M3223", calcrst.Item2);
                                     }
                                     else
@@ -2415,74 +2507,113 @@ namespace SZVppFilmUI.ViewModels
                 AddMessage("找到模板: Row:" + row1.D.ToString("F0") + " Column:" + column1.D.ToString("F0") + " Angle:" + angle1.TupleDeg().D.ToString("F2") + " Score:" + score1.D.ToString("F1"));
 
                 //确认角度
-                //HObject lineRegion;
-                //HOperatorSet.ReadRegion(out lineRegion, Path.Combine(path, "Line.hobj"));
-                //HObject imageReduced1;
-                //HOperatorSet.ReduceDomain(ModelImage, lineRegion, out imageReduced1);
-                //HObject edges1;
-                //HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, TopCameraLow, TopCameraLow + 20);
-                //HObject contoursSplit1;
-                //HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
-                //HObject selectedContours1;
-                //HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
-                //HObject unionContours1;
-                //HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
-                //HTuple rowBegin1, colBegin1, rowEnd1, colEnd1, nr1, nc1, dist1;
-                //HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
-                //HObject regionLine;
-                //HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
-                //var index = FindMaxLine(regionLine);
-                //double lineAngle1 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
+                HObject lineRegion;
+                HOperatorSet.ReadRegion(out lineRegion, Path.Combine(path, "Line.hobj"));
+                HObject imageReduced1;
+                HOperatorSet.ReduceDomain(ModelImage, lineRegion, out imageReduced1);
+                HObject edges1;
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, TopCameraLow, TopCameraLow + 20);
+                HObject contoursSplit1;
+                HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
+                HObject selectedContours1;
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
+                HObject unionContours1;
+                HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
+                HTuple rowBegin1, colBegin1, rowEnd1, colEnd1, nr1, nc1, dist1;
+                HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
+                HObject regionLine;
+                HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
+                var index = FindMaxLine(regionLine);
+                double lineAngle1 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
 
-                //HObject regionLineAffineTrans;
-                //HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
-                //HOperatorSet.ReduceDomain(topCamera.CurrentImage, regionLineAffineTrans, out imageReduced1);
-                //HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, TopCameraLow, TopCameraLow + 20);
-                //HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
-                //HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
-                //HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
-                //HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
-                //HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
-                //TopCameraAppendHObject = regionLine;
-                //index = FindMaxLine(regionLine);
-                //double lineAngle2 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
+                HObject regionLineAffineTrans;
+                HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
+                HOperatorSet.ReduceDomain(topCamera.CurrentImage, regionLineAffineTrans, out imageReduced1);
+                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, TopCameraLow, TopCameraLow + 20);
+                HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
+                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
+                HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
+                HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
+                HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
+                TopCameraAppendHObject = regionLine;
+                index = FindMaxLine(regionLine);
+                double lineAngle2 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
 
 
 
                 //坐标变换
                 HOperatorSet.ReadTuple(Path.Combine(path, "homMat2D.tup"), out homMat2D);
+
+                PointViewModel centerP, mIC1P;
+                switch (pindex)
+                {
+                    case 0:
+                        using (StreamReader reader = new StreamReader(Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top", "CenterP2.json")))
+                        {
+                            string json = reader.ReadToEnd();
+                            centerP = JsonConvert.DeserializeObject<PointViewModel>(json);
+                        }
+                        using (StreamReader reader = new StreamReader(Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top", "MIC1P2.json")))
+                        {
+                            string json = reader.ReadToEnd();
+                            mIC1P = JsonConvert.DeserializeObject<PointViewModel>(json);
+                        }
+                        break;
+                    case 1:
+                    default:
+                        using (StreamReader reader = new StreamReader(Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top", "CenterP1.json")))
+                        {
+                            string json = reader.ReadToEnd();
+                            centerP = JsonConvert.DeserializeObject<PointViewModel>(json);
+                        }
+                        using (StreamReader reader = new StreamReader(Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top", "MIC1P1.json")))
+                        {
+                            string json = reader.ReadToEnd();
+                            mIC1P = JsonConvert.DeserializeObject<PointViewModel>(json);
+                        }
+                        break;
+                }
+
+                HTuple T0;
+                HOperatorSet.VectorAngleToRigid(centerP.X, centerP.Y, new HTuple(centerP.U).TupleRad(), (double)targetp[0] / 100, (double)targetp[1] / 100, new HTuple((double)targetp[2] / 100).TupleRad(), out T0);//T0是产品从矫正平台移动到贴膜位的变换
+
+                HTuple ProductP_x, ProductP_y;
+                HOperatorSet.AffineTransPoint2d(T0, mIC1P.X, mIC1P.Y, out ProductP_x, out ProductP_y);//计算得出的膜的位置
+
+                HTuple T1;
+                HOperatorSet.VectorAngleToRigid(ProductP_x, ProductP_y, new HTuple(lineAngle1).TupleRad(), ProductP_x, ProductP_y, new HTuple(lineAngle2).TupleRad(), out T1);//T1是膜坐标旋转角度差的变换
+
+                HTuple FitRobot_x0, FitRobot_y0;
+                HOperatorSet.AffineTransPoint2d(T1, (double)targetp[0] / 100, (double)targetp[1] / 100, out FitRobot_x0, out FitRobot_y0);//绕膜旋转，先补偿角度
+
                 HTuple CamImage_x, CamImage_y;
                 HOperatorSet.AffineTransPoint2d(homMat2D, row, column, out CamImage_x, out CamImage_y);
                 HTuple CamImage_x1, CamImage_y1;
                 HOperatorSet.AffineTransPoint2d(homMat2D, row1, column1, out CamImage_x1, out CamImage_y1);
-                HTuple T3;
-                HOperatorSet.VectorAngleToRigid(CamImage_x, CamImage_y, angle, CamImage_x1 + _x, CamImage_y1 + _y, angle, out T3);//T3是模板料移动到新料位置的变换
-                HTuple FitRobot_x1, FitRobot_y1;
-                HOperatorSet.AffineTransPoint2d(T3, (double)targetp[0] / 100, (double)targetp[1] / 100, out FitRobot_x1, out FitRobot_y1);//移动到新料与模板料重合
-                //HOperatorSet.AffineTransPoint2d(T3, CamImage_x - 90, CamImage_y, out FitRobot_x1, out FitRobot_y1);//移动到新料与模板料重合
+                
                 #endregion
                 #region 范围
                 bool result = true;
-                if (FitRobot_x1.D * 100 - targetp[0] > 1000 || FitRobot_x1.D * 100 - targetp[0] < -1000)
-                {
-                    result = false;
-                }
-                else
-                {
-                    if (FitRobot_y1.D * 100 - targetp[1] > 1000 || FitRobot_y1.D * 100 - targetp[1] < -1000)
-                    {
-                        result = false;
-                    }
-                    else
-                    {
-                        if (GetAnglein180(angle.TupleDeg()) - GetAnglein180(angle1.TupleDeg()) > 6 || GetAnglein180(angle.TupleDeg()) - GetAnglein180(angle1.TupleDeg()) < -6)
-                        {
-                            result = false;
-                        }
-                    }
-                }
+                //if (FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100 > 2000 || FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100 < -2000)
+                //{
+                //    result = false;
+                //}
+                //else
+                //{
+                //    if (FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 * -1 > 2000 || FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 * -1 < -2000)
+                //    {
+                //        result = false;
+                //    }
+                //    else
+                //    {
+                //        if ((lineAngle2 - lineAngle1) * 100 * -1 * -1 > 15 || (lineAngle2 - lineAngle1) * 100 * -1 * -1 < -15)
+                //        {
+                //            result = false;
+                //        }
+                //    }
+                //}
                 #endregion
-                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)((GetAnglein180(angle1.TupleDeg()) - GetAnglein180(angle.TupleDeg())) * 100) }, result); ;
+                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100), (int)(FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100), (int)((lineAngle2 - lineAngle1) * 100) }, result);
             }
             catch (Exception ex)
             {
@@ -2574,13 +2705,13 @@ namespace SZVppFilmUI.ViewModels
                 #endregion
                 #region 范围
                 bool result = true;
-                if (FitRobot_x1.D * 100 - targetp[0] > 1000 || FitRobot_x1.D * 100 - targetp[0] < -1000)
+                if (FitRobot_x1.D * 100 - targetp[0] > 2000 || FitRobot_x1.D * 100 - targetp[0] < -2000)
                 {
                     result = false;
                 }
                 else
                 {
-                    if (FitRobot_y1.D * 100 - targetp[1] > 1000 || FitRobot_y1.D * 100 - targetp[1] < -1000)
+                    if (FitRobot_y1.D * 100 - targetp[1] > 2000 || FitRobot_y1.D * 100 - targetp[1] < -2000)
                     {
                         result = false;
                     }
@@ -2690,13 +2821,13 @@ namespace SZVppFilmUI.ViewModels
                 #endregion
                 #region 范围
                 bool result = true;
-                if (FitRobot_x1.D * 100 - targetp[0] > 1000 || FitRobot_x1.D * 100 - targetp[0] < -1000)
+                if (FitRobot_x1.D * 100 - targetp[0] > 2000 || FitRobot_x1.D * 100 - targetp[0] < -2000)
                 {
                     result = false;
                 }
                 else
                 {
-                    if (FitRobot_y1.D * 100 - targetp[1] > 1000 || FitRobot_y1.D * 100 - targetp[1] < -1000)
+                    if (FitRobot_y1.D * 100 - targetp[1] > 2000 || FitRobot_y1.D * 100 - targetp[1] < -2000)
                     {
                         result = false;
                     }
