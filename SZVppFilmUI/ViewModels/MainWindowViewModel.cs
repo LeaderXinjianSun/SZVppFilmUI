@@ -624,6 +624,39 @@ namespace SZVppFilmUI.ViewModels
                 this.RaisePropertyChanged("NoiseValue");
             }
         }
+        private double overlapFactorTop;
+
+        public double OverlapFactorTop
+        {
+            get { return overlapFactorTop; }
+            set
+            {
+                overlapFactorTop = value;
+                this.RaisePropertyChanged("OverlapFactorTop");
+            }
+        }
+        private double overlapFactorBottom1;
+
+        public double OverlapFactorBottom1
+        {
+            get { return overlapFactorBottom1; }
+            set
+            {
+                overlapFactorBottom1 = value;
+                this.RaisePropertyChanged("OverlapFactorBottom1");
+            }
+        }
+        private double overlapFactorBottom2;
+
+        public double OverlapFactorBottom2
+        {
+            get { return overlapFactorBottom2; }
+            set
+            {
+                overlapFactorBottom2 = value;
+                this.RaisePropertyChanged("OverlapFactorBottom2");
+            }
+        }
 
         #endregion
         #region 方法绑定
@@ -947,6 +980,7 @@ namespace SZVppFilmUI.ViewModels
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraContrast", TopCameraContrast.ToString());
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraLow", TopCameraLow.ToString());
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "TopCameraCalibRadius", TopCameraCalibRadius.ToString());
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "OverlapFactorTop", OverlapFactorTop.ToString());
                     topCamera.SetExpose(TopCameraExposureValue);
                     AddMessage("上相机参数保存完成");
                     break;
@@ -957,6 +991,7 @@ namespace SZVppFilmUI.ViewModels
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera1Contrast", BottomCamera1Contrast.ToString());
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera1Low", BottomCamera1Low.ToString());
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera1CalibRadius", BottomCamera1CalibRadius.ToString());
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "OverlapFactorBottom1", OverlapFactorBottom1.ToString());
                     bottomCamera1.SetExpose(BottomCamera1ExposureValue);
                     AddMessage("下相机1参数保存完成");
                     break;
@@ -967,6 +1002,7 @@ namespace SZVppFilmUI.ViewModels
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera2Contrast", BottomCamera2Contrast.ToString());
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera2Low", BottomCamera2Low.ToString());
                     Inifile.INIWriteValue(iniParameterPath, "Camera", "BottomCamera2CalibRadius", BottomCamera2CalibRadius.ToString());
+                    Inifile.INIWriteValue(iniParameterPath, "Camera", "OverlapFactorBottom2", OverlapFactorBottom2.ToString());
                     bottomCamera2.SetExpose(BottomCamera2ExposureValue);
                     AddMessage("下相机2参数保存完成");
                     break;
@@ -1914,6 +1950,11 @@ namespace SZVppFilmUI.ViewModels
             TopCameraCalibRadius = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "TopCameraCalibRadius", "5"));
             BottomCamera1CalibRadius = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera1CalibRadius", "5"));
             BottomCamera2CalibRadius = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera2CalibRadius", "5"));
+
+            OverlapFactorTop = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "OverlapFactorTop", "2"));
+            OverlapFactorBottom1 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "OverlapFactorBottom1", "2"));
+            OverlapFactorBottom2 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "OverlapFactorBottom2", "2"));
+
             string plc_ip = Inifile.INIGetStringValue(iniParameterPath, "System", "PLCIP", "192.168.1.13");
             int plc_port = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "PLCPORT", "3900"));
 
@@ -2008,26 +2049,34 @@ namespace SZVppFilmUI.ViewModels
                 AddMessage(ex.Message);
             }
             #endregion
-            if (!Directory.Exists("E:\\RecordImages"))
+            try
             {
-                Directory.CreateDirectory("E:\\RecordImages");
+                if (!Directory.Exists("E:\\RecordImages"))
+                {
+                    Directory.CreateDirectory("E:\\RecordImages");
+                }
+                if (!Directory.Exists("E:\\RecordImages\\top1"))
+                {
+                    Directory.CreateDirectory("E:\\RecordImages\\top1");
+                }
+                if (!Directory.Exists("E:\\RecordImages\\top2"))
+                {
+                    Directory.CreateDirectory("E:\\RecordImages\\top2");
+                }
+                if (!Directory.Exists("E:\\RecordImages\\bottom1"))
+                {
+                    Directory.CreateDirectory("E:\\RecordImages\\bottom1");
+                }
+                if (!Directory.Exists("E:\\RecordImages\\bottom2"))
+                {
+                    Directory.CreateDirectory("E:\\RecordImages\\bottom2");
+                }
             }
-            if (!Directory.Exists("E:\\RecordImages\\top1"))
+            catch (Exception ex)
             {
-                Directory.CreateDirectory("E:\\RecordImages\\top1");
+                AddMessage(ex.Message);
             }
-            if (!Directory.Exists("E:\\RecordImages\\top2"))
-            {
-                Directory.CreateDirectory("E:\\RecordImages\\top2");
-            }
-            if (!Directory.Exists("E:\\RecordImages\\bottom1"))
-            {
-                Directory.CreateDirectory("E:\\RecordImages\\bottom1");
-            }
-            if (!Directory.Exists("E:\\RecordImages\\bottom2"))
-            {
-                Directory.CreateDirectory("E:\\RecordImages\\bottom2");
-            }
+            
         }
         private void AddMessage(string str)
         {
@@ -2616,10 +2665,10 @@ namespace SZVppFilmUI.ViewModels
                 #region 重膜检测
                 HTuple areaModel = GetDarkAreaValue(row, column, ModelImage, 70, 200);
                 HTuple areaNewImage = GetDarkAreaValue(row1, column1, topCamera.CurrentImage, 70, 200);
-                if (Math.Abs(areaModel.D - areaNewImage.D) > areaModel.D / 4)
+                if (Math.Abs(areaModel.D - areaNewImage.D) > areaModel.D / OverlapFactorTop)
                 {
                     result = false;
-                    AddMessage("上相机:可能重膜");
+                    AddMessage($"上相机:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
                 }                
                 #endregion
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100), (int)(FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100), (int)((lineAngle2 - lineAngle1) * 100) }, result);
@@ -2736,10 +2785,10 @@ namespace SZVppFilmUI.ViewModels
                 #region 重膜检测
                 HTuple areaModel = GetDarkAreaValue(row, column, ModelImage, 70, 200);
                 HTuple areaNewImage = GetDarkAreaValue(row1, column1, bottomCamera1.CurrentImage, 70, 200);
-                if (Math.Abs(areaModel.D - areaNewImage.D) > areaModel.D / 4)
+                if (Math.Abs(areaModel.D - areaNewImage.D) > areaModel.D / OverlapFactorBottom1)
                 {
                     result = false;
-                    AddMessage("下相机1:可能重膜");
+                    AddMessage($"下相机1:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
                 }
                 #endregion
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)(((lineAngle1 - lineAngle2) * -1 + _u) * 100) }, result);
@@ -2861,10 +2910,10 @@ namespace SZVppFilmUI.ViewModels
                 #region 重膜检测
                 HTuple areaModel = GetDarkAreaValue(row, column, ModelImage, 70, 200);
                 HTuple areaNewImage = GetDarkAreaValue(row1, column1, bottomCamera2.CurrentImage, 70, 200);
-                if (Math.Abs(areaModel.D - areaNewImage.D) > areaModel.D / 4)
+                if (Math.Abs(areaModel.D - areaNewImage.D) > areaModel.D / OverlapFactorBottom2)
                 {
                     result = false;
-                    AddMessage("下相机2:可能重膜");
+                    AddMessage($"下相机2:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
                 }
                 #endregion
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)(((lineAngle1 - lineAngle2) * -1 + _u) * 100) }, result);

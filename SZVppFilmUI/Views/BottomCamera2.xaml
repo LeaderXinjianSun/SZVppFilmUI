@@ -112,6 +112,8 @@
                     <StackPanel Orientation="Horizontal" Margin="0,1">
                         <Label Content="标定旋转角度:" Width="90" VerticalAlignment="Center"></Label>
                         <TextBox Width="60" Text="{Binding BottomCamera2CalibRadius}" VerticalAlignment="Center"></TextBox>
+                        <Label Content="重叠因子:" Width="90" VerticalAlignment="Center"></Label>
+                        <TextBox Width="60" Text="{Binding OverlapFactorBottom2}" VerticalAlignment="Center"></TextBox>
                     </StackPanel>
                 </StackPanel>
             </Grid>
