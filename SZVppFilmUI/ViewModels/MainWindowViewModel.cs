@@ -712,6 +712,21 @@ namespace SZVppFilmUI.ViewModels
             CreateLineCommand = new DelegateCommand<object>(new Action<object>(this.CreateLineCommandExecute));
             TopCameraProductSelectCommand = new DelegateCommand<object>(new Action<object>(this.TopCameraProductSelectCommandExecute));
             GetMic1PositionCommand = new DelegateCommand<object>(new Action<object>(this.GetMic1PositionCommandExecute));
+            if (System.Environment.CurrentDirectory != @"C:\Debug")
+            {
+                System.Windows.MessageBox.Show("软件安装目录必须为C:\\Debug","Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                System.Windows.Application.Current.Shutdown();
+            }
+            else
+            {
+                System.Diagnostics.Process[] myProcesses = System.Diagnostics.Process.GetProcessesByName("SZVppFilmUI");//获取指定的进程名   
+                if (myProcesses.Length > 1) //如果可以获取到知道的进程名则说明已经启动
+                {
+                    System.Windows.MessageBox.Show("不允许重复打开软件", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    System.Windows.Application.Current.Shutdown();
+                }
+            }
+            
         }
         #endregion
         #region 方法绑定函数
@@ -1940,7 +1955,7 @@ namespace SZVppFilmUI.ViewModels
             Product_DiffY1 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "Product_DiffY1", "16.3488"));
             Product_DiffX2 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "Product_DiffX2", "47.0362"));
             Product_DiffY2 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "Product_DiffY2", "63.6512"));
-            WindowTitle = "SZVppFilmUI20200806:" + Station;
+            WindowTitle = "SZVppFilmUI20200808:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
