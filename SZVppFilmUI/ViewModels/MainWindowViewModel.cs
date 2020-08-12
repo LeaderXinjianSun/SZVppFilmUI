@@ -712,7 +712,7 @@ namespace SZVppFilmUI.ViewModels
             CreateLineCommand = new DelegateCommand<object>(new Action<object>(this.CreateLineCommandExecute));
             TopCameraProductSelectCommand = new DelegateCommand<object>(new Action<object>(this.TopCameraProductSelectCommandExecute));
             GetMic1PositionCommand = new DelegateCommand<object>(new Action<object>(this.GetMic1PositionCommandExecute));
-            if (System.Environment.CurrentDirectory == @"C:\Debug")
+            if (System.Environment.CurrentDirectory != @"C:\Debug")
             {
                 System.Windows.MessageBox.Show("软件安装目录必须为C:\\Debug", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 System.Windows.Application.Current.Shutdown();
