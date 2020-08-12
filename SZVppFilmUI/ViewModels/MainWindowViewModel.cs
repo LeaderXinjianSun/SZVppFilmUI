@@ -1368,9 +1368,19 @@ namespace SZVppFilmUI.ViewModels
 
                         break;
                 }
+                double _row, _column;
+                if (nc1.D < 0)
+                {
+                    _row = nr1.D * -1;
+                    _column = nc1.D * -1;
+                }
+                else
+                {
+                    _row = nr1.D;
+                    _column = nc1.D;
+                }
 
-
-                AddMessage("找到直线: " + (Math.Atan2((nc1), (nr1)) * 180 / Math.PI - 90).ToString("F2") + "°");
+                AddMessage("找到直线: " + (Math.Atan2(_column, _row) * 180 / Math.PI - 90).ToString("F2") + "°");
             }
             catch (Exception ex)
             {
@@ -1955,7 +1965,7 @@ namespace SZVppFilmUI.ViewModels
             Product_DiffY1 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "Product_DiffY1", "16.3488"));
             Product_DiffX2 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "Product_DiffX2", "47.0362"));
             Product_DiffY2 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "Product_DiffY2", "63.6512"));
-            WindowTitle = "SZVppFilmUI20200808:" + Station;
+            WindowTitle = "SZVppFilmUI20200812:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -2603,7 +2613,18 @@ namespace SZVppFilmUI.ViewModels
                 HObject regionLine;
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 var index = FindMaxLine(regionLine);
-                double lineAngle1 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
+                double _row, _column;
+                if (nc1.DArr[index] < 0)
+                {
+                    _row = nr1.DArr[index] * -1;
+                    _column = nc1.DArr[index] * -1;
+                }
+                else
+                {
+                    _row = nr1.DArr[index];
+                    _column = nc1.DArr[index];
+                }
+                double lineAngle1 = Math.Atan2(_column, _row) * 180 / Math.PI - 90;
 
                 HObject regionLineAffineTrans;
                 HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
@@ -2616,7 +2637,17 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 TopCameraAppendHObject = regionLine;
                 index = FindMaxLine(regionLine);
-                double lineAngle2 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
+                if (nc1.DArr[index] < 0)
+                {
+                    _row = nr1.DArr[index] * -1;
+                    _column = nc1.DArr[index] * -1;
+                }
+                else
+                {
+                    _row = nr1.DArr[index];
+                    _column = nc1.DArr[index];
+                }
+                double lineAngle2 = Math.Atan2(_column, _row) * 180 / Math.PI - 90;
 
 
 
@@ -2763,7 +2794,18 @@ namespace SZVppFilmUI.ViewModels
                 HObject regionLine;
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 var index = FindMaxLine(regionLine);
-                double lineAngle1 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
+                double _row, _column;
+                if (nc1.DArr[index] < 0)
+                {
+                    _row = nr1.DArr[index] * -1;
+                    _column = nc1.DArr[index] * -1;
+                }
+                else
+                {
+                    _row = nr1.DArr[index];
+                    _column = nc1.DArr[index];
+                }
+                double lineAngle1 = Math.Atan2(_column, _row) * 180 / Math.PI - 90;
 
                 HObject regionLineAffineTrans;
                 HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
@@ -2776,7 +2818,17 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 BottomCamera1AppendHObject = regionLine;
                 index = FindMaxLine(regionLine);
-                double lineAngle2 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
+                if (nc1.DArr[index] < 0)
+                {
+                    _row = nr1.DArr[index] * -1;
+                    _column = nc1.DArr[index] * -1;
+                }
+                else
+                {
+                    _row = nr1.DArr[index];
+                    _column = nc1.DArr[index];
+                }
+                double lineAngle2 = Math.Atan2(_column, _row) * 180 / Math.PI - 90;
                 //坐标变换
                 HOperatorSet.ReadTuple(Path.Combine(path, "homMat2D.tup"), out homMat2D);
                 HTuple CamImage_x, CamImage_y;
@@ -2884,7 +2936,18 @@ namespace SZVppFilmUI.ViewModels
                 HObject regionLine;
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 var index = FindMaxLine(regionLine);
-                double lineAngle1 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
+                double _row, _column;
+                if (nc1.DArr[index] < 0)
+                {
+                    _row = nr1.DArr[index] * -1;
+                    _column = nc1.DArr[index] * -1;
+                }
+                else
+                {
+                    _row = nr1.DArr[index];
+                    _column = nc1.DArr[index];
+                }
+                double lineAngle1 = Math.Atan2(_column, _row) * 180 / Math.PI - 90;
 
                 HObject regionLineAffineTrans;
                 HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
@@ -2897,7 +2960,17 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 BottomCamera2AppendHObject = regionLine;
                 index = FindMaxLine(regionLine);
-                double lineAngle2 = Math.Atan2((nc1.DArr[index]), (nr1.DArr[index])) * 180 / Math.PI - 90;
+                if (nc1.DArr[index] < 0)
+                {
+                    _row = nr1.DArr[index] * -1;
+                    _column = nc1.DArr[index] * -1;
+                }
+                else
+                {
+                    _row = nr1.DArr[index];
+                    _column = nc1.DArr[index];
+                }
+                double lineAngle2 = Math.Atan2(_column, _row) * 180 / Math.PI - 90;
 
 
 
