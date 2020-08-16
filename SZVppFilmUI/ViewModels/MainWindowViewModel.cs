@@ -1367,20 +1367,9 @@ namespace SZVppFilmUI.ViewModels
                         TopCameraAppendHObject = regionLine;
 
                         break;
-                }
-                double _row, _column;
-                if (nc1.D < 0)
-                {
-                    _row = nr1.D * -1;
-                    _column = nc1.D * -1;
-                }
-                else
-                {
-                    _row = nr1.D;
-                    _column = nc1.D;
-                }
+                }               
 
-                AddMessage("找到直线: " + (Math.Atan2(_column, _row) * 180 / Math.PI - 90).ToString("F2") + "°");
+                AddMessage("找到直线: " + (Math.Atan2(nc1.D, nr1.D) * 180 / Math.PI + 90).ToString("F2") + "°");
             }
             catch (Exception ex)
             {
@@ -2220,10 +2209,7 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst)
                                     {
                                         TopCameraIamge = topCamera.CurrentImage;
-                                        if (isRecordImage != "0")
-                                        {
-                                            topCamera.SaveImage("bmp", Path.Combine("E:\\RecordImages\\top1", DateTime.Now.ToString("yyyyMMddHHmmss") + "Top1.bmp"));
-                                        }
+                                
                                         
                                         var calcrst = TopCameraCalc("D4116", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 0);
                                         
@@ -2231,6 +2217,10 @@ namespace SZVppFilmUI.ViewModels
                                         CalcRecord(0, calcrst);
                                         Fx5u.WriteMultW("D3206", calcrst.Item1);
                                         Fx5u.SetM("M3201", calcrst.Item2);
+                                        if (isRecordImage != "0" && !calcrst.Item2)
+                                        {
+                                            topCamera.SaveImage("bmp", Path.Combine("E:\\RecordImages\\top1", DateTime.Now.ToString("yyyyMMddHHmmss") + "Top1.bmp"));
+                                        }
                                     }
                                     else
                                     {
@@ -2255,10 +2245,7 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst)
                                     {
                                         TopCameraIamge = topCamera.CurrentImage;
-                                        if (isRecordImage != "0")
-                                        {
-                                            topCamera.SaveImage("bmp", Path.Combine("E:\\RecordImages\\top2", DateTime.Now.ToString("yyyyMMddHHmmss") + "Top2.bmp"));
-                                        }                                        
+                                                                            
                                         var calcrst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 1);
                                         
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
@@ -2266,6 +2253,10 @@ namespace SZVppFilmUI.ViewModels
 
                                         Fx5u.WriteMultW("D3206", calcrst.Item1);
                                         Fx5u.SetM("M3203", calcrst.Item2);
+                                        if (isRecordImage != "0" && !calcrst.Item2)
+                                        {
+                                            topCamera.SaveImage("bmp", Path.Combine("E:\\RecordImages\\top2", DateTime.Now.ToString("yyyyMMddHHmmss") + "Top2.bmp"));
+                                        }
                                     }
                                     else
                                     {
@@ -2296,28 +2287,30 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst1)
                                     {
                                         BottomCamera1Iamge = bottomCamera1.CurrentImage;
-                                        if (isRecordImage != "0")
-                                        {
-                                            bottomCamera1.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom1", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom1.bmp"));
-                                        }
+                                   
                                         var calcrst = BottomCamera1Calc("D4134", "D4086", BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(2, calcrst);
                                         Fx5u.WriteMultW("D3212", calcrst.Item1);
                                         Fx5u.SetM("M3205", calcrst.Item2);
+                                        if (isRecordImage != "0" && !calcrst.Item2)
+                                        {
+                                            bottomCamera1.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom1", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom1.bmp"));
+                                        }
                                     }
                                     if (rst2)
                                     {
                                         BottomCamera2Iamge = bottomCamera2.CurrentImage;
-                                        if (isRecordImage != "0")
-                                        {
-                                            bottomCamera2.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom2", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom2.bmp"));
-                                        }
+                                       
                                         var calcrst = BottomCamera2Calc("D4134", "D4092", BottomCamera2Diff.X, BottomCamera2Diff.Y, BottomCamera2Diff.U);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(3, calcrst);
                                         Fx5u.WriteMultW("D3218", calcrst.Item1);
                                         Fx5u.SetM("M3206", calcrst.Item2);
+                                        if (isRecordImage != "0" && !calcrst.Item2)
+                                        {
+                                            bottomCamera2.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom2", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom2.bmp"));
+                                        }
                                     }
                                     if (!rst1 || !rst2)
                                     {
@@ -2366,10 +2359,7 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst)
                                     {
                                         TopCameraIamge = topCamera.CurrentImage;
-                                        if (isRecordImage != "0")
-                                        {
-                                            topCamera.SaveImage("bmp", Path.Combine("E:\\RecordImages\\top1", DateTime.Now.ToString("yyyyMMddHHmmss") + "Top1.bmp"));
-                                        }                                        
+                                                                           
                                         var calcrst = TopCameraCalc("D4222", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 0);
                                         
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
@@ -2377,6 +2367,10 @@ namespace SZVppFilmUI.ViewModels
                    
                                         Fx5u.WriteMultW("D3246", calcrst.Item1);
                                         Fx5u.SetM("M3221", calcrst.Item2);
+                                        if (isRecordImage != "0" && !calcrst.Item2)
+                                        {
+                                            topCamera.SaveImage("bmp", Path.Combine("E:\\RecordImages\\top1", DateTime.Now.ToString("yyyyMMddHHmmss") + "Top1.bmp"));
+                                        }
                                     }
                                     else
                                     {
@@ -2401,10 +2395,7 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst)
                                     {
                                         TopCameraIamge = topCamera.CurrentImage;
-                                        if (isRecordImage != "0")
-                                        {
-                                            topCamera.SaveImage("bmp", Path.Combine("E:\\RecordImages\\top2", DateTime.Now.ToString("yyyyMMddHHmmss") + "Top2.bmp"));
-                                        }                                        
+                                                                         
                                         var calcrst = TopCameraCalc("D4228", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 1);
                                         
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
@@ -2412,6 +2403,10 @@ namespace SZVppFilmUI.ViewModels
 
                                         Fx5u.WriteMultW("D3246", calcrst.Item1);
                                         Fx5u.SetM("M3223", calcrst.Item2);
+                                        if (isRecordImage != "0" && !calcrst.Item2)
+                                        {
+                                            topCamera.SaveImage("bmp", Path.Combine("E:\\RecordImages\\top2", DateTime.Now.ToString("yyyyMMddHHmmss") + "Top2.bmp"));
+                                        }
                                     }
                                     else
                                     {
@@ -2442,28 +2437,30 @@ namespace SZVppFilmUI.ViewModels
                                     if (rst1)
                                     {
                                         BottomCamera1Iamge = bottomCamera1.CurrentImage;
-                                        if (isRecordImage != "0")
-                                        {
-                                            bottomCamera1.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom1", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom1.bmp"));
-                                        }
+                                     
                                         var calcrst = BottomCamera1Calc("D4240", "D4192", BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(2, calcrst);
                                         Fx5u.WriteMultW("D3252", calcrst.Item1);
                                         Fx5u.SetM("M3225", calcrst.Item2);
+                                        if (isRecordImage != "0" && !calcrst.Item2)
+                                        {
+                                            bottomCamera1.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom1", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom1.bmp"));
+                                        }
                                     }
                                     if (rst2)
                                     {
                                         BottomCamera2Iamge = bottomCamera2.CurrentImage;
-                                        if (isRecordImage != "0")
-                                        {
-                                            bottomCamera2.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom2", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom2.bmp"));
-                                        }
+                                     
                                         var calcrst = BottomCamera2Calc("D4240", "D4198", BottomCamera2Diff.X, BottomCamera2Diff.Y, BottomCamera2Diff.U);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
                                         CalcRecord(3, calcrst);
                                         Fx5u.WriteMultW("D3258", calcrst.Item1);
                                         Fx5u.SetM("M3226", calcrst.Item2);
+                                        if (isRecordImage != "0" && !calcrst.Item2)
+                                        {
+                                            bottomCamera2.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom2", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom2.bmp"));
+                                        }
                                     }
                                     if (!rst1 || !rst2)
                                     {
@@ -2613,18 +2610,8 @@ namespace SZVppFilmUI.ViewModels
                 HObject regionLine;
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 var index = FindMaxLine(regionLine);
-                double _row, _column;
-                if (nc1.DArr[index] < 0)
-                {
-                    _row = nr1.DArr[index] * -1;
-                    _column = nc1.DArr[index] * -1;
-                }
-                else
-                {
-                    _row = nr1.DArr[index];
-                    _column = nc1.DArr[index];
-                }
-                double lineAngle1 = Math.Atan2(_column, _row) * 180 / Math.PI - 90;
+                
+                double lineAngle1 = Math.Atan2(nc1.DArr[index], nr1.DArr[index]) * 180 / Math.PI + 90;
 
                 HObject regionLineAffineTrans;
                 HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
@@ -2637,17 +2624,8 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 TopCameraAppendHObject = regionLine;
                 index = FindMaxLine(regionLine);
-                if (nc1.DArr[index] < 0)
-                {
-                    _row = nr1.DArr[index] * -1;
-                    _column = nc1.DArr[index] * -1;
-                }
-                else
-                {
-                    _row = nr1.DArr[index];
-                    _column = nc1.DArr[index];
-                }
-                double lineAngle2 = Math.Atan2(_column, _row) * 180 / Math.PI - 90;
+                
+                double lineAngle2 = Math.Atan2(nc1.DArr[index], nr1.DArr[index]) * 180 / Math.PI + 90;
 
 
 
@@ -2706,24 +2684,24 @@ namespace SZVppFilmUI.ViewModels
                 #endregion
                 #region 范围
                 bool result = true;
-                //if (FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100 > 2000 || FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100 < -2000)
-                //{
-                //    result = false;
-                //}
-                //else
-                //{
-                //    if (FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 * -1 > 2000 || FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 * -1 < -2000)
-                //    {
-                //        result = false;
-                //    }
-                //    else
-                //    {
-                //        if ((lineAngle2 - lineAngle1) * 100 * -1 * -1 > 15 || (lineAngle2 - lineAngle1) * 100 * -1 * -1 < -15)
-                //        {
-                //            result = false;
-                //        }
-                //    }
-                //}
+                if (FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100 > 5000 || FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100 < -5000)
+                {
+                    result = false;
+                }
+                else
+                {
+                    if (FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 * -1 > 5000 || FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 * -1 < -5000)
+                    {
+                        result = false;
+                    }
+                    else
+                    {
+                        if (lineAngle2 - lineAngle1 > 45 || lineAngle2 - lineAngle1 < -45)
+                        {
+                            result = false;
+                        }
+                    }
+                }
                 #endregion
                 #region 重膜检测
                 HTuple areaModel = GetDarkAreaValue(row, column, ModelImage, 70, 200);
@@ -2794,18 +2772,8 @@ namespace SZVppFilmUI.ViewModels
                 HObject regionLine;
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 var index = FindMaxLine(regionLine);
-                double _row, _column;
-                if (nc1.DArr[index] < 0)
-                {
-                    _row = nr1.DArr[index] * -1;
-                    _column = nc1.DArr[index] * -1;
-                }
-                else
-                {
-                    _row = nr1.DArr[index];
-                    _column = nc1.DArr[index];
-                }
-                double lineAngle1 = Math.Atan2(_column, _row) * 180 / Math.PI - 90;
+                
+                double lineAngle1 = Math.Atan2(nc1.DArr[index], nr1.DArr[index]) * 180 / Math.PI + 90;
 
                 HObject regionLineAffineTrans;
                 HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
@@ -2818,17 +2786,8 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 BottomCamera1AppendHObject = regionLine;
                 index = FindMaxLine(regionLine);
-                if (nc1.DArr[index] < 0)
-                {
-                    _row = nr1.DArr[index] * -1;
-                    _column = nc1.DArr[index] * -1;
-                }
-                else
-                {
-                    _row = nr1.DArr[index];
-                    _column = nc1.DArr[index];
-                }
-                double lineAngle2 = Math.Atan2(_column, _row) * 180 / Math.PI - 90;
+               
+                double lineAngle2 = Math.Atan2(nc1.DArr[index], nr1.DArr[index]) * 180 / Math.PI + 90;
                 //坐标变换
                 HOperatorSet.ReadTuple(Path.Combine(path, "homMat2D.tup"), out homMat2D);
                 HTuple CamImage_x, CamImage_y;
@@ -2936,18 +2895,8 @@ namespace SZVppFilmUI.ViewModels
                 HObject regionLine;
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 var index = FindMaxLine(regionLine);
-                double _row, _column;
-                if (nc1.DArr[index] < 0)
-                {
-                    _row = nr1.DArr[index] * -1;
-                    _column = nc1.DArr[index] * -1;
-                }
-                else
-                {
-                    _row = nr1.DArr[index];
-                    _column = nc1.DArr[index];
-                }
-                double lineAngle1 = Math.Atan2(_column, _row) * 180 / Math.PI - 90;
+                
+                double lineAngle1 = Math.Atan2(nc1.DArr[index], nr1.DArr[index]) * 180 / Math.PI + 90;
 
                 HObject regionLineAffineTrans;
                 HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
@@ -2960,17 +2909,8 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 BottomCamera2AppendHObject = regionLine;
                 index = FindMaxLine(regionLine);
-                if (nc1.DArr[index] < 0)
-                {
-                    _row = nr1.DArr[index] * -1;
-                    _column = nc1.DArr[index] * -1;
-                }
-                else
-                {
-                    _row = nr1.DArr[index];
-                    _column = nc1.DArr[index];
-                }
-                double lineAngle2 = Math.Atan2(_column, _row) * 180 / Math.PI - 90;
+                
+                double lineAngle2 = Math.Atan2(nc1.DArr[index], nr1.DArr[index]) * 180 / Math.PI + 90;
 
 
 
