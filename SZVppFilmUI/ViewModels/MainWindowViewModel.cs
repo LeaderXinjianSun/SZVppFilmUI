@@ -126,6 +126,17 @@ namespace SZVppFilmUI.ViewModels
                 this.RaisePropertyChanged("TopCameraIamge");
             }
         }
+        private HImage topCameraIamge2;
+
+        public HImage TopCameraIamge2
+        {
+            get { return topCameraIamge2; }
+            set
+            {
+                topCameraIamge2 = value;
+                this.RaisePropertyChanged("TopCameraIamge2");
+            }
+        }
         private HImage bottomCamera1Iamge;
 
         public HImage BottomCamera1Iamge
@@ -157,6 +168,17 @@ namespace SZVppFilmUI.ViewModels
             {
                 topCameraRepaint = value;
                 this.RaisePropertyChanged("TopCameraRepaint");
+            }
+        }
+        private bool topCameraRepaint2;
+
+        public bool TopCameraRepaint2
+        {
+            get { return topCameraRepaint2; }
+            set
+            {
+                topCameraRepaint2 = value;
+                this.RaisePropertyChanged("TopCameraRepaint2");
             }
         }
         private bool bottomCamera1Repaint;
@@ -247,6 +269,17 @@ namespace SZVppFilmUI.ViewModels
                 this.RaisePropertyChanged("TopCameraROIList");
             }
         }
+        private ObservableCollection<ROI> topCameraROIList2;
+
+        public ObservableCollection<ROI> TopCameraROIList2
+        {
+            get { return topCameraROIList2; }
+            set
+            {
+                topCameraROIList2 = value;
+                this.RaisePropertyChanged("TopCameraROIList2");
+            }
+        }
         private ObservableCollection<ROI> bottomCamera1ROIList;
 
         public ObservableCollection<ROI> BottomCamera1ROIList
@@ -314,6 +347,17 @@ namespace SZVppFilmUI.ViewModels
                 this.RaisePropertyChanged("TopCameraAppendHObject");
             }
         }
+        private HObject topCameraAppendHObject2;
+
+        public HObject TopCameraAppendHObject2
+        {
+            get { return topCameraAppendHObject2; }
+            set
+            {
+                topCameraAppendHObject2 = value;
+                this.RaisePropertyChanged("TopCameraAppendHObject2");
+            }
+        }
         private HObject bottomCamera1AppendHObject;
 
         public HObject BottomCamera1AppendHObject
@@ -356,6 +400,17 @@ namespace SZVppFilmUI.ViewModels
             {
                 topCameraGCStyle = value;
                 this.RaisePropertyChanged("TopCameraGCStyle");
+            }
+        }
+        private Tuple<string, object> topCameraGCStyle2;
+
+        public Tuple<string, object> TopCameraGCStyle2
+        {
+            get { return topCameraGCStyle2; }
+            set
+            {
+                topCameraGCStyle2 = value;
+                this.RaisePropertyChanged("TopCameraGCStyle2");
             }
         }
         private Tuple<string, object> bottomCamera1GCStyle;
@@ -662,7 +717,7 @@ namespace SZVppFilmUI.ViewModels
         #region 方法绑定
         public DelegateCommand AppLoadedEventCommand { get; set; }
         public DelegateCommand<object> MenuActionCommand { get; set; }
-        public DelegateCommand TopCameraFunctionCommand { get; set; }
+        public DelegateCommand<object> TopCameraFunctionCommand { get; set; }
         public DelegateCommand BottonCamera1FunctionCommand { get; set; }
         public DelegateCommand BottonCamera2FunctionCommand { get; set; }
         public DelegateCommand<object> DrawROIOperateCommand { get; set; }
@@ -677,7 +732,6 @@ namespace SZVppFilmUI.ViewModels
         public DelegateCommand CreateShapeModel2 { get; set; }
         public DelegateCommand FindShapeModel2 { get; set; }
         public DelegateCommand AppClosedEventCommand { get; set; }
-        public DelegateCommand<object> TopCameraProductSelectCommand { get; set; }
         public DelegateCommand<object> GetMic1PositionCommand { get; set; }
         #endregion
         #region 变量
@@ -688,7 +742,6 @@ namespace SZVppFilmUI.ViewModels
         Fx5u Fx5u;
         private string iniParameterPath = System.Environment.CurrentDirectory + "\\Parameter.ini";
         List<AlarmData> AlarmList = new List<AlarmData>(); bool[] M300;
-        int TopCameraProductIndex = 0;
         #endregion
         #region 构造函数
         public MainWindowViewModel()
@@ -696,7 +749,7 @@ namespace SZVppFilmUI.ViewModels
             AppLoadedEventCommand = new DelegateCommand(new Action(this.AppLoadedEventCommandExecute));
             AppClosedEventCommand = new DelegateCommand(new Action(this.AppClosedEventCommandExecute));
             MenuActionCommand = new DelegateCommand<object>(new Action<object>(this.MenuActionCommandExecute));
-            TopCameraFunctionCommand = new DelegateCommand(new Action(this.TopCameraFunctionCommandExecute));
+            TopCameraFunctionCommand = new DelegateCommand<object>(new Action<object>(this.TopCameraFunctionCommandExecute));
             BottonCamera1FunctionCommand = new DelegateCommand(new Action(this.BottonCamera1FunctionCommandExecute));
             BottonCamera2FunctionCommand = new DelegateCommand(new Action(this.BottonCamera2FunctionCommandExecute));
             DrawROIOperateCommand = new DelegateCommand<object>(new Action<object>(this.DrawROIOperateCommandExecute));
@@ -710,7 +763,7 @@ namespace SZVppFilmUI.ViewModels
             CreateShapeModel2 = new DelegateCommand(new Action(this.CreateShapeModel2Execute));
             FindShapeModel2 = new DelegateCommand(new Action(this.FindShapeModel2Execute));
             CreateLineCommand = new DelegateCommand<object>(new Action<object>(this.CreateLineCommandExecute));
-            TopCameraProductSelectCommand = new DelegateCommand<object>(new Action<object>(this.TopCameraProductSelectCommandExecute));
+            
             GetMic1PositionCommand = new DelegateCommand<object>(new Action<object>(this.GetMic1PositionCommandExecute));
             if (System.Environment.CurrentDirectory != @"C:\Debug")
             {
@@ -754,6 +807,16 @@ namespace SZVppFilmUI.ViewModels
                     AddMessage("TopCamera Open Fail!");
                 }
                 TabControlSelectedIndex = 1;
+                if (topCamera.GrabImage(TopCameraRadius))
+                {
+                    AddMessage("TopCamera2拍照成功");
+                    TopCameraIamge2 = topCamera.CurrentImage;
+                }
+                else
+                {
+                    AddMessage("TopCamera2 Open Fail!");
+                }
+                TabControlSelectedIndex = 2;
                 if (bottomCamera1.OpenCamera(BottomCamera1Name, "GigEVision"))
                 {
                     AddMessage("BottomCamera1 Open Success!");
@@ -769,7 +832,7 @@ namespace SZVppFilmUI.ViewModels
                 {
                     AddMessage("BottomCamera1 Open Fail!");
                 }
-                TabControlSelectedIndex = 2;
+                TabControlSelectedIndex = 3;
                 if (bottomCamera2.OpenCamera(BottomCamera2Name, "GigEVision"))
                 {
                     BottomCamera2ExposureValue = int.Parse(Inifile.INIGetStringValue(iniParameterPath, "Camera", "BottomCamera2ExposureValue", "3500"));
@@ -837,12 +900,23 @@ namespace SZVppFilmUI.ViewModels
                     break;
             }
         }
-        private void TopCameraFunctionCommandExecute()
+        private void TopCameraFunctionCommandExecute(object p)
         {
 
             topCamera.GrabImageVoid(TopCameraRadius);
-            TopCameraIamge = topCamera.CurrentImage;
-            AddMessage("TopCamera拍照");
+            switch (p.ToString())
+            {
+                case "1":
+                    TopCameraIamge2 = topCamera.CurrentImage;
+                    AddMessage("TopCamera2拍照");
+                    break;
+                case "0":
+                default:
+                    TopCameraIamge = topCamera.CurrentImage;
+                    AddMessage("TopCamera拍照");
+                    break;
+            }
+
         }
         private void BottonCamera1FunctionCommandExecute()
         {
@@ -885,18 +959,16 @@ namespace SZVppFilmUI.ViewModels
                         imageViewer = Global.BottonCamera2ImageViewer;
                         rOIList = BottomCamera2ROIList;
                         break;
+                    case "3":
+                        image = topCamera.CurrentImage;
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
+                        imageViewer = Global.TopCameraImageViewer2;
+                        rOIList = TopCameraROIList2;
+                        break;
+                    case "0":
                     default:
                         image = topCamera.CurrentImage;
-                        switch (TopCameraProductIndex)
-                        {
-                            case 1:
-                                path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
-                                break;
-                            case 0:
-                            default:
-                                path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
-                                break;
-                        }
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
                         imageViewer = Global.TopCameraImageViewer;
                         rOIList = TopCameraROIList;
                         break;
@@ -921,6 +993,11 @@ namespace SZVppFilmUI.ViewModels
                         BottomCamera2GCStyle = t;
                         BottomCamera2AppendHObject = null;
                         BottomCamera2AppendHObject = roi.getRegion();
+                        break;
+                    case "3":
+                        TopCameraGCStyle2 = t;
+                        TopCameraAppendHObject2 = null;
+                        TopCameraAppendHObject2 = roi.getRegion();
                         break;
                     default:
                         TopCameraGCStyle = t;
@@ -960,6 +1037,10 @@ namespace SZVppFilmUI.ViewModels
                     case "2":
                         bottomCamera2.ReadImage(strFileName);
                         BottomCamera2Iamge = bottomCamera2.CurrentImage;
+                        break;
+                    case "3":
+                        topCamera.ReadImage(strFileName);
+                        TopCameraIamge2 = topCamera.CurrentImage;
                         break;
                     default:
                         break;
@@ -1061,18 +1142,19 @@ namespace SZVppFilmUI.ViewModels
                             BottomCamera2AppendHObject = null;
                             Contrast = BottomCamera2Contrast;
                             break;
+                        case "3":
+                            image = topCamera.CurrentImage;
+                            path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
+                            imageViewer = Global.TopCameraImageViewer2;
+                            rOIList = TopCameraROIList2;
+                            camera = topCamera;
+                            TopCameraAppendHObject2 = null;
+                            Contrast = TopCameraContrast;
+                            break;
+                        case "0":
                         default:
                             image = topCamera.CurrentImage;
-                            switch (TopCameraProductIndex)
-                            {
-                                case 1:
-                                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
-                                    break;
-                                case 0:
-                                default:
-                                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
-                                    break;
-                            }
+                            path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
                             imageViewer = Global.TopCameraImageViewer;
                             rOIList = TopCameraROIList;
                             camera = topCamera;
@@ -1103,6 +1185,10 @@ namespace SZVppFilmUI.ViewModels
                         case "2":
                             BottomCamera2AppendHObject = null;
                             BottomCamera2AppendHObject = objectSelected;
+                            break;
+                        case "3":
+                            TopCameraAppendHObject2 = null;
+                            TopCameraAppendHObject2 = objectSelected;
                             break;
                         default:
                             TopCameraAppendHObject = null;
@@ -1200,18 +1286,16 @@ namespace SZVppFilmUI.ViewModels
                         rOIList = BottomCamera2ROIList;
                         camera = bottomCamera2;
                         break;
+                    case "3":
+                        image = topCamera.CurrentImage;
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
+                        imageViewer = Global.TopCameraImageViewer2;
+                        rOIList = TopCameraROIList2;
+                        camera = topCamera;
+                        break;
                     default:
                         image = topCamera.CurrentImage;
-                        switch (TopCameraProductIndex)
-                        {
-                            case 1:
-                                path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
-                                break;
-                            case 0:
-                            default:
-                                path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
-                                break;
-                        }
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
                         imageViewer = Global.TopCameraImageViewer;
                         rOIList = TopCameraROIList;
                         camera = topCamera;
@@ -1247,6 +1331,12 @@ namespace SZVppFilmUI.ViewModels
                         BottomCamera2GCStyle = t;
                         BottomCamera2AppendHObject = null;
                         BottomCamera2AppendHObject = regionAffineTrans;
+                        break;
+                    case "3":
+                        TopCameraGCStyle2 = t;
+                        TopCameraAppendHObject2 = null;
+                        TopCameraAppendHObject2 = regionAffineTrans;
+
                         break;
                     default:
                         TopCameraGCStyle = t;
@@ -1295,18 +1385,17 @@ namespace SZVppFilmUI.ViewModels
                         edges_sub_pix_high = BottomCamera2Low + 20;
                         camera = bottomCamera2;
                         break;
+                    case "3":
+                        image = topCamera.CurrentImage;
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
+                        imageViewer = Global.TopCameraImageViewer2;
+                        edges_sub_pix_low = TopCameraLow;
+                        edges_sub_pix_high = TopCameraLow + 20;
+                        camera = topCamera;
+                        break;
                     default:
                         image = topCamera.CurrentImage;
-                        switch (TopCameraProductIndex)
-                        {
-                            case 1:
-                                path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
-                                break;
-                            case 0:
-                            default:
-                                path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
-                                break;
-                        }
+                        path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
                         imageViewer = Global.TopCameraImageViewer;
                         edges_sub_pix_low = TopCameraLow;
                         edges_sub_pix_high = TopCameraLow + 20;
@@ -1358,6 +1447,11 @@ namespace SZVppFilmUI.ViewModels
                         BottomCamera2GCStyle = t;
                         BottomCamera2AppendHObject = null;
                         BottomCamera2AppendHObject = regionLine;
+                        break;
+                    case "3":
+                        TopCameraGCStyle2 = t;
+                        TopCameraAppendHObject2 = null;
+                        TopCameraAppendHObject2 = regionLine;
                         break;
                     default:
                         TopCameraGCStyle = t;
@@ -1770,18 +1864,16 @@ namespace SZVppFilmUI.ViewModels
                             camera = bottomCamera2;
                             BottomCamera2AppendHObject = null;
                             break;
+                        case "3":
+                            image = topCamera.CurrentImage;
+                            path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
+                            imageViewer = Global.TopCameraImageViewer2;
+                            camera = topCamera;
+                            TopCameraAppendHObject2 = null;
+                            break;
                         default:
                             image = topCamera.CurrentImage;
-                            switch (TopCameraProductIndex)
-                            {
-                                case 1:
-                                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
-                                    break;
-                                case 0:
-                                default:
-                                    path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
-                                    break;
-                            }
+                            path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
                             imageViewer = Global.TopCameraImageViewer;
                             camera = topCamera;
                             TopCameraAppendHObject = null;
@@ -1802,6 +1894,9 @@ namespace SZVppFilmUI.ViewModels
                         case "2":
                             BottomCamera2AppendHObject = roi.getRegion();
                             break;
+                        case "3":
+                            TopCameraAppendHObject2 = roi.getRegion();
+                            break;
                         default:
                             TopCameraAppendHObject = roi.getRegion();
                             break;
@@ -1821,22 +1916,7 @@ namespace SZVppFilmUI.ViewModels
                 HalconWindowVisibility = "Visible";
             }
         }
-        private void TopCameraProductSelectCommandExecute(object p)
-        {
-            switch (p.ToString())
-            {
-                case "0":
-                    TopCameraProductIndex = 0;
-                    AddMessage("上相机选择：旋转OFF");
-                    break;
-                case "1":
-                    TopCameraProductIndex = 1;
-                    AddMessage("上相机选择：旋转ON");
-                    break;
-                default:
-                    break;
-            }
-        }
+        
         private async void GetMic1PositionCommandExecute(object p)
         {
             metro.ChangeAccent("Red");
@@ -1939,7 +2019,7 @@ namespace SZVppFilmUI.ViewModels
             NoiseValue = 0;
             OnlyImage = true;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
-            WindowTitle = "SZVppFilmUI20200812_1:" + Station;
+            WindowTitle = "SZVppFilmUI20200818_1:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -1948,6 +2028,7 @@ namespace SZVppFilmUI.ViewModels
             HalconWindowVisibility = "Visible";
             LoginMenuItemHeader = "登录";
             TopCameraROIList = new ObservableCollection<ROI>();
+            TopCameraROIList2 = new ObservableCollection<ROI>();
             BottomCamera1ROIList = new ObservableCollection<ROI>();
             BottomCamera2ROIList = new ObservableCollection<ROI>();
             ClibButtonIsEnabled = true;
@@ -2231,7 +2312,7 @@ namespace SZVppFilmUI.ViewModels
                                     bool rst = topCamera.GrabImage(TopCameraRadius);
                                     if (rst)
                                     {
-                                        TopCameraIamge = topCamera.CurrentImage;
+                                        TopCameraIamge2 = topCamera.CurrentImage;
                                  
                                         var calcrst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 0);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
@@ -2379,7 +2460,7 @@ namespace SZVppFilmUI.ViewModels
                                     bool rst = topCamera.GrabImage(TopCameraRadius);
                                     if (rst)
                                     {
-                                        TopCameraIamge = topCamera.CurrentImage;
+                                        TopCameraIamge2 = topCamera.CurrentImage;
                                        
                                         var calcrst = TopCameraCalc("D4228", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 0);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
@@ -2571,9 +2652,21 @@ namespace SZVppFilmUI.ViewModels
                 HObject regionAffineTrans;
                 HOperatorSet.AffineTransRegion(modelRegion, out regionAffineTrans, homMat2D, "nearest_neighbor");
                 Tuple<string, object> t = new Tuple<string, object>("Color", "green");
-                TopCameraGCStyle = t;
-                TopCameraAppendHObject = null;
-                TopCameraAppendHObject = regionAffineTrans;
+                switch (pindex)
+                {
+                    case 1:
+                        TopCameraGCStyle = t;
+                        TopCameraAppendHObject = null;
+                        TopCameraAppendHObject = regionAffineTrans;
+                        break;
+                    case 0:
+                    default:
+                        TopCameraGCStyle2 = t;
+                        TopCameraAppendHObject2 = null;
+                        TopCameraAppendHObject2 = regionAffineTrans;
+                        break;
+                }
+
                 AddMessage("找到模板: Row:" + row1.D.ToString("F0") + " Column:" + column1.D.ToString("F0") + " Angle:" + angle1.TupleDeg().D.ToString("F2") + " Score:" + score1.D.ToString("F1"));
 
                 //确认角度
@@ -2605,7 +2698,17 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
                 HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
-                TopCameraAppendHObject = regionLine;
+                switch (pindex)
+                {
+                    case 1:
+                        TopCameraAppendHObject = regionLine;
+                        break;
+                    case 0:
+                    default:
+                        TopCameraAppendHObject2 = regionLine;
+                        break;
+                }
+                
                 index = FindMaxLine(regionLine);
                 double lineAngle2 = Math.Atan2(nc1.DArr[index], nr1.DArr[index]) * 180 / Math.PI + 90;
 
@@ -2684,13 +2787,13 @@ namespace SZVppFilmUI.ViewModels
                 }
                 #endregion
                 #region 重膜检测
-                HTuple areaModel = GetDarkAreaValue(row, column, ModelImage, 70, 200);
-                HTuple areaNewImage = GetDarkAreaValue(row1, column1, topCamera.CurrentImage, 70, 200);
-                if (Math.Abs(areaModel.D - areaNewImage.D) > areaModel.D / OverlapFactorTop)
-                {
-                    result = false;
-                    AddMessage($"上相机:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
-                }                
+                //HTuple areaModel = GetDarkAreaValue(row, column, ModelImage, 70, 200);
+                //HTuple areaNewImage = GetDarkAreaValue(row1, column1, topCamera.CurrentImage, 70, 200);
+                //if (Math.Abs(areaModel.D - areaNewImage.D) > areaModel.D / OverlapFactorTop)
+                //{
+                //    result = false;
+                //    AddMessage($"上相机:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
+                //}                
                 #endregion
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100), (int)(FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100), (int)((lineAngle2 - lineAngle1) * 100) }, result);
             }
@@ -2804,13 +2907,13 @@ namespace SZVppFilmUI.ViewModels
                 }
                 #endregion
                 #region 重膜检测
-                HTuple areaModel = GetDarkAreaValue(row, column, ModelImage, 70, 200);
-                HTuple areaNewImage = GetDarkAreaValue(row1, column1, bottomCamera1.CurrentImage, 70, 200);
-                if (Math.Abs(areaModel.D - areaNewImage.D) > areaModel.D / OverlapFactorBottom1)
-                {
-                    result = false;
-                    AddMessage($"下相机1:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
-                }
+                //HTuple areaModel = GetDarkAreaValue(row, column, ModelImage, 70, 200);
+                //HTuple areaNewImage = GetDarkAreaValue(row1, column1, bottomCamera1.CurrentImage, 70, 200);
+                //if (Math.Abs(areaModel.D - areaNewImage.D) > areaModel.D / OverlapFactorBottom1)
+                //{
+                //    result = false;
+                //    AddMessage($"下相机1:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
+                //}
                 #endregion
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)(((lineAngle1 - lineAngle2) * -1 + _u) * 100) }, result);
             }
@@ -2926,13 +3029,13 @@ namespace SZVppFilmUI.ViewModels
                 }
                 #endregion
                 #region 重膜检测
-                HTuple areaModel = GetDarkAreaValue(row, column, ModelImage, 70, 200);
-                HTuple areaNewImage = GetDarkAreaValue(row1, column1, bottomCamera2.CurrentImage, 70, 200);
-                if (Math.Abs(areaModel.D - areaNewImage.D) > areaModel.D / OverlapFactorBottom2)
-                {
-                    result = false;
-                    AddMessage($"下相机2:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
-                }
+                //HTuple areaModel = GetDarkAreaValue(row, column, ModelImage, 70, 200);
+                //HTuple areaNewImage = GetDarkAreaValue(row1, column1, bottomCamera2.CurrentImage, 70, 200);
+                //if (Math.Abs(areaModel.D - areaNewImage.D) > areaModel.D / OverlapFactorBottom2)
+                //{
+                //    result = false;
+                //    AddMessage($"下相机2:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
+                //}
                 #endregion
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)(((lineAngle1 - lineAngle2) * -1 + _u) * 100) }, result);
             }

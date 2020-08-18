@@ -12,8 +12,11 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <TabControl SelectedIndex="{Binding TabControlSelectedIndex}">
-            <TabItem Header="TopCamera">
+            <TabItem Header="TopCamera1">
                 <local:TopCamera></local:TopCamera>
+            </TabItem>
+            <TabItem Header="TopCamera2">
+                <local:TopCamera2></local:TopCamera2>
             </TabItem>
             <TabItem Header="BottomCamera1">
                 <local:BottomCamera1></local:BottomCamera1>

@@ -151,6 +151,9 @@
     <Compile Include="Views\TopCamera.xaml.cs">
       <DependentUpon>TopCamera.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\TopCamera2.xaml.cs">
+      <DependentUpon>TopCamera2.xaml</DependentUpon>
+    </Compile>
     <Page Include="Views\Dictionary1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -180,6 +183,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\TopCamera.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TopCamera2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

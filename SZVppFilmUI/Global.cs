@@ -10,6 +10,7 @@ namespace SZVppFilmUI
     public static class Global
     {
         public static ImageViewer TopCameraImageViewer;
+        public static ImageViewer TopCameraImageViewer2;
         public static ImageViewer BottonCamera1ImageViewer;
         public static ImageViewer BottonCamera2ImageViewer;
     }
