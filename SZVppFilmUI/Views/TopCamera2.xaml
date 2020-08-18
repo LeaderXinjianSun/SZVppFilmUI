@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="SZVppFilmUI.Views.TopCamera2"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"                           
+             xmlns:local="clr-namespace:SZVppFilmUI.Views"
+             xmlns:halconviewer="clr-namespace:HalconViewer;assembly=HalconViewer"
+             mc:Ignorable="d" 
+             d:DesignHeight="480" d:DesignWidth="1024">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Dictionary1.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <halconviewer:ImageViewer Visibility="{Binding HalconWindowVisibility}" Name="TopCameraImageViewer2" Image="{Binding TopCameraIamge2}" Repaint="{Binding TopCameraRepaint2}" AutoRepaint="True" ROIList="{Binding TopCameraROIList2}" AppendHObject="{Binding TopCameraAppendHObject2}" GCStyle="{Binding TopCameraGCStyle2}"></halconviewer:ImageViewer>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.ColumnSpan="2" Orientation="Vertical">
+                <TextBlock Text="{Binding TopCameraName,StringFormat=相机名称:{0},FallbackValue=相机名称}" FontSize="24"></TextBlock>
+            </StackPanel>
+
+            <Button Grid.Column="3" Style="{StaticResource AccentedSquareButtonStyle}" Margin="10" Content="拍照" FontSize="24" Command="{Binding TopCameraFunctionCommand}" CommandParameter="1"></Button>
+            <Grid Grid.Row="1" Grid.ColumnSpan="4" Grid.RowSpan="3" Style="{StaticResource GridLoginStatus}">
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button Style="{StaticResource AccentedSquareButtonStyle}" Content="区域" Margin="5" FontSize="18" Command="{Binding DrawROIOperateCommand}" CommandParameter="3"></Button>
+                <Button Grid.Column="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="模板" Margin="5" FontSize="18" Command="{Binding CreateShapeModelOperateCommand}" CommandParameter="3"></Button>
+                <Button Grid.Column="2" Style="{StaticResource AccentedSquareButtonStyle}" Content="直线" Margin="5" FontSize="18" Command="{Binding CreateLineCommand}" CommandParameter="3"></Button>
+                <Button Grid.Column="3" Style="{StaticResource AccentedSquareButtonStyle}" Content="识别&#13;模板" Margin="5" FontSize="12" Command="{Binding FindShapeModelOperateCommand}" CommandParameter="3"></Button>
+                <Button Grid.Row="1" Grid.Column="3" Style="{StaticResource AccentedSquareButtonStyle}" Content="识别&#13;直线" Margin="5" FontSize="12" Command="{Binding FindLineOperateCommand}" CommandParameter="3"></Button>
+
+                <Button Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="读取" Margin="5" FontSize="18" Command="{Binding ReadImageOperateCommand}" CommandParameter="3"></Button>
+                <!--<Button Grid.Row="1" Grid.Column="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="模板2" Margin="5" FontSize="18" Command="{Binding CreateShapeModel2}"></Button>-->
+                <!--<Button Grid.Row="1" Grid.Column="2" Style="{StaticResource AccentedSquareButtonStyle}" Content="识别2" Margin="5" FontSize="18" Command="{Binding FindShapeModel2}"></Button>-->
+
+            </Grid>
+
+        </Grid>
+    </Grid>
+</UserControl>
