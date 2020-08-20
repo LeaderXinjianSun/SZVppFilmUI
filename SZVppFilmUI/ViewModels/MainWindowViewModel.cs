@@ -959,14 +959,14 @@ namespace SZVppFilmUI.ViewModels
                         rOIList = BottomCamera2ROIList;
                         break;
                     case "3":
-                        image = topCamera.CurrentImage;
+                        image = TopCameraIamge2;
                         path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
                         imageViewer = Global.TopCameraImageViewer2;
                         rOIList = TopCameraROIList2;
                         break;
                     case "0":
                     default:
-                        image = topCamera.CurrentImage;
+                        image = TopCameraIamge;
                         path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
                         imageViewer = Global.TopCameraImageViewer;
                         rOIList = TopCameraROIList;
@@ -1143,7 +1143,7 @@ namespace SZVppFilmUI.ViewModels
                             Contrast = BottomCamera2Contrast;
                             break;
                         case "3":
-                            image = topCamera.CurrentImage;
+                            image = TopCameraIamge2;
                             path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
                             imageViewer = Global.TopCameraImageViewer2;
                             rOIList = TopCameraROIList2;
@@ -1153,7 +1153,7 @@ namespace SZVppFilmUI.ViewModels
                             break;
                         case "0":
                         default:
-                            image = topCamera.CurrentImage;
+                            image = TopCameraIamge;
                             path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
                             imageViewer = Global.TopCameraImageViewer;
                             rOIList = TopCameraROIList;
@@ -1199,7 +1199,7 @@ namespace SZVppFilmUI.ViewModels
                     HTuple ModelID;
                     HOperatorSet.CreateShapeModel(ReduceDomainImage, 7, (new HTuple(-180)).TupleRad(), (new HTuple(360)).TupleRad(), (new HTuple(0.1)).TupleRad(), "no_pregeneration", "use_polarity", Contrast, 10, out ModelID);
                     HOperatorSet.WriteShapeModel(ModelID, Path.Combine(path, "ShapeModel.shm"));
-                    camera.SaveImage("bmp", Path.Combine(path, "ModelImage.bmp"));
+                    image.WriteImage("bmp", 0, Path.Combine(path, "ModelImage.bmp"));
                     AddMessage("创建模板完成");
                 }
                 catch (Exception ex)
@@ -1288,7 +1288,7 @@ namespace SZVppFilmUI.ViewModels
                         camera = bottomCamera2;
                         break;
                     case "3":
-                        image = topCamera.CurrentImage;
+                        image = TopCameraIamge2;
                         path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
                         imageViewer = Global.TopCameraImageViewer2;
                         rOIList = TopCameraROIList2;
@@ -1296,7 +1296,7 @@ namespace SZVppFilmUI.ViewModels
                         break;
                     case "0":
                     default:
-                        image = topCamera.CurrentImage;
+                        image = TopCameraIamge;
                         path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
                         imageViewer = Global.TopCameraImageViewer;
                         rOIList = TopCameraROIList;
@@ -1313,7 +1313,7 @@ namespace SZVppFilmUI.ViewModels
                 HObject ModelImage;
                 HOperatorSet.ReadImage(out ModelImage, Path.Combine(path, "ModelImage.bmp"));
                 HOperatorSet.FindShapeModel(ModelImage, ModelID, (new HTuple(-180)).TupleRad(), (new HTuple(360)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
-                HOperatorSet.FindShapeModel(camera.CurrentImage, ModelID, (new HTuple(-180)).TupleRad(), (new HTuple(360)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row1, out column1, out angle1, out score1);
+                HOperatorSet.FindShapeModel(image, ModelID, (new HTuple(-180)).TupleRad(), (new HTuple(360)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row1, out column1, out angle1, out score1);
                 HTuple homMat2D;
                 HOperatorSet.VectorAngleToRigid(row, column, angle, row1, column1, angle1, out homMat2D);
                 HObject modelRegion;
@@ -1388,7 +1388,7 @@ namespace SZVppFilmUI.ViewModels
                         camera = bottomCamera2;
                         break;
                     case "3":
-                        image = topCamera.CurrentImage;
+                        image = TopCameraIamge2;
                         path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
                         imageViewer = Global.TopCameraImageViewer2;
                         edges_sub_pix_low = TopCameraLow;
@@ -1397,7 +1397,7 @@ namespace SZVppFilmUI.ViewModels
                         break;
                     case "0":
                     default:
-                        image = topCamera.CurrentImage;
+                        image = TopCameraIamge;
                         path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
                         imageViewer = Global.TopCameraImageViewer;
                         edges_sub_pix_low = TopCameraLow;
@@ -1415,7 +1415,7 @@ namespace SZVppFilmUI.ViewModels
                 HObject ModelImage;
                 HOperatorSet.ReadImage(out ModelImage, Path.Combine(path, "ModelImage.bmp"));
                 HOperatorSet.FindShapeModel(ModelImage, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
-                HOperatorSet.FindShapeModel(camera.CurrentImage, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row1, out column1, out angle1, out score1);
+                HOperatorSet.FindShapeModel(image, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row1, out column1, out angle1, out score1);
                 HTuple homMat2D;
                 HOperatorSet.VectorAngleToRigid(row, column, angle, row1, column1, angle1, out homMat2D);
                 HObject lineRegion;
@@ -1423,7 +1423,7 @@ namespace SZVppFilmUI.ViewModels
                 HObject regionAffineTrans;
                 HOperatorSet.AffineTransRegion(lineRegion, out regionAffineTrans, homMat2D, "nearest_neighbor");
                 HObject imageReduced1;
-                HOperatorSet.ReduceDomain(camera.CurrentImage, regionAffineTrans, out imageReduced1);
+                HOperatorSet.ReduceDomain(image, regionAffineTrans, out imageReduced1);
                 HObject edges1;
                 HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, edges_sub_pix_low, edges_sub_pix_high);
                 HObject contoursSplit1;
@@ -1877,7 +1877,7 @@ namespace SZVppFilmUI.ViewModels
                             BottomCamera2AppendHObject = null;
                             break;
                         case "3":
-                            image = topCamera.CurrentImage;
+                            image = TopCameraIamge2;
                             path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\ON");
                             imageViewer = Global.TopCameraImageViewer2;
                             camera = topCamera;
@@ -1885,7 +1885,7 @@ namespace SZVppFilmUI.ViewModels
                             break;
                         case "0":
                         default:
-                            image = topCamera.CurrentImage;
+                            image = TopCameraIamge;
                             path = Path.Combine(System.Environment.CurrentDirectory, @"Camera\Top\OFF");
                             imageViewer = Global.TopCameraImageViewer;
                             camera = topCamera;
@@ -2037,7 +2037,7 @@ namespace SZVppFilmUI.ViewModels
             Product_DiffY1 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "Product_DiffY1", "16.3488"));
             Product_DiffX2 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "Product_DiffX2", "47.0362"));
             Product_DiffY2 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "Product_DiffY2", "63.6512"));
-            WindowTitle = "SZVppFilmUI20200818:" + Station;
+            WindowTitle = "SZVppFilmUI20200819:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
