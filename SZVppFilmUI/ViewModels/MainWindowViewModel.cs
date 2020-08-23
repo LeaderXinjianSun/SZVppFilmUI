@@ -1312,8 +1312,13 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.ReadShapeModel(Path.Combine(path, "ShapeModel.shm"), out ModelID);
                 HObject ModelImage;
                 HOperatorSet.ReadImage(out ModelImage, Path.Combine(path, "ModelImage.bmp"));
-                HOperatorSet.FindShapeModel(ModelImage, ModelID, (new HTuple(-180)).TupleRad(), (new HTuple(360)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
-                HOperatorSet.FindShapeModel(image, ModelID, (new HTuple(-180)).TupleRad(), (new HTuple(360)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row1, out column1, out angle1, out score1);
+                HObject ImageRegion;
+                HOperatorSet.ReadRegion(out ImageRegion, Path.Combine(path, "Region.hobj"));
+                HObject ImageReduced;
+                HOperatorSet.ReduceDomain(ModelImage, ImageRegion, out ImageReduced);
+                HOperatorSet.FindShapeModel(ImageReduced, ModelID, (new HTuple(-180)).TupleRad(), (new HTuple(360)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
+                HOperatorSet.ReduceDomain(image, ImageRegion, out ImageReduced);
+                HOperatorSet.FindShapeModel(ImageReduced, ModelID, (new HTuple(-180)).TupleRad(), (new HTuple(360)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row1, out column1, out angle1, out score1);
                 HTuple homMat2D;
                 HOperatorSet.VectorAngleToRigid(row, column, angle, row1, column1, angle1, out homMat2D);
                 HObject modelRegion;
@@ -1414,8 +1419,13 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.ReadShapeModel(Path.Combine(path, "ShapeModel.shm"), out ModelID);
                 HObject ModelImage;
                 HOperatorSet.ReadImage(out ModelImage, Path.Combine(path, "ModelImage.bmp"));
-                HOperatorSet.FindShapeModel(ModelImage, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
-                HOperatorSet.FindShapeModel(image, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row1, out column1, out angle1, out score1);
+                HObject ImageRegion;
+                HOperatorSet.ReadRegion(out ImageRegion, Path.Combine(path, "Region.hobj"));
+                HObject ImageReduced;
+                HOperatorSet.ReduceDomain(ModelImage, ImageRegion, out ImageReduced);
+                HOperatorSet.FindShapeModel(ImageReduced, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
+                HOperatorSet.ReduceDomain(image, ImageRegion, out ImageReduced);
+                HOperatorSet.FindShapeModel(ImageReduced, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row1, out column1, out angle1, out score1);
                 HTuple homMat2D;
                 HOperatorSet.VectorAngleToRigid(row, column, angle, row1, column1, angle1, out homMat2D);
                 HObject lineRegion;
@@ -2037,7 +2047,7 @@ namespace SZVppFilmUI.ViewModels
             Product_DiffY1 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "Product_DiffY1", "16.3488"));
             Product_DiffX2 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "Product_DiffX2", "47.0362"));
             Product_DiffY2 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "Product_DiffY2", "63.6512"));
-            WindowTitle = "SZVppFilmUI20200819:" + Station;
+            WindowTitle = "SZVppFilmUI20200821:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -2769,7 +2779,7 @@ namespace SZVppFilmUI.ViewModels
 
 
                 HTuple T0;
-                HOperatorSet.VectorAngleToRigid(centerP.X, centerP.Y, new HTuple(centerP.U).TupleRad(), (double)targetp[0] / 100, (double)targetp[1] / 100, new HTuple((double)targetp[2] / 100).TupleRad(), out T0);//T0是产品从矫正平台移动到贴膜位的变换
+                HOperatorSet.VectorAngleToRigid(centerP.X, centerP.Y, new HTuple(centerP.U).TupleRad(), (double)targetp[0] / 100 + _x, (double)targetp[1] / 100 + _y, new HTuple((double)targetp[2] / 100 + _u).TupleRad(), out T0);//T0是产品从矫正平台移动到贴膜位的变换
 
                 HTuple ProductP_x, ProductP_y;
                 HOperatorSet.AffineTransPoint2d(T0, mIC1P.X, mIC1P.Y, out ProductP_x, out ProductP_y);//计算得出的膜的位置
@@ -2778,7 +2788,7 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.VectorAngleToRigid(ProductP_x, ProductP_y, new HTuple(lineAngle1 * -1 * -1).TupleRad(), ProductP_x, ProductP_y, new HTuple(lineAngle2 * -1 * -1).TupleRad(), out T1);//T1是膜坐标旋转角度差的变换
 
                 HTuple FitRobot_x0, FitRobot_y0;
-                HOperatorSet.AffineTransPoint2d(T1, (double)targetp[0] / 100, (double)targetp[1] / 100, out FitRobot_x0, out FitRobot_y0);//绕膜旋转，先补偿角度
+                HOperatorSet.AffineTransPoint2d(T1, (double)targetp[0] / 100 + _x, (double)targetp[1] / 100 + _y, out FitRobot_x0, out FitRobot_y0);//绕膜旋转，先补偿角度
 
                 HTuple CamImage_x, CamImage_y;
                 HOperatorSet.AffineTransPoint2d(homMat2D, row, column, out CamImage_x, out CamImage_y);
@@ -2816,7 +2826,7 @@ namespace SZVppFilmUI.ViewModels
                 //    AddMessage($"上相机:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
                 //}
                 #endregion
-                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100), (int)(FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 * -1), (int)((lineAngle2 - lineAngle1) * 100 * -1 * -1) }, result);
+                return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100), (int)(FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 * -1), (int)(((lineAngle2 - lineAngle1) * -1 * -1 + _u) * 100) }, result);
             }
             catch (Exception ex)
             {
