@@ -2028,7 +2028,7 @@ namespace SZVppFilmUI.ViewModels
             NoiseValue = 0;
             OnlyImage = true;
             string Station = Inifile.INIGetStringValue(iniParameterPath, "System", "Station", "A");
-            WindowTitle = "SZVppFilmUI20200821_1:" + Station;
+            WindowTitle = "SZVppFilmUI20200901_1:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -2290,7 +2290,7 @@ namespace SZVppFilmUI.ViewModels
                                  
                                         var calcrst = TopCameraCalc("D4116", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 1);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
-                                        CalcRecord(0, calcrst);
+                                        
 
                                         Fx5u.WriteMultW("D3206", calcrst.Item1);
                                         Fx5u.SetM("M3201", calcrst.Item2);
@@ -2325,7 +2325,7 @@ namespace SZVppFilmUI.ViewModels
                                  
                                         var calcrst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 0);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
-                                        CalcRecord(1, calcrst);
+                                        
 
                                         Fx5u.WriteMultW("D3206", calcrst.Item1);
                                         Fx5u.SetM("M3203", calcrst.Item2);
@@ -2354,40 +2354,47 @@ namespace SZVppFilmUI.ViewModels
                                 try
                                 {
                                     bool rst1 = false, rst2 = false, finish1 = false, finish2 = false;
-                                    Task.Run(() => { rst1 = bottomCamera1.GrabImage(BottomCamera1Radius); finish1 = true; });
-                                    Task.Run(() => { rst2 = bottomCamera2.GrabImage(BottomCamera2Radius); finish2 = true; });
+                                    Task.Run(() => {
+                                        rst1 = bottomCamera1.GrabImage(BottomCamera1Radius);
+                                        if (rst1)
+                                        {
+                                            BottomCamera1Iamge = bottomCamera1.CurrentImage;
+
+                                            var calcrst = BottomCamera1Calc("D4134", "D4086", BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
+                                            AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
+                                            
+                                            Fx5u.WriteMultW("D3212", calcrst.Item1);
+                                            Fx5u.SetM("M3205", calcrst.Item2);
+                                            if (isRecordImage != "0" && !calcrst.Item2)
+                                            {
+                                                bottomCamera1.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom1", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom1.bmp"));
+                                            }
+                                        }
+                                        finish1 = true;
+                                    });
+                                    Task.Run(() => { rst2 = bottomCamera2.GrabImage(BottomCamera2Radius);
+                                        if (rst2)
+                                        {
+                                            BottomCamera2Iamge = bottomCamera2.CurrentImage;
+
+                                            var calcrst = BottomCamera2Calc("D4134", "D4092", BottomCamera2Diff.X, BottomCamera2Diff.Y, BottomCamera2Diff.U);
+                                            AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
+                                            
+                                            Fx5u.WriteMultW("D3218", calcrst.Item1);
+                                            Fx5u.SetM("M3206", calcrst.Item2);
+                                            if (isRecordImage != "0" && !calcrst.Item2)
+                                            {
+                                                bottomCamera2.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom2", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom2.bmp"));
+                                            }
+                                        }
+                                        finish2 = true;
+                                    });
                                     while (!finish1 || !finish2)
                                     {
                                         System.Threading.Thread.Sleep(10);
                                     }
-                                    if (rst1)
-                                    {
-                                        BottomCamera1Iamge = bottomCamera1.CurrentImage;
-                                     
-                                        var calcrst = BottomCamera1Calc("D4134", "D4086", BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
-                                        AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
-                                        CalcRecord(2, calcrst);
-                                        Fx5u.WriteMultW("D3212", calcrst.Item1);
-                                        Fx5u.SetM("M3205", calcrst.Item2);
-                                        if (isRecordImage != "0" && !calcrst.Item2)
-                                        {
-                                            bottomCamera1.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom1", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom1.bmp"));
-                                        }
-                                    }
-                                    if (rst2)
-                                    {
-                                        BottomCamera2Iamge = bottomCamera2.CurrentImage;
-                                       
-                                        var calcrst = BottomCamera2Calc("D4134", "D4092", BottomCamera2Diff.X, BottomCamera2Diff.Y, BottomCamera2Diff.U);
-                                        AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
-                                        CalcRecord(3, calcrst);
-                                        Fx5u.WriteMultW("D3218", calcrst.Item1);
-                                        Fx5u.SetM("M3206", calcrst.Item2);
-                                        if (isRecordImage != "0" && !calcrst.Item2)
-                                        {
-                                            bottomCamera2.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom2", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom2.bmp"));
-                                        }
-                                    }
+                                    
+                                    
                                     if (!rst1 || !rst2)
                                     {
                                         AddMessage("下相机拍照失败");
@@ -2438,7 +2445,7 @@ namespace SZVppFilmUI.ViewModels
                                       
                                         var calcrst = TopCameraCalc("D4222", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 1);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
-                                        CalcRecord(0, calcrst);
+                                        
 
                                         Fx5u.WriteMultW("D3246", calcrst.Item1);
                                         Fx5u.SetM("M3221", calcrst.Item2);
@@ -2473,7 +2480,7 @@ namespace SZVppFilmUI.ViewModels
                                        
                                         var calcrst = TopCameraCalc("D4228", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 0);
                                         AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
-                                        CalcRecord(1, calcrst);
+                                        
 
                                         Fx5u.WriteMultW("D3246", calcrst.Item1);
                                         Fx5u.SetM("M3223", calcrst.Item2);
@@ -2502,40 +2509,46 @@ namespace SZVppFilmUI.ViewModels
                                 try
                                 {
                                     bool rst1 = false, rst2 = false, finish1 = false, finish2 = false;
-                                    Task.Run(() => { rst1 = bottomCamera1.GrabImage(BottomCamera1Radius); finish1 = true; });
-                                    Task.Run(() => { rst2 = bottomCamera2.GrabImage(BottomCamera2Radius); finish2 = true; });
+                                    Task.Run(() => { rst1 = bottomCamera1.GrabImage(BottomCamera1Radius);
+                                        if (rst1)
+                                        {
+                                            BottomCamera1Iamge = bottomCamera1.CurrentImage;
+
+                                            var calcrst = BottomCamera1Calc("D4240", "D4192", BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
+                                            AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
+                                            
+                                            Fx5u.WriteMultW("D3252", calcrst.Item1);
+                                            Fx5u.SetM("M3225", calcrst.Item2);
+                                            if (isRecordImage != "0" && !calcrst.Item2)
+                                            {
+                                                bottomCamera1.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom1", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom1.bmp"));
+                                            }
+                                        }
+                                        finish1 = true;
+                                    });
+                                    Task.Run(() => {
+                                        rst2 = bottomCamera2.GrabImage(BottomCamera2Radius);
+                                        if (rst2)
+                                        {
+                                            BottomCamera2Iamge = bottomCamera2.CurrentImage;
+
+                                            var calcrst = BottomCamera2Calc("D4240", "D4198", BottomCamera2Diff.X, BottomCamera2Diff.Y, BottomCamera2Diff.U);
+                                            AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
+                                            
+                                            Fx5u.WriteMultW("D3258", calcrst.Item1);
+                                            Fx5u.SetM("M3226", calcrst.Item2);
+                                            if (isRecordImage != "0" && !calcrst.Item2)
+                                            {
+                                                bottomCamera2.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom2", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom2.bmp"));
+                                            }
+                                        }
+                                        finish2 = true; });
                                     while (!finish1 || !finish2)
                                     {
                                         System.Threading.Thread.Sleep(10);
                                     }
-                                    if (rst1)
-                                    {
-                                        BottomCamera1Iamge = bottomCamera1.CurrentImage;
-                                        
-                                        var calcrst = BottomCamera1Calc("D4240", "D4192", BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
-                                        AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
-                                        CalcRecord(2, calcrst);
-                                        Fx5u.WriteMultW("D3252", calcrst.Item1);
-                                        Fx5u.SetM("M3225", calcrst.Item2);
-                                        if (isRecordImage != "0" && !calcrst.Item2)
-                                        {
-                                            bottomCamera1.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom1", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom1.bmp"));
-                                        }
-                                    }
-                                    if (rst2)
-                                    {
-                                        BottomCamera2Iamge = bottomCamera2.CurrentImage;
-                                       
-                                        var calcrst = BottomCamera2Calc("D4240", "D4198", BottomCamera2Diff.X, BottomCamera2Diff.Y, BottomCamera2Diff.U);
-                                        AddMessage(calcrst.Item1[0].ToString() + "," + calcrst.Item1[1].ToString() + "," + calcrst.Item1[2].ToString());
-                                        CalcRecord(3, calcrst);
-                                        Fx5u.WriteMultW("D3258", calcrst.Item1);
-                                        Fx5u.SetM("M3226", calcrst.Item2);
-                                        if (isRecordImage != "0" && !calcrst.Item2)
-                                        {
-                                            bottomCamera2.SaveImage("bmp", Path.Combine("E:\\RecordImages\\bottom2", DateTime.Now.ToString("yyyyMMddHHmmss") + "bottom2.bmp"));
-                                        }
-                                    }
+                                    
+                                    
                                     if (!rst1 || !rst2)
                                     {
                                         AddMessage("下相机拍照失败");
@@ -2679,47 +2692,49 @@ namespace SZVppFilmUI.ViewModels
                 AddMessage("找到模板: Row:" + row1.D.ToString("F0") + " Column:" + column1.D.ToString("F0") + " Angle:" + angle1.TupleDeg().D.ToString("F2") + " Score:" + score1.D.ToString("F1"));
 
                 //确认角度
-                HObject lineRegion;
-                HOperatorSet.ReadRegion(out lineRegion, Path.Combine(path, "Line.hobj"));
-                HObject imageReduced1;
-                HOperatorSet.ReduceDomain(ModelImage, lineRegion, out imageReduced1);
-                HObject edges1;
-                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, TopCameraLow, TopCameraLow + 20);
-                HObject contoursSplit1;
-                HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
-                HObject selectedContours1;
-                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
-                HObject unionContours1;
-                HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
-                HTuple rowBegin1, colBegin1, rowEnd1, colEnd1, nr1, nc1, dist1;
-                HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
-                HObject regionLine;
-                HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
-                var index = FindMaxLine(regionLine);
-                double lineAngle1 = Math.Atan2(nc1.DArr[index], nr1.DArr[index]) * 180 / Math.PI + 90;
+                //HObject lineRegion;
+                //HOperatorSet.ReadRegion(out lineRegion, Path.Combine(path, "Line.hobj"));
+                //HObject imageReduced1;
+                //HOperatorSet.ReduceDomain(ModelImage, lineRegion, out imageReduced1);
+                //HObject edges1;
+                //HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, TopCameraLow, TopCameraLow + 20);
+                //HObject contoursSplit1;
+                //HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
+                //HObject selectedContours1;
+                //HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
+                //HObject unionContours1;
+                //HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
+                //HTuple rowBegin1, colBegin1, rowEnd1, colEnd1, nr1, nc1, dist1;
+                //HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
+                //HObject regionLine;
+                //HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
+                //var index = FindMaxLine(regionLine);
+                //double lineAngle1 = Math.Atan2(nc1.DArr[index], nr1.DArr[index]) * 180 / Math.PI + 90;
+                double lineAngle1 = angle.TupleDeg().D;
 
-                HObject regionLineAffineTrans;
-                HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
-                HOperatorSet.ReduceDomain(topCamera.CurrentImage, regionLineAffineTrans, out imageReduced1);
-                HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, TopCameraLow, TopCameraLow + 20);
-                HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
-                HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
-                HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
-                HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
-                HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
-                switch (pindex)
-                {
-                    case 1:
-                        TopCameraAppendHObject = regionLine;
-                        break;
-                    case 0:
-                    default:
-                        TopCameraAppendHObject2 = regionLine;
-                        break;
-                }
-                
-                index = FindMaxLine(regionLine);
-                double lineAngle2 = Math.Atan2(nc1.DArr[index], nr1.DArr[index]) * 180 / Math.PI + 90;
+                //HObject regionLineAffineTrans;
+                //HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
+                //HOperatorSet.ReduceDomain(topCamera.CurrentImage, regionLineAffineTrans, out imageReduced1);
+                //HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, TopCameraLow, TopCameraLow + 20);
+                //HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
+                //HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
+                //HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
+                //HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
+                //HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
+                //switch (pindex)
+                //{
+                //    case 1:
+                //        TopCameraAppendHObject = regionLine;
+                //        break;
+                //    case 0:
+                //    default:
+                //        TopCameraAppendHObject2 = regionLine;
+                //        break;
+                //}
+
+                //index = FindMaxLine(regionLine);
+                //double lineAngle2 = Math.Atan2(nc1.DArr[index], nr1.DArr[index]) * 180 / Math.PI + 90;
+                double lineAngle2 = angle1.TupleDeg().D;
 
 
 
@@ -2776,23 +2791,9 @@ namespace SZVppFilmUI.ViewModels
                 #endregion
                 #region 范围
                 bool result = true;
-                if (FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100 > 5000 || FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100 < -5000)
+                if (lineAngle2 - lineAngle1 > 15 || lineAngle2 - lineAngle1 < -15)
                 {
                     result = false;
-                }
-                else
-                {
-                    if (FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 > 5000 || FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 < -5000)
-                    {
-                        result = false;
-                    }
-                    else
-                    {
-                        if (lineAngle2 - lineAngle1 > 45 || lineAngle2 - lineAngle1 < -45)
-                        {
-                            result = false;
-                        }
-                    }
                 }
                 #endregion
                 #region 重膜检测

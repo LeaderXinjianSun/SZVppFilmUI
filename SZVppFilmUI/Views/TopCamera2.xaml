@@ -63,9 +63,9 @@
                 <Button Grid.Row="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="读取" Margin="5" FontSize="18" Command="{Binding ReadImageOperateCommand}" CommandParameter="3"></Button>
                 <!--<Button Grid.Row="1" Grid.Column="1" Style="{StaticResource AccentedSquareButtonStyle}" Content="模板2" Margin="5" FontSize="18" Command="{Binding CreateShapeModel2}"></Button>-->
                 <!--<Button Grid.Row="1" Grid.Column="2" Style="{StaticResource AccentedSquareButtonStyle}" Content="识别2" Margin="5" FontSize="18" Command="{Binding FindShapeModel2}"></Button>-->
-                
+
             </Grid>
-            
+
         </Grid>
     </Grid>
 </UserControl>
