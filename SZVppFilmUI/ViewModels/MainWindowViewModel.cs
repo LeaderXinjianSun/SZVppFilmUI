@@ -2047,7 +2047,7 @@ namespace SZVppFilmUI.ViewModels
             Product_DiffY1 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "Product_DiffY1", "16.3488"));
             Product_DiffX2 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "Product_DiffX2", "47.0362"));
             Product_DiffY2 = double.Parse(Inifile.INIGetStringValue(iniParameterPath, "System", "Product_DiffY2", "63.6512"));
-            WindowTitle = "SZVppFilmUI20200902:" + Station;
+            WindowTitle = "SZVppFilmUI20200924:" + Station;
             TopCameraName = "cam3";
             BottomCamera1Name = "cam1";
             BottomCamera2Name = "cam2";
@@ -2302,6 +2302,7 @@ namespace SZVppFilmUI.ViewModels
                                     bool rst = topCamera.GrabImage(TopCameraRadius, false);
                                     if (rst)
                                     {
+                                        TopCameraIamge = null;
                                         TopCameraIamge = topCamera.CurrentImage;
                                 
                                         
@@ -2338,6 +2339,7 @@ namespace SZVppFilmUI.ViewModels
                                     bool rst = topCamera.GrabImage(TopCameraRadius, false);
                                     if (rst)
                                     {
+                                        TopCameraIamge2 = null;
                                         TopCameraIamge2 = topCamera.CurrentImage;
                                                                             
                                         var calcrst = TopCameraCalc("D4122", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 1);
@@ -2376,6 +2378,7 @@ namespace SZVppFilmUI.ViewModels
                                         rst1 = bottomCamera1.GrabImage(BottomCamera1Radius, false);
                                         if (rst1)
                                         {
+                                            BottomCamera1Iamge = null;
                                             BottomCamera1Iamge = bottomCamera1.CurrentImage;
 
                                             var calcrst = BottomCamera1Calc("D4134", "D4086", BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
@@ -2394,6 +2397,7 @@ namespace SZVppFilmUI.ViewModels
                                         rst2 = bottomCamera2.GrabImage(BottomCamera2Radius, false);
                                         if (rst2)
                                         {
+                                            BottomCamera2Iamge = null;
                                             BottomCamera2Iamge = bottomCamera2.CurrentImage;
 
                                             var calcrst = BottomCamera2Calc("D4134", "D4092", BottomCamera2Diff.X, BottomCamera2Diff.Y, BottomCamera2Diff.U);
@@ -2457,6 +2461,7 @@ namespace SZVppFilmUI.ViewModels
                                     bool rst = topCamera.GrabImage(TopCameraRadius, false);
                                     if (rst)
                                     {
+                                        TopCameraIamge = null;
                                         TopCameraIamge = topCamera.CurrentImage;
                                                                            
                                         var calcrst = TopCameraCalc("D4222", TopCameraDiff1.X, TopCameraDiff1.Y, TopCameraDiff1.U, 0);
@@ -2493,6 +2498,7 @@ namespace SZVppFilmUI.ViewModels
                                     bool rst = topCamera.GrabImage(TopCameraRadius, false);
                                     if (rst)
                                     {
+                                        TopCameraIamge2 = null;
                                         TopCameraIamge2 = topCamera.CurrentImage;
                                                                          
                                         var calcrst = TopCameraCalc("D4228", TopCameraDiff2.X, TopCameraDiff2.Y, TopCameraDiff2.U, 1);
@@ -2531,6 +2537,7 @@ namespace SZVppFilmUI.ViewModels
                                         rst1 = bottomCamera1.GrabImage(BottomCamera1Radius, false);
                                         if (rst1)
                                         {
+                                            BottomCamera1Iamge = null;
                                             BottomCamera1Iamge = bottomCamera1.CurrentImage;
 
                                             var calcrst = BottomCamera1Calc("D4240", "D4192", BottomCamera1Diff.X, BottomCamera1Diff.Y, BottomCamera1Diff.U);
@@ -2548,6 +2555,7 @@ namespace SZVppFilmUI.ViewModels
                                         rst2 = bottomCamera2.GrabImage(BottomCamera2Radius, false);
                                         if (rst2)
                                         {
+                                            BottomCamera2Iamge = null;
                                             BottomCamera2Iamge = bottomCamera2.CurrentImage;
 
                                             var calcrst = BottomCamera2Calc("D4240", "D4198", BottomCamera2Diff.X, BottomCamera2Diff.Y, BottomCamera2Diff.U);
@@ -2825,6 +2833,12 @@ namespace SZVppFilmUI.ViewModels
                 //    AddMessage($"上相机:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
                 //}
                 #endregion
+                #region 释放内存
+                ModelImage.Dispose();
+                ImageRegion.Dispose();
+                ImageReduced.Dispose();
+                modelRegion.Dispose();
+                #endregion
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100), (int)(FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 * -1), (int)(((lineAngle2 - lineAngle1) * -1 * -1 + _u) * 100) }, result);
             }
             catch (Exception ex)
@@ -2946,6 +2960,19 @@ namespace SZVppFilmUI.ViewModels
                 //    result = false;
                 //    AddMessage($"下相机1:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
                 //}
+                #endregion
+                #region 释放内存
+                ModelImage.Dispose();
+                ImageRegion.Dispose();
+                ImageReduced.Dispose();
+                modelRegion.Dispose();
+                lineRegion.Dispose();
+                imageReduced1.Dispose();
+                edges1.Dispose();
+                contoursSplit1.Dispose();
+                selectedContours1.Dispose();
+                unionContours1.Dispose();
+                regionLineAffineTrans.Dispose();
                 #endregion
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)(((lineAngle1 - lineAngle2) * -1 + _u) * 100) }, result);
             }
@@ -3073,6 +3100,19 @@ namespace SZVppFilmUI.ViewModels
                 //    result = false;
                 //    AddMessage($"下相机2:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
                 //}
+                #endregion
+                #region 释放内存
+                ModelImage.Dispose();
+                ImageRegion.Dispose();
+                ImageReduced.Dispose();
+                modelRegion.Dispose();
+                lineRegion.Dispose();
+                imageReduced1.Dispose();
+                edges1.Dispose();
+                contoursSplit1.Dispose();
+                selectedContours1.Dispose();
+                unionContours1.Dispose();
+                regionLineAffineTrans.Dispose();
                 #endregion
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)(((lineAngle1 - lineAngle2) * -1 + _u) * 100) }, result);
             }

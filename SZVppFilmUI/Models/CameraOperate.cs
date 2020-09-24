@@ -68,6 +68,7 @@ namespace BingLibrary.HVision
                     {
                         HObject medianedImage;
                         HOperatorSet.MedianImage(image, out medianedImage, "circle", medianRadius, "mirrored");
+                        image.Dispose();
                         if (isMirror)
                         {
                             HObject imageMirror;
@@ -83,6 +84,7 @@ namespace BingLibrary.HVision
                         {
                             HObject imageMirror;
                             HOperatorSet.MirrorImage(image, out imageMirror, "column");
+                            image.Dispose();
                             CurrentImage = new HImage(imageMirror);
                         }
                         else
@@ -110,10 +112,12 @@ namespace BingLibrary.HVision
                     {
                         HObject medianedImage;
                         HOperatorSet.MedianImage(image, out medianedImage, "circle", medianRadius, "mirrored");
+                        image.Dispose();
                         if (isMirror)
                         {
                             HObject imageMirror;
                             HOperatorSet.MirrorImage(medianedImage, out imageMirror, "column");
+                            medianedImage.Dispose();
                             CurrentImage = new HImage(imageMirror);
                         }
                         else
@@ -125,6 +129,7 @@ namespace BingLibrary.HVision
                         {
                             HObject imageMirror;
                             HOperatorSet.MirrorImage(image, out imageMirror, "column");
+                            image.Dispose();
                             CurrentImage = new HImage(imageMirror);
                         }
                         else
