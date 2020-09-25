@@ -2690,15 +2690,20 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.ReadRegion(out ImageRegion, Path.Combine(path, "Region.hobj"));
                 HObject ImageReduced;
                 HOperatorSet.ReduceDomain(ModelImage, ImageRegion, out ImageReduced);
+                ModelImage?.Dispose();//释放资源
                 HOperatorSet.FindShapeModel(ImageReduced, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
                 HOperatorSet.ReduceDomain(topCamera.CurrentImage, ImageRegion, out ImageReduced);
+                ImageRegion?.Dispose();//释放资源
                 HOperatorSet.FindShapeModel(ImageReduced, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row1, out column1, out angle1, out score1);
+                HOperatorSet.ClearShapeModel(ModelID);
+                ImageReduced?.Dispose();//释放资源
                 HTuple homMat2D;
                 HOperatorSet.VectorAngleToRigid(row, column, angle, row1, column1, angle1, out homMat2D);
                 HObject modelRegion;
                 HOperatorSet.ReadRegion(out modelRegion, Path.Combine(path, "ModelRegion.hobj"));
                 HObject regionAffineTrans;
                 HOperatorSet.AffineTransRegion(modelRegion, out regionAffineTrans, homMat2D, "nearest_neighbor");
+                modelRegion?.Dispose();//释放资源
                 Tuple<string, object> t = new Tuple<string, object>("Color", "green");
                 switch (pindex)
                 {
@@ -2833,12 +2838,6 @@ namespace SZVppFilmUI.ViewModels
                 //    AddMessage($"上相机:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
                 //}
                 #endregion
-                #region 释放内存
-                ModelImage.Dispose();
-                ImageRegion.Dispose();
-                ImageReduced.Dispose();
-                modelRegion.Dispose();
-                #endregion
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x0.D * 100 - targetp[0] + (CamImage_x1.D - CamImage_x.D) * 100), (int)(FitRobot_y0.D * 100 - targetp[1] + (CamImage_y1.D - CamImage_y.D) * 100 * -1), (int)(((lineAngle2 - lineAngle1) * -1 * -1 + _u) * 100) }, result);
             }
             catch (Exception ex)
@@ -2867,15 +2866,20 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.ReadRegion(out ImageRegion, Path.Combine(path, "Region.hobj"));
                 HObject ImageReduced;
                 HOperatorSet.ReduceDomain(ModelImage, ImageRegion, out ImageReduced);
+                ModelImage?.Dispose();//释放资源
                 HOperatorSet.FindShapeModel(ImageReduced, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
                 HOperatorSet.ReduceDomain(bottomCamera1.CurrentImage, ImageRegion, out ImageReduced);
+                ImageRegion?.Dispose();//释放资源
                 HOperatorSet.FindShapeModel(ImageReduced, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row1, out column1, out angle1, out score1);
+                HOperatorSet.ClearShapeModel(ModelID);//释放资源
+                ImageReduced?.Dispose();//释放资源
                 HTuple homMat2D;
                 HOperatorSet.VectorAngleToRigid(row, column, angle, row1, column1, angle1, out homMat2D);
                 HObject modelRegion;
                 HOperatorSet.ReadRegion(out modelRegion, Path.Combine(path, "ModelRegion.hobj"));
                 HObject regionAffineTrans;
                 HOperatorSet.AffineTransRegion(modelRegion, out regionAffineTrans, homMat2D, "nearest_neighbor");
+                modelRegion?.Dispose();//释放资源
                 Tuple<string, object> t = new Tuple<string, object>("Color", "green");
                 BottomCamera1GCStyle = t;
                 BottomCamera1AppendHObject = null;
@@ -2884,18 +2888,26 @@ namespace SZVppFilmUI.ViewModels
                 //确认角度
                 HObject lineRegion;
                 HOperatorSet.ReadRegion(out lineRegion, Path.Combine(path, "Line.hobj"));
-                HObject imageReduced1;
+                HOperatorSet.ReadImage(out ModelImage, Path.Combine(path, "ModelImage.bmp"));
+                HObject imageReduced1;                
                 HOperatorSet.ReduceDomain(ModelImage, lineRegion, out imageReduced1);
+                lineRegion?.Dispose();//释放资源
+                ModelImage?.Dispose();//释放资源
                 HObject edges1;
                 HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, BottomCamera1Low, BottomCamera1Low + 20);
+                imageReduced1?.Dispose();//释放资源
                 HObject contoursSplit1;
                 HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
+                edges1?.Dispose();//释放资源
                 HObject selectedContours1;
                 HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
+                contoursSplit1?.Dispose();//释放资源
                 HObject unionContours1;
                 HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
+                selectedContours1?.Dispose();//释放资源
                 HTuple rowBegin1, colBegin1, rowEnd1, colEnd1, nr1, nc1, dist1;
                 HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
+                unionContours1?.Dispose();//释放资源
                 HObject regionLine;
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 var index = FindMaxLine(regionLine);
@@ -2903,13 +2915,21 @@ namespace SZVppFilmUI.ViewModels
                 double lineAngle1 = Math.Atan2(nc1.DArr[index], nr1.DArr[index]) * 180 / Math.PI + 90;
 
                 HObject regionLineAffineTrans;
+                HOperatorSet.ReadRegion(out lineRegion, Path.Combine(path, "Line.hobj"));
                 HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
+                lineRegion?.Dispose();//释放资源
                 HOperatorSet.ReduceDomain(bottomCamera1.CurrentImage, regionLineAffineTrans, out imageReduced1);
+                regionLineAffineTrans?.Dispose();//释放资源
                 HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, BottomCamera1Low, BottomCamera1Low + 20);
+                imageReduced1?.Dispose();//释放资源
                 HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
+                edges1?.Dispose();//释放资源
                 HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
+                contoursSplit1?.Dispose();//释放资源
                 HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
+                selectedContours1?.Dispose();//释放资源
                 HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
+                unionContours1?.Dispose();//释放资源
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 BottomCamera1AppendHObject = regionLine;
                 index = FindMaxLine(regionLine);
@@ -2961,19 +2981,7 @@ namespace SZVppFilmUI.ViewModels
                 //    AddMessage($"下相机1:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
                 //}
                 #endregion
-                #region 释放内存
-                ModelImage.Dispose();
-                ImageRegion.Dispose();
-                ImageReduced.Dispose();
-                modelRegion.Dispose();
-                lineRegion.Dispose();
-                imageReduced1.Dispose();
-                edges1.Dispose();
-                contoursSplit1.Dispose();
-                selectedContours1.Dispose();
-                unionContours1.Dispose();
-                regionLineAffineTrans.Dispose();
-                #endregion
+                
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)(((lineAngle1 - lineAngle2) * -1 + _u) * 100) }, result);
             }
             catch (Exception ex)
@@ -3002,15 +3010,20 @@ namespace SZVppFilmUI.ViewModels
                 HOperatorSet.ReadRegion(out ImageRegion, Path.Combine(path, "Region.hobj"));
                 HObject ImageReduced;
                 HOperatorSet.ReduceDomain(ModelImage, ImageRegion, out ImageReduced);
+                ModelImage?.Dispose();//释放资源
                 HOperatorSet.FindShapeModel(ImageReduced, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row, out column, out angle, out score);
                 HOperatorSet.ReduceDomain(bottomCamera2.CurrentImage, ImageRegion, out ImageReduced);
+                ImageRegion?.Dispose();//释放资源
                 HOperatorSet.FindShapeModel(ImageReduced, ModelID, (new HTuple(-45)).TupleRad(), (new HTuple(90)).TupleRad(), 0.5, 1, 0, "least_squares", 0, 0.9, out row1, out column1, out angle1, out score1);
+                ImageReduced?.Dispose();//释放资源
+                HOperatorSet.ClearShapeModel(ModelID);//释放资源
                 HTuple homMat2D;
                 HOperatorSet.VectorAngleToRigid(row, column, angle, row1, column1, angle1, out homMat2D);
                 HObject modelRegion;
                 HOperatorSet.ReadRegion(out modelRegion, Path.Combine(path, "ModelRegion.hobj"));
                 HObject regionAffineTrans;
                 HOperatorSet.AffineTransRegion(modelRegion, out regionAffineTrans, homMat2D, "nearest_neighbor");
+                modelRegion?.Dispose();//释放资源
                 Tuple<string, object> t = new Tuple<string, object>("Color", "green");
                 BottomCamera2GCStyle = t;
                 BottomCamera2AppendHObject = null;
@@ -3020,18 +3033,26 @@ namespace SZVppFilmUI.ViewModels
                 //确认角度
                 HObject lineRegion;
                 HOperatorSet.ReadRegion(out lineRegion, Path.Combine(path, "Line.hobj"));
+                HOperatorSet.ReadImage(out ModelImage, Path.Combine(path, "ModelImage.bmp"));
                 HObject imageReduced1;
                 HOperatorSet.ReduceDomain(ModelImage, lineRegion, out imageReduced1);
+                lineRegion?.Dispose();//释放资源
+                ModelImage?.Dispose();//释放资源
                 HObject edges1;
                 HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, BottomCamera2Low, BottomCamera2Low + 20);
+                imageReduced1?.Dispose();//释放资源
                 HObject contoursSplit1;
                 HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
+                edges1?.Dispose();//释放资源
                 HObject selectedContours1;
                 HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
+                contoursSplit1?.Dispose();//释放资源
                 HObject unionContours1;
                 HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
+                selectedContours1?.Dispose();//释放资源
                 HTuple rowBegin1, colBegin1, rowEnd1, colEnd1, nr1, nc1, dist1;
                 HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
+                unionContours1?.Dispose();//释放资源
                 HObject regionLine;
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 var index = FindMaxLine(regionLine);
@@ -3039,13 +3060,21 @@ namespace SZVppFilmUI.ViewModels
                 double lineAngle1 = Math.Atan2(nc1.DArr[index], nr1.DArr[index]) * 180 / Math.PI + 90;
 
                 HObject regionLineAffineTrans;
+                HOperatorSet.ReadRegion(out lineRegion, Path.Combine(path, "Line.hobj"));
                 HOperatorSet.AffineTransRegion(lineRegion, out regionLineAffineTrans, homMat2D, "nearest_neighbor");
+                lineRegion?.Dispose();//释放资源
                 HOperatorSet.ReduceDomain(bottomCamera2.CurrentImage, regionLineAffineTrans, out imageReduced1);
+                regionLineAffineTrans?.Dispose();//释放资源
                 HOperatorSet.EdgesSubPix(imageReduced1, out edges1, "canny", 1, BottomCamera2Low, BottomCamera2Low + 20);
+                imageReduced1?.Dispose();//释放资源
                 HOperatorSet.SegmentContoursXld(edges1, out contoursSplit1, "lines_circles", 5, 4, 2);
+                edges1?.Dispose();//释放资源
                 HOperatorSet.SelectContoursXld(contoursSplit1, out selectedContours1, "contour_length", 15, 500, -0.5, 0.5);
+                contoursSplit1?.Dispose();//释放资源
                 HOperatorSet.UnionAdjacentContoursXld(selectedContours1, out unionContours1, 10, 1, "attr_keep");
+                selectedContours1?.Dispose();//释放资源
                 HOperatorSet.FitLineContourXld(unionContours1, "tukey", -1, 0, 5, 2, out rowBegin1, out colBegin1, out rowEnd1, out colEnd1, out nr1, out nc1, out dist1);
+                unionContours1?.Dispose();//释放资源
                 HOperatorSet.GenRegionLine(out regionLine, rowBegin1, colBegin1, rowEnd1, colEnd1);
                 BottomCamera2AppendHObject = regionLine;
                 index = FindMaxLine(regionLine);
@@ -3100,19 +3129,6 @@ namespace SZVppFilmUI.ViewModels
                 //    result = false;
                 //    AddMessage($"下相机2:可能重膜。模板{areaModel.D} 新膜{areaNewImage.D}");
                 //}
-                #endregion
-                #region 释放内存
-                ModelImage.Dispose();
-                ImageRegion.Dispose();
-                ImageReduced.Dispose();
-                modelRegion.Dispose();
-                lineRegion.Dispose();
-                imageReduced1.Dispose();
-                edges1.Dispose();
-                contoursSplit1.Dispose();
-                selectedContours1.Dispose();
-                unionContours1.Dispose();
-                regionLineAffineTrans.Dispose();
                 #endregion
                 return new Tuple<int[], bool>(new int[3] { (int)(FitRobot_x1.D * 100 - targetp[0]), (int)(FitRobot_y1.D * 100 - targetp[1]), (int)(((lineAngle1 - lineAngle2) * -1 + _u) * 100) }, result);
             }
